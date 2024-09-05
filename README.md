@@ -66,7 +66,6 @@ The purpose of this project is to create a platform where users can engage in st
 
 ### Pages
 
-Pages
 * Home Page
 Displays an overview of the website, including active and popular debates. Users can browse debates, log in, or sign up.
 Users can explore debates or proceed to log in for full functionality.
