@@ -66,8 +66,24 @@ The purpose of this project is to create a platform where users can engage in st
 
 ### Pages
 
-* Home: 1-3 sentences describing what the page displays and what a user can do
-* Shopping cart: ...
+1. Home Page
+Displays an overview of the website, including active and popular debates. Users can browse debates, log in, or sign up.
+Users can explore debates or proceed to log in for full functionality.
+2. Debate List Page
+Shows a list of all available debates. Users can search for debates by topic, date, or popularity.
+Users can click on a debate to view its details and participate in voting or commenting.
+3. Debate Page
+Displays the details of a specific debate, including the arguments from both debators.
+Users can read arguments, cast their votes for the stronger argument, and leave comments.
+4. Create Debate Page
+Allows Debators to create a new debate by entering the topic, description, and initial arguments.
+Debators can submit new debates or update/delete existing ones.
+5. Profile Page
+Displays the user’s information, including their role (Debator or Observer), history of debates, and earned points.
+Users can update their profile details, see their past activity, and check their ranking (if applicable).
+6. Login/Sign-up Page
+Provides a form for users to log into the system or create a new account.
+Users can enter their credentials to access debates or sign up if they are new.
 
 ### Entity-Relationship (ER) Diagram
 
