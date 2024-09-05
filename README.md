@@ -62,26 +62,27 @@ Open the `server` and `client` in separate VSCode workspaces or open the combine
 
 ### Purpose
 
-The purpose of this project is to create a platform where users can engage in structured debates on various topics. Users can either participate as Debators and present their arguments for or against a given topic and as Observers, where they can comment on arguments and vote for the debator they think has made the stronger case. The system will track votes, and debators with more votes will accumulate points, which contribute to their ranking in the system.
+The purpose of this project is to create a platform where users can engage in structured debates on various topics. Users can either participate as Voters and present their arguments for or against a given topic and as Observers, where they can comment on arguments and vote for the debator they think has made the stronger case. The system will track votes, and debators with more votes will accumulate points, which contribute to their ranking in the system.
 
 ### Pages
 
-1. Home Page
+Pages
+* Home Page
 Displays an overview of the website, including active and popular debates. Users can browse debates, log in, or sign up.
 Users can explore debates or proceed to log in for full functionality.
-2. Debate List Page
-Shows a list of all available debates. Users can search for debates by topic, date, or popularity.
+* Debate List Page (Extended scope)
+Shows a list of all available debates. Users can search for debates by topic, date, or popularity. 
 Users can click on a debate to view its details and participate in voting or commenting.
-3. Debate Page
+* Debate Page
 Displays the details of a specific debate, including the arguments from both debators.
 Users can read arguments, cast their votes for the stronger argument, and leave comments.
-4. Create Debate Page
-Allows Debators to create a new debate by entering the topic, description, and initial arguments.
+* Create Debate Invite Page
+Allows Debators to create a new debate by entering the topic, description, and initiate arguments by inviting users.
 Debators can submit new debates or update/delete existing ones.
-5. Profile Page
-Displays the user’s information, including their role (Debator or Observer), history of debates, and earned points.
+* Profile Page
+Displays the user’s information, including their role (Debator or Voter), history of debates, and earned points.
 Users can update their profile details, see their past activity, and check their ranking (if applicable).
-6. Login/Sign-up Page
+* Login/Sign-up Page
 Provides a form for users to log into the system or create a new account.
 Users can enter their credentials to access debates or sign up if they are new.
 
