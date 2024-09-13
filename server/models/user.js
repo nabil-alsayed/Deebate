@@ -7,8 +7,17 @@ const UserModel = new Schema({
     emailAddress: {
         type: String,
         unique: true,
-        trim: true,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
@@ -28,8 +37,8 @@ const UserModel = new Schema({
         type: Image,
     },
     debates: [{
-        type: Schema.Types.ObjectId, ref: "Course"
+        type: Schema.Types.ObjectId, ref: "Debate"
     }]
-});
+}, {  timestamps: true });
 
 module.exports = mongoose.model("User", UserModel);
