@@ -13,7 +13,12 @@ const registerUser = async (req, res) => {
     // Destructure the request body
     const { emailAddress, username, password, firstName, lastName, role } = req.body;
 
-    console.log( emailAddress )
+    // Check if user with similar email already exists
+    const user = await User.findOne({ emailAddress });
+
+    if(user){
+      return res.status(400).json({ message: 'A user with same email exist.'})
+    }
 
     // Check if all required credentials are provided
       if (!emailAddress || !username || !password || !firstName || !lastName) {
@@ -77,9 +82,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Get all users
-
 
 const getAllUsers = async (req, res) => {
     try {
