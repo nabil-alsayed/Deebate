@@ -1,12 +1,15 @@
+require('dotenv').config(); // This should be the first line in your entry point file
+
 var express = require('express');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
+var { registerUser, loginUser, getAllUsers } = require('./controllers/userController');
 
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/animalDevelopmentDB';
+var mongoURI = process.env.MONGODB_URI;
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -33,6 +36,19 @@ app.use(cors());
 app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
 });
+
+// Register a user
+
+app.post('/auth/users', registerUser);
+
+// Log in a user
+
+app.post('/auth/users/:id', loginUser)
+
+// Return all registred users
+
+app.get('/users', getAllUsers)
+
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
@@ -63,6 +79,7 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json(err_res);
 });
+
 
 app.listen(port, function(err) {
     if (err) throw err;
