@@ -7,8 +7,11 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
+var Argument = require('./models/argument');
+var { createArgument } = require('./controllers/argumentController');
+
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/deebatedb'; // TODO: change to deebatedb
+var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/deebateDB';
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -35,10 +38,10 @@ app.options('*', cors());
 app.use(cors());
 
 // Import routes
-app.get('/api', function (req, res) {
-  res.json({ message: 'Welcome to your DIT342 backend ExpressJS project!' });
-});
-
+// app.get('/api', function (req, res) {
+// res.json({ message: 'Welcome to your DIT342 backend ExpressJS project!' });
+// });
+app.post('/api/arguments', createArgument);
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
   res.status(404).json({ message: 'Not Found' });
