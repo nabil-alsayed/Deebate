@@ -10,7 +10,7 @@ var { registerUser, loginUser, getAllUsers } = require('./controllers/userContro
 
 // Variables
 var mongoURI = process.env.MONGODB_URI;
-var port = process.env.PORT || 3000;
+var port = process.env.PORT;
 
 // Connect to MongoDB
 mongoose.connect(mongoURI).catch(function(err) {
