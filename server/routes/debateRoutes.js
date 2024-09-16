@@ -99,18 +99,35 @@ router.get('/debates/:id', async function(req, res, next) {
 
 
 
-// router.patch('/debate/:id', async function (req, res, next) {
-//   const debateId = req.params.id;
-  
-//   try {
-//     const updatedDebate = await Debate.findByIdAndUpdate(debateId, req.body, { new: true });
-//     if (!updatedDebate) {
-//       return res.status(404).json({ message: 'Debate not found' });
-//     }
-//     res.status(200).json(updatedDebate);
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.put('/debates/:id', async function(req, res, next) {
+  const id = req.params.id;
+  const {topic, status, endTime} = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(404).json({message: "Invalid ID format"});
+  }
+
+  if (!topic || !endTime){
+    return res.status(404).json({message: "Missing required fields"});
+  }
+
+  try {
+    // Find the debate by ID and update
+    const updatedDebate = await Debate.findByIdAndUpdate(
+      id,
+      { topic, status, endTime },
+      { new: true, runValidators: true } // Return the updated document and run validation
+    );
+
+    // Check if the debate was found and updated
+    if (!updatedDebate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    res.status(200).json({message: "Fields were updated", updatedDebate});
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
