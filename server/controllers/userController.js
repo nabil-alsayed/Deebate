@@ -1,6 +1,7 @@
 /* This controller is for managing the User Endpoints */
 
 const User = require('../models/user')
+const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -118,8 +119,39 @@ const getAllUsers = async (req, res) => {
 
       res.status(200).json({ message: 'Registred users were found: ', users });
     } catch (error) {
-      res.status(400).json({ message: 'Request to login user failed.', error: error.message });
+      res.status(500).json({ message: 'Request to get all registred users failed.', error: error.message });
     }
   };
 
-module.exports = { registerUser, loginUser, getAllUsers };
+
+  // Get a specific user
+  // TODO: Check the role of the requesting client weither it is Admin or not
+
+  const getUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+  
+      // Check if the id provided is valid mongoose id
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.log('Invalid ID format');
+        return res.status(400).json({ message: `ID format provided is invalid: ${id}` });
+      }
+  
+      // Find the user by its ID
+      const user = await User.findById(id);
+  
+      // If the user is not found, return a 404 response
+      if (!user) {
+        return res.status(404).json({ message: `User with ID: ${id} cannot be found.` });
+      }
+  
+      // If the user is found, return a 200 response with the user data
+      return res.status(200).json({ message: `Successfully found user with ID ${id}`, user });
+  
+    } catch (error) {
+      res.status(500).json({ message: `Request to get user with ID ${id} failed.`, error: error.message });
+    }
+  };
+  
+
+module.exports = { registerUser, loginUser, getAllUsers, getUser };
