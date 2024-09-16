@@ -33,5 +33,7 @@ const debateSchema = new Schema({
   }]
 });
 
+
+
 const Debate = mongoose.model('Debate', debateSchema);
 module.exports = Debate;

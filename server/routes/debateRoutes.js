@@ -130,4 +130,28 @@ router.put('/debates/:id', async function(req, res, next) {
   }
 });
 
+router.patch('/debates/:id', async function(req, res, next) {
+  const { id } = req.params; // Get id from URL
+  const updateFields = req.body; // Get update fields from request body
+
+  // Validate that id is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
+
+  try {
+    const debate = await Debate.findByIdAndUpdate(id, updateFields, { new: true, runValidators: true });
+
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    res.status(200).json(debate);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+
 module.exports = router;
