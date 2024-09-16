@@ -65,7 +65,7 @@ router.delete('/debates/:id', async function(req, res, next) {
   const id = req.params.id; // Using const for id as it's not reassigned
   
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid ID format' });
+    return res.status(404).json({ message: 'Invalid ID format' });
   }
   
   try {
@@ -78,6 +78,25 @@ router.delete('/debates/:id', async function(req, res, next) {
     return next(err);
   }
 });
+
+router.get('/debates/:id', async function(req, res, next) {
+  const id = req.params.id; // Using const for id as it's not reassigned
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: 'Invalid ID format' });
+  }
+  
+  try {
+    const debate = await Debate.findById(id);
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+    res.status(200).json({ message: 'Debate found successfully', debate });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 
 
 // router.patch('/debate/:id', async function (req, res, next) {
