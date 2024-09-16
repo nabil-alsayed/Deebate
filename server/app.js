@@ -38,15 +38,14 @@ app.get('/api', function(req, res) {
 });
 
 // Register a user
-
-app.post('/auth/users', registerUser);
+// app.post('/auth/users', registerUser);
+app.post('/auth/signup', registerUser);
 
 // Log in a user
-
-app.post('/auth/users/:id', loginUser)
+// app.post('/auth/users/:id', loginUser)
+app.post('/auth/login', loginUser)
 
 // Return all registred users
-
 app.get('/api/users', getAllUsers)
 
 // TODO: Delete all arguments

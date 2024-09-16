@@ -14,11 +14,11 @@ const registerUser = async (req, res) => {
     // Destructure the request body
     const { emailAddress, username, password, firstName, lastName, role } = req.body;
 
-    // Check if user with similar email already exists
-    const user = await User.findOne({ emailAddress });
+    // Check if user with similar email or username already exists
+    const user = await User.findOne({ $or: [{ emailAddress }, { username }] });
 
     if(user){
-      return res.status(400).json({ message: 'A user with same email exist.'})
+      return res.status(400).json({ message: 'A user with same email or username already exist.'})
     }
 
     // Check if all required credentials are provided
