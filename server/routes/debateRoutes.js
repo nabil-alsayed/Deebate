@@ -7,9 +7,9 @@ const User = require('../models/user');
 const Argument = require('../models/argument'); 
 
 // POST /debate
-router.post('/debates', async function (req, res, next) {
+router.post('/debate', async function (req, res, next) {
   const { topic, endTime, creator } = req.body;
-
+  const debate = new Debate(req.body);
   // Basic validation
   if (!topic || !endTime || !creator) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -21,25 +21,46 @@ router.post('/debates', async function (req, res, next) {
   }
 
   try {
-    const debate = new Debate(req.body);
+    
     await debate.save();
-    res.status(201).json(debate);
+    
   } catch (err) {
     return next(err);
   }
+  res.status(201).json(debate);
 });
 
 // GET /debates
-router.get('/debates', async function (req, res, next) {
+router.get('/debates', async function(req, res, next) {
   try {
-    const debates = await Debate.find().populate('creator arguments');
-    res.status(200).json(debates);
+    // Find all debates and populate references to creator and arguments
+    const debates = await Debate.find();
+    // Send the retrieved debates as JSON response
+    res.json({ "debates": debates });
+  } catch (err) {
+    // Pass any errors to the next middleware (usually an error handler)
+    return next(err);
+  }
+});
+
+router.delete('/delete/debates', async function(req, res, next) {
+  try {
+    const result = await Debate.deleteMany();
+    
+    // Check if any debates were deleted
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No debates found to delete' });
+    }
+    
+    // Respond with the number of debates deleted
+    res.status(200).json({ message: `${result.deletedCount} debates deleted successfully` });
+    
   } catch (err) {
     return next(err);
   }
 });
 
-// // PATCH /debate/:id
+
 // router.patch('/debate/:id', async function (req, res, next) {
 //   const debateId = req.params.id;
   
