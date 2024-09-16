@@ -1,13 +1,14 @@
 // routes/debateRoutes.js
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Debate = require('../models/debate');
 const User = require('../models/user'); 
 const Argument = require('../models/argument'); 
 
 // POST /debate
-router.post('/debate', async function (req, res, next) {
+router.post('/debates', async function (req, res, next) {
   const { topic, endTime, creator } = req.body;
   const debate = new Debate(req.body);
   // Basic validation
@@ -43,7 +44,7 @@ router.get('/debates', async function(req, res, next) {
   }
 });
 
-router.delete('/delete/debates', async function(req, res, next) {
+router.delete('/debates', async function(req, res, next) {
   try {
     const result = await Debate.deleteMany();
     
@@ -55,6 +56,24 @@ router.delete('/delete/debates', async function(req, res, next) {
     // Respond with the number of debates deleted
     res.status(200).json({ message: `${result.deletedCount} debates deleted successfully` });
     
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.delete('/debates/:id', async function(req, res, next) {
+  const id = req.params.id; // Using const for id as it's not reassigned
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
+  
+  try {
+    const debate = await Debate.findByIdAndDelete(id);
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+    res.status(200).json({ message: 'Debate deleted successfully', debate });
   } catch (err) {
     return next(err);
   }
