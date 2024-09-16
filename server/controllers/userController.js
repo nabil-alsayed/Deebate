@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 // Register a user
 
-const registerUser = async (req, res) => {
+const signupUser = async (req, res) => {
     try {
 
     // Destructure the request body
@@ -158,4 +158,4 @@ const getAllUsers = async (req, res) => {
   };
   
 
-module.exports = { registerUser, loginUser, getAllUsers, getUser };
+module.exports = { signupUser, loginUser, getAllUsers, getUser };

@@ -6,7 +6,7 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-var { registerUser, loginUser, getAllUsers, getUser } = require('./controllers/userController');
+var { signupUser, loginUser, getAllUsers, getUser } = require('./controllers/userController');
 
 // Variables
 var mongoURI = process.env.MONGODB_URI;
@@ -38,22 +38,20 @@ app.get('/api', function(req, res) {
 });
 
 // Register a user
-// app.post('/auth/users', registerUser);
-app.post('/auth/signup', registerUser);
+app.post('/auth/signup', signupUser);
 
 // Log in a user
-// app.post('/auth/users/:id', loginUser)
 app.post('/auth/login', loginUser)
 
 // Return all registred users
 app.get('/api/users', getAllUsers)
 
+// Return a specific user
+app.get('/api/users/:id', getUser);
+
 // TODO: Delete all arguments
 
 // TODO: Delete all comments
-
-// Return a specific user
-app.get('/api/users/:id', getUser);
 
 
 // // Catch all non-error handler for api (i.e., 404 Not Found)
