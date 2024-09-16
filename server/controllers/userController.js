@@ -40,6 +40,7 @@ const registerUser = async (req, res) => {
         role: role || "user"
       });
 
+      // Return a success message and the new registeration record of the user
       res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error: error.message });
@@ -77,6 +78,8 @@ const loginUser = async (req, res) => {
 
     // Create a token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Return a success message and token to login
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     res.status(400).json({ message: 'Request to login user failed.', error: error.message });
@@ -117,6 +120,7 @@ const getAllUsers = async (req, res) => {
         res.status(401).json({ error: 'No registred users found.' })
       }
 
+      // Return a 200 response with list of users
       res.status(200).json({ message: 'Registred users were found: ', users });
     } catch (error) {
       res.status(500).json({ message: 'Request to get all registred users failed.', error: error.message });
@@ -145,7 +149,7 @@ const getAllUsers = async (req, res) => {
         return res.status(404).json({ message: `User with ID: ${id} cannot be found.` });
       }
   
-      // If the user is found, return a 200 response with the user data
+      // Return a 200 response with the user data
       return res.status(200).json({ message: `Successfully found user with ID ${id}`, user });
   
     } catch (error) {
