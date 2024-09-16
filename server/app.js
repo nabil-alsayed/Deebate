@@ -7,6 +7,7 @@ var history = require('connect-history-api-fallback');
 
 const debateRoutes = require('./routes/debateRoutes');
 
+
 // Variables
 var mongoURI = process.env.MONGODB_URI || 'mongodb+srv://admin:c1JQSotcKNqdTw0Q@deebatedb.1wbfg.mongodb.net/';
 var port = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
 });
 
+app.use('/api', debateRoutes);  //create (post) a debate
 app.use('/api', debateRoutes);  //create (post) a debate
 
 // Catch all non-error handler for api (i.e., 404 Not Found)

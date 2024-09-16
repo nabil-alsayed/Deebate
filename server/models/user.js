@@ -34,9 +34,9 @@ const UserModel = new Schema({
         trim: true,
         required: true
     },
-    profilePicture: {
-        type: Image,
-    },
+    // profilePicture: { //not a valid type in MongoDB
+    //     type: Image,
+    // },
     debates: [{
         type: Schema.Types.ObjectId, ref: "Debate"
     }]

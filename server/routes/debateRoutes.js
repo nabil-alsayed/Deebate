@@ -1,10 +1,13 @@
 // routes/debateRoutes.js
 const express = require('express');
 const router = express.Router();
+
 const Debate = require('../models/debate');
+const User = require('../models/user'); 
+const Argument = require('../models/argument'); 
 
 // POST /debate
-router.post('/debate', async function (req, res, next) {
+router.post('/debates', async function (req, res, next) {
   const { topic, endTime, creator } = req.body;
 
   // Basic validation
@@ -27,14 +30,14 @@ router.post('/debate', async function (req, res, next) {
 });
 
 // GET /debates
-// router.get('/debates', async function (req, res, next) {
-//   try {
-//     const debates = await Debate.find().populate('creator arguments');
-//     res.status(200).json(debates);
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.get('/debates', async function (req, res, next) {
+  try {
+    const debates = await Debate.find().populate('creator arguments');
+    res.status(200).json(debates);
+  } catch (err) {
+    return next(err);
+  }
+});
 
 // // PATCH /debate/:id
 // router.patch('/debate/:id', async function (req, res, next) {
