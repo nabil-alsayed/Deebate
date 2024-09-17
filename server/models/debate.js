@@ -30,13 +30,10 @@ const debateSchema = new Schema({
   arguments: [{
     type: Schema.Types.ObjectId,
     ref: 'Argument',
-    required: true,
   }]
-  //in case a user create an argument for with 2 other debators
-//   participants: [{
-//     type: mongoose.Schema.ObjectId,
-//     ref: 'User',
-//   }]
 });
 
+
+
 const Debate = mongoose.model('Debate', debateSchema);
+module.exports = Debate;

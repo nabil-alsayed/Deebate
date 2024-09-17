@@ -5,8 +5,10 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
+const debateRoutes = require('./routes/debateRoutes');
+
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/animalDevelopmentDB';
+var mongoURI = process.env.MONGODB_URI || 'mongodb+srv://admin:c1JQSotcKNqdTw0Q@deebatedb.1wbfg.mongodb.net/DeebateDB';
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -33,6 +35,11 @@ app.use(cors());
 app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
 });
+
+app.use('/api', debateRoutes);  //create (post) a debate
+// app.use('/api', debateRoutes);  //get debates
+// app.use('/api', debateRoutes);  //delete debates
+// app.use('/api', debateRoutes);  //delete debates
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
