@@ -152,6 +152,33 @@ router.patch('/debates/:id', async function(req, res, next) {
   }
 });
 
+//second section
+//This endpoint adds a new argument to a specific debate.
+router.post('/debates/:debate_id/arguments', async function (req, res, next) {
+  const { debate_id } = req.params;
+  const { content, user_id } = req.body;
+
+  try {
+    const debate = await Debate.findById(debate_id);
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    // Create a new argument (assuming you have an Argument model)
+    const argument = new Argument({ content, owner: user_id, debate: debate_id });
+    await argument.save();
+
+    // Add the argument to the debate's arguments array
+    debate.arguments.push(argument._id);
+    await debate.save();
+
+    res.status(201).json(argument);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 
 
 module.exports = router;
