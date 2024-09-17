@@ -142,6 +142,9 @@ const postDebate = async (req, res, next) => {
     }
   }
 
+
+  // section 2
+
   const addArgumentToDebate = async (req, res, next) => {
     const { debate_id } = req.params;
     const { content, user_id } = req.body;
@@ -166,5 +169,20 @@ const postDebate = async (req, res, next) => {
     }
   }
 
+  const getAllArgumentsOfDebate = async (req, res, next) => {
+    const { debate_id } = req.params;
+  
+    try {
+      const debate = await Debate.findById(debate_id).populate('arguments');
+      if (!debate) {
+        return res.status(404).json({ message: 'Debate not found' });
+      }
+  
+      res.status(200).json(debate.arguments);
+    } catch (err) {
+      return next(err);
+    }
+  }
 
-module.exports = { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate };
+
+module.exports = { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate, getAllArgumentsOfDebate };

@@ -7,7 +7,7 @@ const Debate = require('../models/debate');
 const User = require('../models/user'); 
 const Argument = require('../models/argument'); 
 
-const { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate } = require('../controllers/debateController');
+const { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate, getAllArgumentsOfDebate } = require('../controllers/debateController');
 
 // POST /debate
 router.post('/debates', postDebate);
@@ -28,5 +28,7 @@ router.patch('/debates/:id', updateSpecificField);
 //second section
 //This endpoint adds a new argument to a specific debate.
 router.post('/debates/:debate_id/arguments', addArgumentToDebate);
+
+router.get('/debates/:debate_id/arguments', getAllArgumentsOfDebate);
 
 module.exports = router;

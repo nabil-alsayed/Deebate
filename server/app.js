@@ -37,9 +37,6 @@ app.get('/api', function(req, res) {
 });
 
 app.use('/api', debateRoutes);  //create (post) a debate
-// app.use('/api', debateRoutes);  //get debates
-// app.use('/api', debateRoutes);  //delete debates
-// app.use('/api', debateRoutes);  //delete debates
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
