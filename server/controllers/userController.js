@@ -89,6 +89,9 @@ const loginUser = async (req, res) => {
 // Get all users
 
 const getAllUsers = async (req, res) => {
+    
+  // TODO: only admin or a signed in user should be able to perform this request
+  
     try {
       // Destructure the request body
       const { emailAddress, password } = req.body;
@@ -129,9 +132,11 @@ const getAllUsers = async (req, res) => {
 
 
   // Get a specific user
-  // TODO: Check the role of the requesting client weither it is Admin or not
 
   const getUser = async (req, res) => {
+
+    // TODO: only admin or a signed in user should be able to perform this request
+
     const { id } = req.params;
     try {
   
@@ -161,6 +166,8 @@ const getAllUsers = async (req, res) => {
   // Modify one user's info
 
   const editUser = async (req, res) => {
+
+    // TODO: only admin or the owner of the user account should be able to perform this request
     
     // Get the user's id and updates from the request params and body
     const { id } = req.params;
@@ -178,7 +185,7 @@ const getAllUsers = async (req, res) => {
     
     try {
       // find the user 
-      const user = await User.findById({_id: id});
+      const user = await User.findById(id);
 
       // check if the user exist
       if(!user){
@@ -194,10 +201,42 @@ const getAllUsers = async (req, res) => {
     }
   }
 
+  // Delete a user
+  const deleteUser = async (req, res) => {
+    
+    // TODO: only admin or the owner of the user account should be able to perform this request
+
+    const { id } = req.params;
+    
+    try {
+      // Check if the ID provided is valid mongoose id
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.log('Invalid ID format');
+        return res.status(400).json({ message: `ID format provided is invalid: ${id}` });
+      }
+  
+      // Find the user by its ID
+      const user = await User.findById(id);
+  
+      // check if the user exist
+      if(!user){
+        return res.status(404).json({ message: "User was not found."})
+      }
+      // find the user and update the informations as per the request
+      const deletedUser = await User.findByIdAndDelete(id)
+
+      res.status(200).json({ message: `${user.username}'s was deleted sucessfully!`, deletedUser})
+
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error.', error: error.message})
+    }
+  }
+
 module.exports = { 
   signupUser, 
   loginUser, 
   getAllUsers, 
   getUser, 
-  editUser 
+  editUser,
+  deleteUser 
 };

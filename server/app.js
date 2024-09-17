@@ -6,7 +6,7 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-var { signupUser, loginUser, getAllUsers, getUser, editUser } = require('./controllers/userController');
+var { signupUser, loginUser, getAllUsers, getUser, editUser, deleteUser } = require('./controllers/userController');
 
 // Variables
 var mongoURI = process.env.MONGODB_URI;
@@ -52,16 +52,17 @@ app.get('/api/users/:id', getUser);
 // Change information of one user
 app.patch('/api/users/edit/:id', editUser);
 
+// Delete a user
+app.delete('/api/users/:id', deleteUser);
 
 // TODO: Delete all arguments
 
 // TODO: Delete all comments
 
-
-// // Catch all non-error handler for api (i.e., 404 Not Found)
-// app.use('/api/*', function (req, res) {
-//     res.status(404).json({ 'message': 'Not Found' });
-// });
+// Catch all non-error handler for api (i.e., 404 Not Found)
+app.use('/api/*', function (req, res) {
+    res.status(404).json({ 'message': 'Not Found' });
+});
 
 // Configuration for serving frontend in production mode
 // Support Vuejs HTML 5 history mode
