@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
     // Return a success message and token to login
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
-    res.status(400).json({ message: 'Request to login user failed.', error: error.message });
+    res.status(500).json({ message: 'Internal Server Error.', error: error.message });
   }
 };
 
@@ -123,7 +123,7 @@ const getAllUsers = async (req, res) => {
       // Return a 200 response with list of users
       res.status(200).json({ message: 'Registred users were found: ', users });
     } catch (error) {
-      res.status(500).json({ message: 'Request to get all registred users failed.', error: error.message });
+      res.status(500).json({ message: 'Internal Server Error.', error: error.message });
     }
   };
 
@@ -153,9 +153,51 @@ const getAllUsers = async (req, res) => {
       return res.status(200).json({ message: `Successfully found user with ID ${id}`, user });
   
     } catch (error) {
-      res.status(500).json({ message: `Request to get user with ID ${id} failed.`, error: error.message });
+      res.status(500).json({ message: 'Internal Server Error.', error: error.message });
     }
   };
   
 
-module.exports = { signupUser, loginUser, getAllUsers, getUser };
+  // Modify one user's info
+
+  const editUser = async (req, res) => {
+    
+    // Get the user's id and updates from the request params and body
+    const { id } = req.params;
+    const updates = req.body;
+
+    // List of allowed attributes to update
+    const allowedAttributes = ['emailAddress', 'username', 'password', 'firstName', 'lastName', 'role', 'profileImg'];
+
+    // Check every requested update if it is valid
+    const isValidRequest = Object.keys(updates).every((key) => allowedAttributes.includes(key));
+
+    if (!isValidRequest) {
+      return res.status(400).json({ message: 'Invalid update request. One or more attributes are not allowed.' });
+    }
+    
+    try {
+      // find the user 
+      const user = await User.findById({_id: id});
+
+      // check if the user exist
+      if(!user){
+        return res.status(404).json({ message: "User was not found."})
+      }
+      // find the user and update the informations as per the request
+      const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true })
+
+      res.status(200).json({ message: `${user.username}'s information updated sucessfully!`, updatedUser})
+
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error.', error: error.message})
+    }
+  }
+
+module.exports = { 
+  signupUser, 
+  loginUser, 
+  getAllUsers, 
+  getUser, 
+  editUser 
+};

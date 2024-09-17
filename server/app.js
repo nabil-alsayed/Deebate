@@ -6,7 +6,7 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-var { signupUser, loginUser, getAllUsers, getUser } = require('./controllers/userController');
+var { signupUser, loginUser, getAllUsers, getUser, editUser } = require('./controllers/userController');
 
 // Variables
 var mongoURI = process.env.MONGODB_URI;
@@ -48,6 +48,10 @@ app.get('/api/users', getAllUsers)
 
 // Return a specific user
 app.get('/api/users/:id', getUser);
+
+// Change information of one user
+app.patch('/api/users/edit/:id', editUser);
+
 
 // TODO: Delete all arguments
 
