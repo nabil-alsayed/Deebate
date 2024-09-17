@@ -12,6 +12,8 @@ var {
   getAllArguments,
 } = require('./controllers/argumentController');
 
+const debateRoutes = require('./routes/debateRoutes');
+
 // Variables
 var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/deebateDB';
 var port = process.env.PORT || 3000;
@@ -43,6 +45,12 @@ app.use(cors());
 app.post('/api/arguments', createArgument);
 app.get('/api/arguments', getAllArguments);
 app.get('/api/arguments/:id', getArgumentById);
+
+//debate routes
+app.use('/api', debateRoutes); //create (post) a debate
+// app.use('/api', debateRoutes);  //get debates
+// app.use('/api', debateRoutes);  //delete debates
+// app.use('/api', debateRoutes);  //delete debates
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {

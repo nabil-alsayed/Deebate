@@ -9,6 +9,7 @@ const ArgumentModel = new Schema(
     content: {
       type: String,
       required: true,
+      trim: true,
     },
     owner: {
       type: Schema.Types.ObjectId,
@@ -21,6 +22,11 @@ const ArgumentModel = new Schema(
         ref: 'Comment',
       },
     ],
+    debate: {
+      type: Schema.Types.ObjectId,
+      ref: 'Debate',
+      required: true,
+    },
   },
   { timestamps: true }
 );
