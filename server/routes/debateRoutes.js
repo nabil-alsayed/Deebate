@@ -1,17 +1,11 @@
 // routes/debateRoutes.js
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 
-const Debate = require('../models/debate');
-const User = require('../models/user'); 
-const Argument = require('../models/argument'); 
-
-const { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate, getAllArgumentsOfDebate } = require('../controllers/debateController');
+const { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate, getAllArgumentsOfDebate, getArgumentInDebate } = require('../controllers/debateController');
 
 // POST /debate
 router.post('/debates', postDebate);
-
 // GET /debates
 router.get('/debates', getDebates);
 
@@ -30,5 +24,7 @@ router.patch('/debates/:id', updateSpecificField);
 router.post('/debates/:debate_id/arguments', addArgumentToDebate);
 
 router.get('/debates/:debate_id/arguments', getAllArgumentsOfDebate);
+
+router.get('/debates/:debate_id/arguments/:argument_id', getArgumentInDebate);
 
 module.exports = router;

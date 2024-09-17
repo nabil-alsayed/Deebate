@@ -6,6 +6,7 @@ var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
 const debateRoutes = require('./routes/debateRoutes');
+const argumentRoutes = require('./routes/argumentRoutes');
 
 // Variables
 var mongoURI = process.env.MONGODB_URI || 'mongodb+srv://admin:c1JQSotcKNqdTw0Q@deebatedb.1wbfg.mongodb.net/DeebateDB';
@@ -37,6 +38,7 @@ app.get('/api', function(req, res) {
 });
 
 app.use('/api', debateRoutes);  //create (post) a debate
+app.use('/api', argumentRoutes);  //create (post) a debate
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
