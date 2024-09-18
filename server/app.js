@@ -22,21 +22,8 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.use(cors());
 
-// Import routes
-app.get('/api', function(req, res) {
-    res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
-});
-
-// TODO: Implement Versioning ex. /v1/api/debates'
-// TODO: Implement search ex. /v1/debates/search'
-
 // Use routes with controllers
 app.use('/', routes);
-
-// Catch all non-error handler for api (i.e., 404 Not Found)
-app.use('/api/*', function (req, res) {
-    res.status(404).json({ 'message': 'Not Found' });
-});
 
 // Configuration for serving frontend in production mode
 // Support Vuejs HTML 5 history mode
