@@ -14,6 +14,6 @@ router.patch('/:id', debateController.updateSpecificField);
 
 //second section
 //This endpoint adds a new argument to a specific debate.
-router.post('/debates/:debate_id/arguments', debateController.addArgumentToDebate);
+router.post('/:debate_id/arguments', debateController.addArgumentToDebate);
 
 module.exports = router;
