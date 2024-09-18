@@ -1,4 +1,4 @@
-const Argument = require('../models/argument');
+const Argument = require('../../models/argument');
 
 const getArgumentById = async (req, res, next) => {
     const { id } = req.params; // Extract argument ID from URL parameters
