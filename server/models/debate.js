@@ -31,6 +31,9 @@ const debateSchema = new Schema({
   maxParticipants: {
     type: Number,
     default: 2, // Default set to 2 participants
+    max: 4, // Maximum number of participants
+    min: 2, // Minimum number of participants
+    required: true,
 },
   arguments: [{
     type: Schema.Types.ObjectId,

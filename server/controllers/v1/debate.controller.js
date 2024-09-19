@@ -14,20 +14,45 @@ const postDebate = async (req, res, next) => {
    or if it has an argument from a different debate 
    since debates can't share arguments */
 
-    const { topic, endTime, creator } = req.body;
-    const debate = new Debate(req.body);
+    const { topic, category, endTime, creator, maxParticipants, participants } = req.body;
+    
     // Basic validation
-    if (!topic || !endTime || !creator) {
+    if (!topic || !category || !endTime || !creator) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-  
+
     // Check that endTime is in the future
     if (new Date(endTime) <= new Date()) {
       return res.status(400).json({ message: 'End time must be in the future' });
     }
+
+    if (participants.length > maxParticipants) {
+      return res.status(400).json({ message: 'Participants number is invalid the maximum limit' })
+    };
+
+    if (participants.length < 2) {
+      return res.status(400).json({ message: 'Participants number is below the minimum limit' })
+    };
+
+    // Check if participants are unique
+    for (let i = 0; i < participants.length; i++) {
+      for (let j = i + 1; j < participants.length; j++) {
+        if (participants[i] === participants[j]) {
+          return res.status(400).json({ message: 'Participants should be unique' });
+        }
+      }
+    }
   
+    const debate = new Debate({ 
+      topic, 
+      category, 
+      endTime, 
+      creator, 
+      maxParticipants,
+      participants
+    });
+
     try {
-      
       await debate.save();
       
     } catch (err) {
