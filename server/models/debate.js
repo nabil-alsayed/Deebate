@@ -15,7 +15,7 @@ const debateSchema = new Schema({
   },
   category: {
     type: String,
-    enum: ['Politics', 'Technology', 'Sports', 'Health', 'Education'], // Add more categories as needed
+    enum: ['Politics', 'Technology', 'Sports', 'Health', 'Education', 'Social Issues'], // Add more categories as needed
     required: true
   },
   endTime: {
@@ -27,11 +27,11 @@ const debateSchema = new Schema({
     ref: 'User',  // Reference to the user who initiated the debate
     required: true,
   },
-  participants: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    max: 2,
-  }],
+  participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  maxParticipants: {
+    type: Number,
+    default: 2, // Default set to 2 participants
+},
   arguments: [{
     type: Schema.Types.ObjectId,
     ref: 'Argument',
