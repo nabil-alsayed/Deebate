@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
+const User = require('../../models/user');
 
 const postDebate = async (req, res, next) => {
 
@@ -17,7 +18,7 @@ const postDebate = async (req, res, next) => {
     const { topic, category, endTime, creator, maxParticipants, participants } = req.body;
     
     // Basic validation
-    if (!topic || !category || !endTime || !creator) {
+    if (!topic || !category || !endTime || !creator || !participants) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -27,38 +28,42 @@ const postDebate = async (req, res, next) => {
     }
 
     if (participants.length > maxParticipants) {
-      return res.status(400).json({ message: 'Participants number is invalid the maximum limit' })
+      return res.status(400).json({ message: 'Participants number is exceeding the maximum limit' })
     };
 
-    if (participants.length < 2) {
+    const minParticipants = Debate.schema.path('maxParticipants').options.min;
+
+    if (participants.length < minParticipants) {
       return res.status(400).json({ message: 'Participants number is below the minimum limit' })
     };
-
-    // Check if participants are unique
-    for (let i = 0; i < participants.length; i++) {
-      for (let j = i + 1; j < participants.length; j++) {
-        if (participants[i] === participants[j]) {
-          return res.status(400).json({ message: 'Participants should be unique' });
-        }
-      }
-    }
   
-    const debate = new Debate({ 
-      topic, 
-      category, 
-      endTime, 
-      creator, 
-      maxParticipants,
-      participants
-    });
 
     try {
+      // Fetch all participants
+      const participantsDB = await User.find({ _id: { $in: participants } });
+
+      // Create a Set of participant IDs
+      const uniqueParticipants = new Set(participants.map(participant => participant.toString()));
+
+      // Check if the number of provided participants matches the number of unique IDs
+      if (participants.length !== uniqueParticipants.size) {
+        return res.status(400).json({ message: 'Participants should be unique' });
+      }
+
+      // Check if the number of fetched participants matches the provided participants
+      if (participantsDB.length !== participants.length) {
+        return res.status(400).json({ message: 'One or more participants are not valid users/participants' });
+      }
+
+      // Create a new debate
+      const debate = new Debate({ topic, category, endTime, creator, maxParticipants, participants });
+
       await debate.save();
-      
+      res.status(201).json(debate);
+
     } catch (err) {
       return next(err);
     }
-    res.status(201).json(debate);
   }
 
   const getDebates = async (req, res, next) => {
@@ -195,6 +200,9 @@ const postDebate = async (req, res, next) => {
     }
   }
 
+
+  // section 2
+
   const addArgumentToDebate = async (req, res, next) => {
     // TODO: check if the argument user is one of the two debaters, and if the debate is still open
     // if the owner is not one of the debaters, return 403 Forbidden
@@ -223,5 +231,51 @@ const postDebate = async (req, res, next) => {
     }
   }
 
+  const getAllArgumentsOfDebate = async (req, res, next) => {
+    const { debate_id } = req.params;
+  
+    try {
+      const debate = await Debate.findById(debate_id).populate('arguments');
+      if (!debate) {
+        return res.status(404).json({ message: 'Debate not found' });
+      }
+  
+      res.status(200).json(debate.arguments);
+    } catch (err) {
+      return next(err);
+    }
+  }
+  
+  const getArgumentInDebate = async (req, res, next) => {
+    const { debate_id, argument_id } = req.params;
+  
+    try {
+      // Validate debate_id and argument_id
+      if (!mongoose.Types.ObjectId.isValid(debate_id) || !mongoose.Types.ObjectId.isValid(argument_id)) {
+        return res.status(400).json({ message: 'Invalid debate or argument ID format' });
+      }
+  
+      // Find the debate and populate arguments
+      const debate = await Debate.findById(debate_id).populate('arguments');
+      if (!debate) {
+        return res.status(400).json({ message: 'Debate not found' });
+      }
 
-module.exports = { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate };
+      const argument = await Argument.findById(argument_id);
+      if (!argument) {
+        return res.status(404).json({ message: 'Argument not found'})
+      }
+
+      const isArgumentInDebate = debate.arguments.some(argId => argId.equals(argument._id));
+      if (!isArgumentInDebate){
+        return res.status(404).json({ message: 'Argument not associated with this debate'});
+      }
+  
+      // Return the argument details
+      res.status(200).json(argument);
+    } catch (err) {
+      return next(400); // Pass any errors to the error handling middleware
+    }
+  };
+  
+module.exports = { postDebate, getDebates, deleteAllDebates, deleteDebateByID, getDebateByID, updateDebate, updateSpecificField, addArgumentToDebate, getAllArgumentsOfDebate, getArgumentInDebate };
