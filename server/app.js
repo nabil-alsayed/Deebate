@@ -9,7 +9,6 @@ var history = require('connect-history-api-fallback');
 var { connectDb } = require('./db/db');
 var routes = require('./routes/index');
 
-// Port Variable
 var port = process.env.PORT || 3000;
 
 // Create Express app
