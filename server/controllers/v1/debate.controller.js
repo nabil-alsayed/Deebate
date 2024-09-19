@@ -1,8 +1,19 @@
 const mongoose = require('mongoose');
-const Debate = require('../models/debate');
-const Argument = require('../models/argument');
+const Debate = require('../../models/debate');
+const Argument = require('../../models/argument');
 
 const postDebate = async (req, res, next) => {
+
+  /* TODO: Add more validation
+   Requires more error handling ex. if creator is not a valid user
+   or if endTime is not a valid date 
+   or if topic is not a string
+   or if status is not a string
+   or if arguments is not an array
+   or if arguments is not an array of valid argument ids
+   or if it has an argument from a different debate 
+   since debates can't share arguments */
+
     const { topic, endTime, creator } = req.body;
     const debate = new Debate(req.body);
     // Basic validation
@@ -26,6 +37,10 @@ const postDebate = async (req, res, next) => {
   }
 
   const getDebates = async (req, res, next) => {
+
+    // TODO: Add pagination and filtering options
+    // e.g., limit, offset, sort, filter by status, etc.
+
     try {
         // Find all debates and populate references to creator and arguments
         const debates = await Debate.find();
@@ -38,6 +53,10 @@ const postDebate = async (req, res, next) => {
   }
 
   const deleteAllDebates = async (req, res, next) => {
+
+    // TODO: Add more validation
+    // e.g. check if user is an admin or if there are any debates to delete
+
     try {
       const result = await Debate.deleteMany();
       
@@ -55,6 +74,8 @@ const postDebate = async (req, res, next) => {
   }
 
   const deleteDebateByID = async (req, res, next) => {
+    // TODO: check if user is an admin or if the debate exists
+    
     const id = req.params.id; // Using const for id as it's not reassigned
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -73,6 +94,7 @@ const postDebate = async (req, res, next) => {
   }
 
   const getDebateByID = async (req, res, next) => {
+
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
@@ -90,6 +112,9 @@ const postDebate = async (req, res, next) => {
   }
 
   const updateDebate = async (req, res, next) => {
+    // TODO: Add more validation and error handling for debate owner or admin only access to update debates
+    // check if the debate end time passed or not before updating, cause it should not be updated after the end time.
+    
     const id = req.params.id;
     const {topic, status, endTime} = req.body;
   
@@ -121,6 +146,9 @@ const postDebate = async (req, res, next) => {
   }
 
   const updateSpecificField = async (req, res, next) => {
+    // TODO: Add more validation and error handling for debate owner or admin only access to update debates
+    // check if the debate end time passed or not before updating, cause it should not be updated after the end time.
+    
     const { id } = req.params; // Get id from URL
     const updateFields = req.body; // Get update fields from request body
   
@@ -143,6 +171,10 @@ const postDebate = async (req, res, next) => {
   }
 
   const addArgumentToDebate = async (req, res, next) => {
+    // TODO: check if the argument user is one of the two debaters, and if the debate is still open
+    // if the owner is not one of the debaters, return 403 Forbidden
+    // if the debate is closed, return 403 Forbidden
+
     const { debate_id } = req.params;
     const { content, user_id } = req.body;
   

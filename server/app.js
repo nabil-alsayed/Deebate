@@ -1,34 +1,16 @@
+require('dotenv').config();
+
 var express = require('express');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
+var { connectDb } = require('./db/db');
+var routes = require('./routes/index');
 
-var Argument = require('./models/argument');
-var {
-  createArgument,
-  getArgumentById,
-  getAllArguments,
-} = require('./controllers/argumentController');
-
-const debateRoutes = require('./routes/debateRoutes');
-
-// Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/deebateDB';
+// Port Variable
 var port = process.env.PORT || 3000;
-
-// Connect to MongoDB
-mongoose
-  .connect(mongoURI)
-  .catch(function (err) {
-    console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
-    console.error(err.stack);
-    process.exit(1);
-  })
-  .then(function () {
-    console.log(`Connected to MongoDB with URI: ${mongoURI}`); // mistake when forward porting
-  });
 
 // Create Express app
 var app = express();
@@ -38,24 +20,10 @@ app.use(express.json());
 // HTTP request logger
 app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
-app.options('*', cors());
 app.use(cors());
 
-// Argument routes
-app.post('/api/arguments', createArgument);
-app.get('/api/arguments', getAllArguments);
-app.get('/api/arguments/:id', getArgumentById);
-
-//debate routes
-app.use('/api', debateRoutes); //create (post) a debate
-// app.use('/api', debateRoutes);  //get debates
-// app.use('/api', debateRoutes);  //delete debates
-// app.use('/api', debateRoutes);  //delete debates
-
-// Catch all non-error handler for api (i.e., 404 Not Found)
-app.use('/api/*', function (req, res) {
-  res.status(404).json({ message: 'Not Found' });
-});
+// Use routes with controllers
+app.use('/', routes);
 
 // Configuration for serving frontend in production mode
 // Support Vuejs HTML 5 history mode
@@ -81,6 +49,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json(err_res);
 });
+
+connectDb();
 
 app.listen(port, function (err) {
   if (err) throw err;
