@@ -8,13 +8,14 @@ const apiController = require('../controllers/v1/api.controller');
 const authRoutes = require('./auth.route');
 const usersRoutes = require('./users.route');
 const debatesRoutes = require('./debates.route');
-// const argumentsRoutes = require('./arguments.route');
-
+const argumentsRoutes = require('./arguments.route');
+const commentsRoutes = require('./comments.route');
 // Use routes with base paths
-router.use('/auth', authRoutes);    // All authentication routes under /api/auth
-router.use('/users', usersRoutes);  // All user routes under /api/users
-router.use('/debates', debatesRoutes);  // All debate routes under /api/debates
-// router.use('/arguments', argumentsRoutes);  // All debate routes under /api/debates
+router.use('/auth', authRoutes); // All authentication routes under /api/auth
+router.use('/users', usersRoutes); // All user routes under /api/users
+router.use('/debates', debatesRoutes); // All debate routes under /api/debates
+router.use('/arguments', argumentsRoutes); // All debate routes under /api/debates
+router.use('/comments', commentsRoutes); // All debate routes under /api/debates
 
 // API Root Route
 router.get('/', apiController.getApiRoot);

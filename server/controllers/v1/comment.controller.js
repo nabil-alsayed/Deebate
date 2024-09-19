@@ -1,5 +1,5 @@
-const Comment = require('../models/comment');
-const Argument = require('../models/argument');
+const Comment = require('../../models/comment');
+const Argument = require('../../models/argument');
 
 // Add a comment to a specific argument
 const addComment = async (req, res) => {

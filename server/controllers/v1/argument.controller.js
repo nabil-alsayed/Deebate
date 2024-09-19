@@ -66,4 +66,9 @@ const deleteArgument = async (req, res) => {
   }
 };
 
-module.exports = { getAllArguments, getArgumentById, deleteArgument };
+module.exports = {
+  createArgument,
+  getAllArguments,
+  getArgumentById,
+  deleteArgument,
+};
