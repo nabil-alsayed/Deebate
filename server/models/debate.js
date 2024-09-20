@@ -15,16 +15,23 @@ const debateSchema = new Schema({
   },
   category: {
     type: String,
-    enum: ['Politics', 'Technology', 'Sports', 'Health', 'Education', 'Social Issues'], // Add more categories as needed
-    required: true
+    enum: [
+      'Politics',
+      'Technology',
+      'Sports',
+      'Health',
+      'Education',
+      'Social Issues',
+    ], // Add more categories as needed
+    required: true,
   },
   endTime: {
     type: Date,
-    required: true,  // Debate must have an end time to be locked
+    required: true, // Debate must have an end time to be locked
   },
   creator: {
     type: Schema.Types.ObjectId,
-    ref: 'User',  // Reference to the user who initiated the debate
+    ref: 'User', // Reference to the user who initiated the debate
     required: true,
   },
   participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -34,14 +41,15 @@ const debateSchema = new Schema({
     max: 4, // Maximum number of participants
     min: 2, // Minimum number of participants
     required: true,
-},
-  arguments: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Argument',
-  }, { timestamps: true }]
+  },
+  arguments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Argument',
+    },
+    { timestamps: true },
+  ],
 });
-
-
 
 const Debate = mongoose.model('Debate', debateSchema);
 module.exports = Debate;
