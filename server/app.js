@@ -15,7 +15,7 @@ var port = process.env.PORT || 3000;
 var app = express();
 // Parse requests of content-type 'application/json'
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); 
+app.use(express.json());
 // HTTP request logger
 app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
@@ -35,27 +35,27 @@ app.use(express.static(client));
 // Error handler (i.e., when exception is thrown) must be registered last
 var env = app.get('env');
 // eslint-disable-next-line no-unused-vars
-app.use(function(err, req, res, next) {
-    console.error(err.stack);
-    var err_res = {
-        'message': err.message,
-        'error': {}
-    };
-    if (env === 'development') {
-        // Return sensitive stack trace only in dev mode
-        err_res['error'] = err.stack;
-    }
-    res.status(err.status || 500);
-    res.json(err_res);
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  var err_res = {
+    message: err.message,
+    error: {},
+  };
+  if (env === 'development') {
+    // Return sensitive stack trace only in dev mode
+    err_res['error'] = err.stack;
+  }
+  res.status(err.status || 500);
+  res.json(err_res);
 });
 
 connectDb();
 
-app.listen(port, function(err) {
-    if (err) throw err;
-    console.log(`Express server listening on port ${port}, in ${env} mode`);
-    console.log(`Backend: http://localhost:${port}/api/`);
-    console.log(`Frontend (production): http://localhost:${port}/`);
+app.listen(port, function (err) {
+  if (err) throw err;
+  console.log(`Express server listening on port ${port}, in ${env} mode`);
+  console.log(`Backend: http://localhost:${port}/api/`);
+  console.log(`Frontend (production): http://localhost:${port}/`);
 });
 
 module.exports = app;
