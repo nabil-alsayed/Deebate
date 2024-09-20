@@ -2,27 +2,17 @@
 const express = require('express');
 const router = express.Router();
 const debateController = require('../controllers/v1/debate.controller');
+const argumentRoutes = require('../routes/arguments.route');
 
 // Debate routes
 router.post('/', debateController.postDebate);
 router.get('/', debateController.getDebates);
 router.delete('/', debateController.deleteAllDebates);
-router.delete('/:id', debateController.deleteDebateByID);
-router.get('/:id', debateController.getDebateByID);
-router.put('/:id', debateController.updateDebate);
-router.patch('/:id', debateController.updateSpecificField);
+router.delete('/:debateId', debateController.deleteDebateByID);
+router.get('/:debateId', debateController.getDebateByID);
+router.put('/:debateId', debateController.updateDebate);
+router.patch('/:debateId', debateController.updateSpecificField);
 
-//second section
-//This endpoint adds a new argument to a specific debate.
-router.post('/:debate_id/arguments', debateController.addArgumentToDebate);
-router.get('/:debate_id/arguments', debateController.getAllArgumentsOfDebate);
-router.get(
-  '/:debate_id/arguments/:argument_id',
-  debateController.getArgumentInDebate
-);
-router.delete(
-  '/:debate_id/arguments/:argument_id',
-  debateController.deleteArgumentInDebate
-);
+router.use('/:debateId/arguments', argumentRoutes);
 
 module.exports = router;

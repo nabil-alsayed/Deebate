@@ -60,30 +60,30 @@ const getAllUsers = async (req, res) => {
 const getUser = async (req, res) => {
   // TODO: only admin or a signed in user should be able to perform this request
 
-  const { id } = req.params;
+  const { userId } = req.params;
   try {
     // Check if the id provided is valid mongoose id
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       console.log('Invalid ID format');
       return res
         .status(400)
-        .json({ message: `ID format provided is invalid: ${id}` });
+        .json({ message: `ID format provided is invalid: ${userId}` });
     }
 
     // Find the user by its ID
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
 
     // If the user is not found, return a 404 response
     if (!user) {
       return res
         .status(404)
-        .json({ message: `User with ID: ${id} cannot be found.` });
+        .json({ message: `User with ID: ${userId} cannot be found.` });
     }
 
     // Return a 200 response with the user data
     return res
       .status(200)
-      .json({ message: `Successfully found user with ID ${id}`, user });
+      .json({ message: `Successfully found user with ID ${userId}`, user });
   } catch (error) {
     res
       .status(500)
@@ -97,7 +97,7 @@ const editUser = async (req, res) => {
   // TODO: only admin or the owner of the user account should be able to perform this request
 
   // Get the user's id and updates from the request params and body
-  const { id } = req.params;
+  const { userId } = req.params;
   const updates = req.body;
 
   // List of allowed attributes to update
@@ -127,14 +127,14 @@ const editUser = async (req, res) => {
 
   try {
     // find the user
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
 
     // check if the user exist
     if (!user) {
       return res.status(404).json({ message: 'User was not found.' });
     }
     // find the user and update the informations as per the request
-    const updatedUser = await User.findByIdAndUpdate(id, updates, {
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
       new: true,
     });
 
@@ -155,25 +155,25 @@ const editUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   // TODO: only admin or the owner of the user account should be able to perform this request
 
-  const { id } = req.params;
+  const { userId } = req.params;
   try {
     // Check if the ID provided is valid mongoose id
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       console.log('Invalid ID format');
       return res
         .status(400)
-        .json({ message: `ID format provided is invalid: ${id}` });
+        .json({ message: `ID format provided is invalid: ${userId}` });
     }
 
     // Find the user by its ID
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
 
     // check if the user exist
     if (!user) {
       return res.status(404).json({ message: 'User was not found.' });
     }
     // find the user and update the informations as per the request
-    const deletedUser = await User.findByIdAndDelete(id);
+    const deletedUser = await User.findByIdAndDelete(userId);
 
     res
       .status(200)
@@ -189,8 +189,6 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  // signupUser,
-  // loginUser,
   getAllUsers,
   getUser,
   editUser,

@@ -1,18 +1,16 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const commentController = require('../controllers/v1/comment.controller');
 
-//router.post('/:argument_Id/comments', commentController.addComment);
-router.post('/', commentController.addComment);
-//router.get('/:argument_Id/comments', commentController.getCommentsForArgument);
+// Comment routes (nested under arguments)
+router.post('/', commentController.addComment);  
 router.get('/', commentController.getCommentsForArgument);
-router.get('/:id', commentController.getCommentById);
-router.delete('/:id', commentController.deleteComment);
+router.get('/:commentId', commentController.getCommentById);  
+router.delete('/:commentId', commentController.deleteComment); 
+router.patch('/:commentId', commentController.editComment);
 
 // Like routes
-//router.post('/:comment_id/like', commentController.addLikeToComment);
-//router.delete('/:comment_id/like', commentController.removeLikeFromComment);
-router.post('/like', commentController.addLikeToComment);
-router.delete('/like', commentController.removeLikeFromComment);
+router.post('/:commentId/like', commentController.addLikeToComment); 
+router.delete('/:commentId/like', commentController.removeLikeFromComment); 
 
 module.exports = router;

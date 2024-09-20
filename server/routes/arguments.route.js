@@ -1,12 +1,15 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const argumentController = require('../controllers/v1/argument.controller');
-const commentRoutes = require('../routes/comments.route');
+const commentRoutes = require('./comments.route');
 
+// Argument routes (nested under debates)
 router.post('/', argumentController.createArgument);
 router.get('/', argumentController.getAllArguments);
-router.get('/:id', argumentController.getArgumentById);
-router.delete('/:id', argumentController.deleteArgument);
+router.get('/:argumentId', argumentController.getArgumentById);
+router.delete('/:argumentId', argumentController.deleteArgument);
 
-router.post('/comments', commentRoutes);
+// Use comment routes, nested under arguments
+router.use('/:argumentId/comments', commentRoutes);
+
 module.exports = router;
