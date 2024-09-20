@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
+const User = require('../../models/user');
 
 // Create a new argument
 const createArgument =  async (req, res, next) => {
@@ -50,6 +51,7 @@ const getAllArguments = async (req, res) => {
 
   try {
     const debate = await Debate.findById(debateId).populate('arguments');
+
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -58,7 +60,7 @@ const getAllArguments = async (req, res) => {
 
     res.status(200).json(arguments);
   } catch (err) {
-    return next(err);
+    return res.status(500).json({ error: err.message });
   }
 };
 
