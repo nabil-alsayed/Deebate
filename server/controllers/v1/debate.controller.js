@@ -214,53 +214,6 @@ const updateSpecificField = async (req, res, next) => {
   }
 };
 
-const addArgumentToDebate = async (req, res, next) => {
-  // TODO: check if the argument user is one of the two debaters, and if the debate is still open
-  // if the owner is not one of the debaters, return 403 Forbidden
-  // if the debate is closed, return 403 Forbidden
-
-  const { debateId } = req.params;
-  const { content, userId } = req.body;
-
-  try {
-    const debate = await Debate.findById(debateId);
-    if (!debate) {
-      return res.status(404).json({ message: 'Debate not found' });
-    }
-
-    // Create a new argument (assuming you have an Argument model)
-    const argument = new Argument({
-      content,
-      owner: userId,
-      debate: debateId,
-    });
-    await argument.save();
-
-    // Add the argument to the debate's arguments array
-    debate.arguments.push(argument._id);
-    await debate.save();
-
-    res.status(201).json(argument);
-  } catch (err) {
-    return next(err);
-  }
-};
-
-const getAllArgumentsOfDebate = async (req, res, next) => {
-  const { debateId } = req.params;
-
-  try {
-    const debate = await Debate.findById(debateId).populate('arguments');
-    if (!debate) {
-      return res.status(404).json({ message: 'Debate not found' });
-    }
-
-    res.status(200).json(debate.arguments);
-  } catch (err) {
-    return next(err);
-  }
-};
-
 const getArgumentInDebate = async (req, res, next) => {
   const { debateId, argumentId } = req.params;
 
@@ -356,6 +309,42 @@ const deleteArgumentInDebate = async (req, res) => {
   }
 };
 
+const joinDebate = async (req, res, next) => {
+  const { debateId } = req.params;
+  const { userId } = req.body;
+
+  console.log("debate id: ", debateId + " user id: ", userId);
+
+  try {
+    const debate = await Debate.findById(debateId);
+    const user = await User.findById(userId);
+
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (debate.participants.length >= debate.maxParticipants) {
+      return res.status(400).json({ message: 'Debate is full' });
+    }
+
+    if (debate.participants.includes(userId)) {
+      return res.status(400).json({ message: 'User already joined the debate' });
+    }
+
+    debate.participants.push(userId);
+
+    await debate.save();
+
+    res.status(200).json({ message: 'User joined the debate successfully' });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   postDebate,
   getDebates,
@@ -364,8 +353,7 @@ module.exports = {
   getDebateByID,
   updateDebate,
   updateSpecificField,
-  addArgumentToDebate,
-  getAllArgumentsOfDebate,
   getArgumentInDebate,
   deleteArgumentInDebate,
+  joinDebate
 };
