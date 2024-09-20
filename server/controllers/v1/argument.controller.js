@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
-const User = require('../../models/user');
+
 
 // Create a new argument
 const createArgument =  async (req, res, next) => {
@@ -101,9 +101,43 @@ const deleteArgument = async (req, res) => {
   }
 };
 
+const editArgument = async (req, res) => {
+  const { debateId, argumentId } = req.params; 
+  const updates = req.body; 
+  const allowedUpdates = ['content'];
+  const requestedUpdates = Object.keys(updates);
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(debateId)) {
+      console.log("Invalid debate ID");
+      return res.status(400).json({ message: 'Invalid debate ID' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(argumentId)) {
+      console.log("Invalid argument ID");
+      return res.status(400).json({ message: 'Invalid argument ID' });
+    }
+  
+     // Validate that all required fields are present for PUT
+ 
+     const isValidUpdate = requestedUpdates.every(key => allowedUpdates.includes(key));
+     if (!isValidUpdate || requestedUpdates.length !== allowedUpdates.length) {
+       return res.status(400).json({ message: 'Invalid or incomplete updates' });
+     }
+
+    const updatedArgument = await Argument.findByIdAndUpdate(argumentId, updates, { new: true, runValidators: true });
+
+    res.status(200).json({ message: 'Argument updated successfully', argument: updatedArgument });
+  } catch (error) {
+    // Catch any errors and send a 500 Internal Server Error response
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+}
+
 module.exports = {
   createArgument,
   getAllArguments,
   getArgumentById,
   deleteArgument,
+  editArgument
 };

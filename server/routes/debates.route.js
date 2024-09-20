@@ -11,7 +11,7 @@ router.post ('/:debateId', debateController.joinDebate);
 router.delete('/:debateId', debateController.deleteDebateByID);
 router.get('/:debateId', debateController.getDebateByID);
 router.put('/:debateId', debateController.updateDebate);
-router.patch('/:debateId', debateController.updateSpecificField);
+router.patch('/:debateId', debateController.updateDebate);
 
 router.use('/:debateId/arguments', argumentRoutes);
 
