@@ -118,14 +118,14 @@ const deleteAllDebates = async (req, res, next) => {
 const deleteDebateByID = async (req, res, next) => {
   // TODO: check if user is an admin or if the debate exists
 
-  const id = req.params.id; // Using const for id as it's not reassigned
+  const debateId = req.params.id; // Using const for id as it's not reassigned
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(debateId)) {
     return res.status(404).json({ message: 'Invalid ID format' });
   }
 
   try {
-    const debate = await Debate.findByIdAndDelete(id);
+    const debate = await Debate.findByIdAndDelete(debateId);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -136,13 +136,13 @@ const deleteDebateByID = async (req, res, next) => {
 };
 
 const getDebateByID = async (req, res, next) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  const { debateId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(debateId)) {
     return res.status(400).json({ message: 'Invalid ID format' });
   }
 
   try {
-    const debate = await Debate.findById(id);
+    const debate = await Debate.findById(debateId);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -156,10 +156,10 @@ const updateDebate = async (req, res, next) => {
   // TODO: Add more validation and error handling for debate owner or admin only access to update debates
   // check if the debate end time passed or not before updating, cause it should not be updated after the end time.
 
-  const id = req.params.id;
+  const debateId = req.params.id;
   const { topic, status, endTime } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(debateId)) {
     return res.status(404).json({ message: 'Invalid ID format' });
   }
 
@@ -170,7 +170,7 @@ const updateDebate = async (req, res, next) => {
   try {
     // Find the debate by ID and update
     const updatedDebate = await Debate.findByIdAndUpdate(
-      id,
+      debateId,
       { topic, status, endTime },
       { new: true, runValidators: true } // Return the updated document and run validation
     );
@@ -190,7 +190,7 @@ const updateSpecificField = async (req, res, next) => {
   // TODO: Add more validation and error handling for debate owner or admin only access to update debates
   // check if the debate end time passed or not before updating, cause it should not be updated after the end time.
 
-  const { id } = req.params; // Get id from URL
+  const { debateId } = req.params; // Get id from URL
   const updateFields = req.body; // Get update fields from request body
 
   // Validate that id is a valid ObjectId
@@ -199,7 +199,7 @@ const updateSpecificField = async (req, res, next) => {
   }
 
   try {
-    const debate = await Debate.findByIdAndUpdate(id, updateFields, {
+    const debate = await Debate.findByIdAndUpdate(debateId, updateFields, {
       new: true,
       runValidators: true,
     });
@@ -219,11 +219,11 @@ const addArgumentToDebate = async (req, res, next) => {
   // if the owner is not one of the debaters, return 403 Forbidden
   // if the debate is closed, return 403 Forbidden
 
-  const { debate_id } = req.params;
-  const { content, user_id } = req.body;
+  const { debateId } = req.params;
+  const { content, userId } = req.body;
 
   try {
-    const debate = await Debate.findById(debate_id);
+    const debate = await Debate.findById(debateId);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -231,8 +231,8 @@ const addArgumentToDebate = async (req, res, next) => {
     // Create a new argument (assuming you have an Argument model)
     const argument = new Argument({
       content,
-      owner: user_id,
-      debate: debate_id,
+      owner: userId,
+      debate: debateId,
     });
     await argument.save();
 
@@ -247,10 +247,10 @@ const addArgumentToDebate = async (req, res, next) => {
 };
 
 const getAllArgumentsOfDebate = async (req, res, next) => {
-  const { debate_id } = req.params;
+  const { debateId } = req.params;
 
   try {
-    const debate = await Debate.findById(debate_id).populate('arguments');
+    const debate = await Debate.findById(debateId).populate('arguments');
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -262,13 +262,13 @@ const getAllArgumentsOfDebate = async (req, res, next) => {
 };
 
 const getArgumentInDebate = async (req, res, next) => {
-  const { debate_id, argument_id } = req.params;
+  const { debateId, argumentId } = req.params;
 
   try {
-    // Validate debate_id and argument_id
+    // Validate debateId and argumentId
     if (
-      !mongoose.Types.ObjectId.isValid(debate_id) ||
-      !mongoose.Types.ObjectId.isValid(argument_id)
+      !mongoose.Types.ObjectId.isValid(debateId) ||
+      !mongoose.Types.ObjectId.isValid(argumentId)
     ) {
       return res
         .status(400)
@@ -276,12 +276,12 @@ const getArgumentInDebate = async (req, res, next) => {
     }
 
     // Find the debate and populate arguments
-    const debate = await Debate.findById(debate_id).populate('arguments');
+    const debate = await Debate.findById(debateId).populate('arguments');
     if (!debate) {
       return res.status(400).json({ message: 'Debate not found' });
     }
 
-    const argument = await Argument.findById(argument_id);
+    const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(404).json({ message: 'Argument not found' });
     }
@@ -303,13 +303,13 @@ const getArgumentInDebate = async (req, res, next) => {
 };
 
 const deleteArgumentInDebate = async (req, res) => {
-  const { debate_id, argument_id } = req.params;
+  const { debateId, argumentId } = req.params;
 
   try {
     // Validate debate_id and argument_id
     if (
-      !mongoose.Types.ObjectId.isValid(debate_id) ||
-      !mongoose.Types.ObjectId.isValid(argument_id)
+      !mongoose.Types.ObjectId.isValid(debateId) ||
+      !mongoose.Types.ObjectId.isValid(argumentId)
     ) {
       return res
         .status(400)
@@ -317,13 +317,13 @@ const deleteArgumentInDebate = async (req, res) => {
     }
 
     // Find the debate and populate arguments
-    const debate = await Debate.findById(debate_id);
+    const debate = await Debate.findById(debateId);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
     // Find the argument
-    const argument = await Argument.findById(argument_id);
+    const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(404).json({ message: 'Argument not found' });
     }
@@ -346,7 +346,7 @@ const deleteArgumentInDebate = async (req, res) => {
     await debate.save();
 
     // Delete the argument document
-    await Argument.findByIdAndDelete(argument_id);
+    await Argument.findByIdAndDelete(argumentId);
 
     res
       .status(200)
