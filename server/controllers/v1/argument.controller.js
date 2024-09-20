@@ -10,7 +10,7 @@ const createArgument =  async (req, res, next) => {
   // if the debate is closed, return 403 Forbidden
 
   const { debateId } = req.params;
-  const { content, owner } = req.body;
+  const { content, userId } = req.body;
 
   try {
     const debate = await Debate.findById(debateId);
@@ -18,10 +18,18 @@ const createArgument =  async (req, res, next) => {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
+    if(debate.status !== 'open'){
+      return res.status(403).json({ message: 'Debate is closed' });
+    }
+
+    if(debate.participants.indexOf(userId) === -1){
+      return res.status(403).json({ message: 'User is not a debater' });
+    }
+
     // Create a new argument (assuming you have an Argument model)
     const argument = new Argument({
       content,
-      owner: owner,
+      owner: userId,
       debate: debateId,
     });
     await argument.save();
