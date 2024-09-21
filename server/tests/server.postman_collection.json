@@ -417,7 +417,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/api/debates/{{debateId}}/",
+					"raw": "localhost:3000/api/debates/{{debateId}}/join",
 					"host": [
 						"localhost"
 					],
@@ -426,7 +426,7 @@
 						"api",
 						"debates",
 						"{{debateId}}",
-						""
+						"join"
 					]
 				}
 			},
@@ -1159,6 +1159,371 @@
 						"api",
 						"debates",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific Debate of a User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/debates/user/{{userId}}/{{debateId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"debates",
+						"user",
+						"{{userId}}",
+						"{{debateId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Debates of a User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/debates/user/{{userId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"debates",
+						"user",
+						"{{userId}}"
 					]
 				}
 			},

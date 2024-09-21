@@ -210,11 +210,62 @@ const joinDebate = async (req, res, next) => {
   }
 }
 
+const deleteAllUserDebates = async (req, res, next) => {
+  const { userId } = req.params;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete all debates owned by the user 
+    const results = await Debate.deleteMany({ creator: userId });
+
+    // Check if any debates were deleted
+    if (results.deletedCount === 0) {
+      return res.status(404).json({ message: 'No debates found for this user' });
+    }
+
+    return res.status(200).json({ message: `${results.deletedCount} debates deleted successfully` });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const deleteSpecificUserDebate = async (req, res, next) => {
+  const { userId, debateId } = req.params;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete specific debate owned by the user
+    const result = await Debate.findOneAndDelete({ creator: userId, _id: debateId });
+
+    // Check if a debate was deleted
+    if (!result) {
+      return res.status(404).json({ message: 'No debate found for this user with the specified ID' });
+    }
+
+    return res.status(200).json({ message: `Debate --> ${result.topic} <-- deleted successfully` });
+  } catch (err) {
+    return next(err);
+  }
+};
+    
+
 module.exports = {
   postDebate,
   getDebates,
   deleteAllDebates,
   deleteDebateByID,
+  deleteAllUserDebates,
+  deleteSpecificUserDebate,
   getDebateByID,
   updateDebate,
   joinDebate
