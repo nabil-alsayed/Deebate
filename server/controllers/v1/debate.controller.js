@@ -79,11 +79,11 @@ const postDebate = async (req, res, next) => {
 
 const getDebates = async (req, res, next) => {
   try {
-    const { category, status, sortOrder } = req.query;
+    const { category, status, sortOrder, limit = 10, page = 1 } = req.query; // Default limit of 10 debates per page
     const allowedFilters = [...Debate.schema.path('category').enumValues, ...Debate.schema.path('status').enumValues];
 
     let filter = {};
-    
+
     // If category specified, add it to the filter
     if (category) {
       if (!allowedFilters.includes(category)) {
@@ -105,14 +105,29 @@ const getDebates = async (req, res, next) => {
       query = query.sort({ totalVotes: sortOption });
     }
 
-    // Execute the query and get the debates
-    const debates = await query; 
+    // Pagination logic
+    const debatesPerPage = parseInt(limit, 10); // Number of debates per page
+    const currentPage = parseInt(page, 10); // Current page number
 
-    res.status(200).json({ debates });
+    const totalDebates = await Debate.countDocuments(filter); // Get total number of debates matching the filter
+
+    // Apply pagination: skip documents to match the current page and limit the number of results
+    query = query.skip((currentPage - 1) * debatesPerPage).limit(debatesPerPage);
+
+    const debates = await query; // Execute the query
+
+    // Return paginated response with metadata
+    res.status(200).json({
+      totalDebates, // Total number of debates that match the filter
+      currentPage,
+      totalPages: Math.ceil(totalDebates / debatesPerPage),
+      debates,
+    });
   } catch (err) {
     return next(err);
   }
-};
+}
+
 
 
 const deleteAllDebates = async (req, res, next) => {
