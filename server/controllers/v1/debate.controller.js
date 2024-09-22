@@ -33,6 +33,10 @@ const postDebate = async (req, res, next) => {
       .json({ message: 'Participants number is exceeding the maximum limit' });
   }
 
+  if( mongoose.Types.ObjectId.isValid(creator) === false){
+    return res.status(400).json({ message: 'Invalid creator ID format' });
+  }
+
   const minParticipants = Debate.schema.path('maxParticipants').options.min;
 
   try {
