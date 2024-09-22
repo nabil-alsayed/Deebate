@@ -79,12 +79,11 @@ const postDebate = async (req, res, next) => {
 
 const getDebates = async (req, res, next) => {
   try {
-    const { category, status, sortOrder, limit = 10, page = 1 } = req.query; // Default limit of 10 debates per page
+    const { category, status, sortOrder, limit = 10, page = 1 } = req.query;
     const allowedFilters = [...Debate.schema.path('category').enumValues, ...Debate.schema.path('status').enumValues];
 
     let filter = {};
 
-    // If category specified, add it to the filter
     if (category) {
       if (!allowedFilters.includes(category)) {
         return res.status(400).json({ message: 'Invalid category' });
@@ -92,41 +91,54 @@ const getDebates = async (req, res, next) => {
       filter.category = category;
     }
 
-    // If status specified, add it to the filter
     if (status) {
       filter.status = status;
     }
 
     let query = Debate.find(filter);
 
-    // If sortOrder is provided, apply sorting by totalVotes
     if (sortOrder) {
       const sortOption = sortOrder === 'asc' ? 1 : -1;
       query = query.sort({ totalVotes: sortOption });
     }
 
-    // Pagination logic
-    const debatesPerPage = parseInt(limit, 10); // Number of debates per page
-    const currentPage = parseInt(page, 10); // Current page number
+    const debatesPerPage = parseInt(limit, 10);
+    const currentPage = parseInt(page, 10);
 
-    const totalDebates = await Debate.countDocuments(filter); // Get total number of debates matching the filter
+    const totalDebates = await Debate.countDocuments(filter);
 
-    // Apply pagination: skip documents to match the current page and limit the number of results
     query = query.skip((currentPage - 1) * debatesPerPage).limit(debatesPerPage);
 
-    const debates = await query; // Execute the query
+    const debates = await query;
 
-    // Return paginated response with metadata
+    const buildLink = (page, limit) => {
+      return `${req.protocol}://${req.get('host')}${req.baseUrl}?page=${page}&limit=${limit}`;
+    };
+
     res.status(200).json({
-      totalDebates, // Total number of debates that match the filter
+      totalDebates,
       currentPage,
       totalPages: Math.ceil(totalDebates / debatesPerPage),
-      debates,
+      debates: debates.map(debate => ({
+        ...debate.toObject(),
+        links: {
+          self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
+          update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
+        }
+      })),
+      links: {
+        first: buildLink(1, debatesPerPage),
+        previous: currentPage > 1 ? buildLink(currentPage - 1, debatesPerPage) : null,
+        next: currentPage < Math.ceil(totalDebates / debatesPerPage) ? buildLink(currentPage + 1, debatesPerPage) : null,
+        last: buildLink(Math.ceil(totalDebates / debatesPerPage), debatesPerPage),
+      }
     });
   } catch (err) {
     return next(err);
   }
-}
+};
 
 
 
