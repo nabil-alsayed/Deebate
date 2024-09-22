@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 
 const signup = async (req, res) => {
     // Destructure the request body
-    const { emailAddress, username, password, firstName, lastName, role } = req.body;
+    const { emailAddress, username, password, firstName, lastName, role, invitationCode } = req.body;
     try {
      
     // Check if all required credentials are provided
@@ -17,14 +17,18 @@ const signup = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required.' });
     }
 
+    if (role === 'admin' && invitationCode !== process.env.INVITATION_CODE) {
+        return res.status(403).json({ message: 'Invalid invitation code.' });
+    }
+
     // Check if user with similar email or username already exists
     const user = await User.findOne({ $or: [{ emailAddress }, { username }] });
 
     if(user){
-        return res.status(400).json({ message: 'A user with same email or username already exist.'})
+        return res.status(400).json({ message: `${role} with same email or username already exist.`})
     }
   
-    // Hash the password annd salt round it to 10
+    // Hash the password and salt round it to 10
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
   
@@ -35,11 +39,12 @@ const signup = async (req, res) => {
         password: hashedPassword,
         firstName,
         lastName,
-        role: role || "user"
+        role: role || "user",
+        invitationCode: invitationCode || "none"
       });
   
       // Return a success message and the new registeration record of the user
-      res.status(201).json({ message: 'User registered successfully', user: newUser });
+      res.status(201).json({ message: `${role} registered successfully`, user: newUser });
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error: error.message });
     }

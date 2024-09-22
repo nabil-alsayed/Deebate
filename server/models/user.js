@@ -40,6 +40,10 @@ const UserModel = new Schema({
     default: 'user',
     required: true
   },
+  invitationCode: {
+    type: String,
+    default: "none"
+  },
   debates: [{
     type: Schema.Types.ObjectId, 
     ref: "Debate"

@@ -80,13 +80,17 @@ const postDebate = async (req, res, next) => {
 const getDebates = async (req, res, next) => {
   try {
     const { category, status, sortOrder } = req.query;
-    const allowedFilters = [...Debate.schema.path('category').enumValues, ...Debate.schema.path('status').enumValues];
+    const allowedCategories = Debate.schema.path('category').enumValues;
+    const allowedStatus = Debate.schema.path('status').enumValues;
+    const allowedSortOrders = ['asc', 'desc'];
+    const asc = allowedSortOrders[0];
+    const desc = allowedSortOrders[1];
 
     let filter = {};
-    
+
     // If category specified, add it to the filter
     if (category) {
-      if (!allowedFilters.includes(category)) {
+      if (!allowedCategories.includes(category)) {
         return res.status(400).json({ message: 'Invalid category' });
       }
       filter.category = category;
@@ -94,6 +98,9 @@ const getDebates = async (req, res, next) => {
 
     // If status specified, add it to the filter
     if (status) {
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
       filter.status = status;
     }
 
@@ -101,12 +108,15 @@ const getDebates = async (req, res, next) => {
 
     // If sortOrder is provided, apply sorting by totalVotes
     if (sortOrder) {
-      const sortOption = sortOrder === 'asc' ? 1 : -1;
+      if (!allowedSortOrders.includes(sortOrder)) {
+        return res.status(400).json({ message: 'Invalid sortOrder' });
+      }
+      const sortOption = sortOrder === asc ? 1 : -1;
       query = query.sort({ totalVotes: sortOption });
     }
 
     // Execute the query and get the debates
-    const debates = await query; 
+    const debates = await query;
 
     res.status(200).json({ debates });
   } catch (err) {
