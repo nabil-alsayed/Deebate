@@ -16,7 +16,7 @@
 
     ![Postman import](./img/postman_import.png)
 
-2. Choose file [tests/server.postman_collection.json](../tests/server.postman_collection.json)
+2. Choose file [tests/server.postman_collection.json](../tests/v1/server.postman_collection.json)
 
     ![Postman choose file](./img/postman_choose.png)
 
@@ -45,7 +45,7 @@
 
     ![Postman export format](./img/postman_export_format.png)
 
-3. *Overwrite* the file [tests/server.postman_collection.json](../tests/server.postman_collection.json)
+3. *Overwrite* the file [tests/server.postman_collection.json](../tests/v1/server.postman_collection.json)
 
     ![Postman overwrite file](./img/postman_export_save.png)
 

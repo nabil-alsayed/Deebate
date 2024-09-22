@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const commentController = require('../controllers/v1/comment.controller');
+const commentController = require('../../controllers/v1/comment.controller');
 
 // Comment routes (nested under arguments)
 router.post('/', commentController.addComment);  
