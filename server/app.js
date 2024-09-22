@@ -7,7 +7,7 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 var { connectDb } = require('./db/db');
-var routes = require('./routes/index');
+var routes = require('./routes/v1');
 
 var port = process.env.PORT || 3000;
 

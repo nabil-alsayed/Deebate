@@ -58,13 +58,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/auth/signup",
+					"raw": "localhost:3001/api/v1/auth/signup",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"signup"
 					]
@@ -101,13 +102,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/auth/login",
+					"raw": "localhost:3001/api/v1/auth/login",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"login"
 					]
@@ -194,13 +196,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -228,13 +231,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates",
+					"raw": "localhost:3001/api/v1/debates",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates"
 					]
 				}
@@ -261,13 +265,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates?category=Sports",
+					"raw": "localhost:3001/api/v1/debates?category=Sports",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates"
 					],
 					"query": [
@@ -300,13 +305,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates?status=open",
+					"raw": "localhost:3001/api/v1/debates?status=open",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates"
 					],
 					"query": [
@@ -349,13 +355,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						""
@@ -404,13 +411,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -452,13 +460,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -497,13 +506,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/join",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/join",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"join"
@@ -555,13 +565,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -618,13 +629,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -667,13 +679,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}"
 					]
@@ -712,13 +725,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -761,13 +775,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -809,13 +824,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -858,13 +874,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -906,13 +923,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}"
 					]
@@ -940,13 +958,14 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -978,13 +997,14 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						"arguments",
@@ -1015,13 +1035,14 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/{{debateId}}/",
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"{{debateId}}",
 						""
@@ -1108,13 +1129,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1200,13 +1222,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1236,13 +1259,14 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1328,13 +1352,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1371,13 +1396,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/user/{{userId}}/{{debateId}}",
+					"raw": "localhost:3001/api/v1/debates/user/{{userId}}/{{debateId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"user",
 						"{{userId}}",
@@ -1465,13 +1491,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1557,13 +1584,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						""
 					]
@@ -1600,13 +1628,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3001/api/debates/user/{{userId}}",
+					"raw": "localhost:3001/api/v1/debates/user/{{userId}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
+						"v1",
 						"debates",
 						"user",
 						"{{userId}}"

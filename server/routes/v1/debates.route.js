@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const debateController = require('../controllers/v1/debate.controller');
-const argumentRoutes = require('../routes/arguments.route');
+const debateController = require('../../controllers/v1/debate.controller');
+const argumentRoutes = require('./arguments.route');
 
 // Debate routes
 router.post('/', debateController.postDebate);
