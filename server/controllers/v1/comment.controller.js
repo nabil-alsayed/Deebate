@@ -87,7 +87,7 @@ const deleteComment = async (req, res) => {
 };
 
 
-const editComment = async (req, res) => {
+const updateComment = async (req, res) => {
  // Get the user's id and updates from the request params and body
  const { debateId, argumentId, commentId } = req.params;
  const updates = req.body;
@@ -113,10 +113,9 @@ const editComment = async (req, res) => {
 
  try {
    // find the comment
-   const comment = await Comment.findById(commentId);
-   console.log(comment);
+   const comment = await Comment.findById(commentId)
 
-   // check if the user exist
+   // check if the comment exist
    if (!comment) {
      return res.status(404).json({ message: 'Comment was not found.' });
    }
@@ -177,7 +176,7 @@ module.exports = {
   getCommentsForArgument,
   getCommentById,
   deleteComment,
-  editComment,
+  updateComment,
   addLikeToComment,
   removeLikeFromComment,
 };

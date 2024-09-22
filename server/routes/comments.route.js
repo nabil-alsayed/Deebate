@@ -7,7 +7,8 @@ router.post('/', commentController.addComment);
 router.get('/', commentController.getCommentsForArgument);
 router.get('/:commentId', commentController.getCommentById);  
 router.delete('/:commentId', commentController.deleteComment); 
-router.patch('/:commentId', commentController.editComment);
+router.put('/:commentId', commentController.updateComment);
+router.patch('/:commentId', commentController.updateComment);
 
 // Like routes
 router.post('/:commentId/like', commentController.addLikeToComment); 

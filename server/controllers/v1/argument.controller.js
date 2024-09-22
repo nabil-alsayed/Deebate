@@ -3,37 +3,72 @@ const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
 
+
 // Create a new argument
-const createArgument = async (req, res) => {
+const createArgument =  async (req, res, next) => {
+  // TODO: check if the argument user is one of the two debaters, and if the debate is still open
+  // if the owner is not one of the debaters, return 403 Forbidden
+  // if the debate is closed, return 403 Forbidden
+
+  const { debateId } = req.params;
+  const { content, userId } = req.body;
+
   try {
-    const { content, owner } = req.body;
-    if (!content || !owner) {
-      // TODO: validate !owner and that he is logged in
-      return res.status(400).json({ error: `Content and owner are required` });
+    const debate = await Debate.findById(debateId);
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
     }
-    const newArgument = new Argument({ content, owner });
-    const savedArgument = await newArgument.save();
-    res.status(201).json(savedArgument);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    if(debate.status !== 'open'){
+      return res.status(403).json({ message: 'Debate is closed' });
+    }
+
+    if(debate.participants.indexOf(userId) === -1){
+      return res.status(403).json({ message: 'User is not a debater' });
+    }
+
+    // Create a new argument (assuming you have an Argument model)
+    const argument = new Argument({
+      content,
+      owner: userId,
+      debate: debateId,
+    });
+    await argument.save();
+
+    // Add the argument to the debate's arguments array
+    debate.arguments.push(argument._id);
+    await debate.save();
+
+    res.status(201).json(argument);
+  } catch (err) {
+    return next(err);
   }
 };
 
 // Get all arguments
 const getAllArguments = async (req, res) => {
+  const { debateId } = req.params;
+
   try {
-    const arguments = await Argument.find().populate('comments');
+    const debate = await Debate.findById(debateId).populate('arguments');
+
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    const arguments = await Argument.find({ debate });
+
     res.status(200).json(arguments);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
 // Get specific argument by ID
 const getArgumentById = async (req, res) => {
-  const { id } = req.params;
+  const { debateId, argumentId } = req.params;
   try {
-    const argument = await Argument.findById(id).populate('comments');
+    const argument = await Argument.findById(argumentId).populate('comments');
     if (!argument) {
       return res.status(404).json({ error: 'Argument not found' });
     }
@@ -45,9 +80,9 @@ const getArgumentById = async (req, res) => {
 
 // Delete specific argument by ID
 const deleteArgument = async (req, res) => {
-  const { id } = req.params;
+  const { debateId, argumentId } = req.params;
   try {
-    const argument = await Argument.findById(id);
+    const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(404).json({ error: 'Argument not found' });
     }
@@ -66,9 +101,43 @@ const deleteArgument = async (req, res) => {
   }
 };
 
+const editArgument = async (req, res) => {
+  const { debateId, argumentId } = req.params; 
+  const updates = req.body; 
+  const allowedUpdates = ['content'];
+  const requestedUpdates = Object.keys(updates);
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(debateId)) {
+      console.log("Invalid debate ID");
+      return res.status(400).json({ message: 'Invalid debate ID' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(argumentId)) {
+      console.log("Invalid argument ID");
+      return res.status(400).json({ message: 'Invalid argument ID' });
+    }
+  
+     // Validate that all required fields are present for PUT
+ 
+     const isValidUpdate = requestedUpdates.every(key => allowedUpdates.includes(key));
+     if (!isValidUpdate || requestedUpdates.length !== allowedUpdates.length) {
+       return res.status(400).json({ message: 'Invalid or incomplete updates' });
+     }
+
+    const updatedArgument = await Argument.findByIdAndUpdate(argumentId, updates, { new: true, runValidators: true });
+
+    res.status(200).json({ message: 'Argument updated successfully', argument: updatedArgument });
+  } catch (error) {
+    // Catch any errors and send a 500 Internal Server Error response
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+}
+
 module.exports = {
   createArgument,
   getAllArguments,
   getArgumentById,
   deleteArgument,
+  editArgument
 };

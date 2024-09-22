@@ -1,75 +1,1541 @@
 {
 	"info": {
-		"_postman_id": "f7ee95b5-9cb9-442f-a6a9-42de46138872",
-		"name": "server",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"_postman_id": "7a40d6df-ff19-4b30-b3e7-4da85421a6ad",
+		"name": "Scenario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38227217"
 	},
 	"item": [
 		{
-			"name": "GET /api",
+			"name": "Signup",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "b58d92ec-5214-450c-adb0-28e068aa71b9",
 						"exec": [
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
+							"const roles = [\"user\", \"admin\"];",
+							"// Randomly select a role from the array",
+							"const randomRole = roles[Math.floor(Math.random() * roles.length)];",
+							"pm.variables.set(\"dynamicRole\", randomRole);",
 							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							"pm.environment.set(\"userId\", pm.response.json().user._id); // Set creatorId from the response",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"{{dynamicEmail}}\",\n    \"username\": \"{{dynamicUsername}}\",\n    \"password\": \"{{dynamicPassword}}\",\n    \"firstName\": \"{{dynamicFirstName}}\",\n    \"lastName\": \"{{dynamicLastName}}\",\n    \"role\": \"{{dynamicRole}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"{{dynamicEmail}}\",\n    \"password\": \"{{dynamicPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Debates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "{{host}}/api",
+					"raw": "localhost:3001/api/debates/",
 					"host": [
-						"{{host}}"
+						"localhost"
 					],
+					"port": "3001",
 					"path": [
-						"api"
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Specific Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Argument While Not Participant",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicContent\", `Argument Content Test #${Math.floor(Math.random() * 1000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"66e6f16e5f521317298e347\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Arguments of Spec Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successfully Join a Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/join",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"join"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Successful Argument",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicContent\", `Argument Content Test #${Math.floor(Math.random() * 1000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.environment.set(\"argumentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Successful Comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = 0;",
+							"",
+							"counter++;",
+							"",
+							"pm.environment.set(\"dynamicCommentContent\", `Comment #${counter}`)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"",
+							"pm.environment.set(\"commentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicCommentContent}}\",\n    \"owner\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"Debate Topic Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Comment Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						"{{commentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Argument",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Argument Topic Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace Comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Comment Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						"{{commentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace Argument",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Argument Topic Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"Debate Topic Replaced\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/comments/{{commentId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						"{{commentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Argument",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates/{{debateId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"{{debateId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Debates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific Debate of a User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/user/{{userId}}/{{debateId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"user",
+						"{{userId}}",
+						"{{debateId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Debates of a User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/debates/user/{{userId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates",
+						"user",
+						"{{userId}}"
 					]
 				}
 			},
 			"response": []
 		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "05864cff-5cba-4070-bac3-a59328954ebf",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "e9c319be-3306-4fc5-ba34-fcf64391213a",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"id": "cd185905-a834-4211-8030-583d17702534",
-			"key": "host",
-			"value": "http://localhost:3000",
-			"type": "string"
-		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

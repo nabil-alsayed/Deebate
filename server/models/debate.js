@@ -30,7 +30,7 @@ const debateSchema = new Schema({
     required: true, // Debate must have an end time to be locked
   },
   creator: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
     ref: 'User', // Reference to the user who initiated the debate
     required: true,
   },
