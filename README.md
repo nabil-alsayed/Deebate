@@ -64,11 +64,6 @@ Open the `server` and `client` in separate VSCode workspaces or open the combine
 
 The purpose of this project is to create a platform where users can engage in structured debates on various topics. Users can either participate as Debaters and present their arguments for or against a given topic and as Observers, where they can comment on arguments and vote for the debator they think has made the stronger case. The system will track votes, and debators with more votes will accumulate points, which contribute to their ranking in the system.
 
-### Proposal
-
-The JudgeAPI is an advanced feature that leverages OpenAI's GPT models to automatically analyze debate arguments, factoring in user votes and likes, to determine the winner. This feature enhances our core platform by providing AI-driven, objective decisions on which side presents the stronger case, ensuring a fair and unbiased outcome at the conclusion of each debate.
-This AI-driven feature not only enhances the platform's capabilities but also aligns with our goal of promoting structured and fair debates, making the experience more interactive and engaging for users. By automating the decision-making process, we ensure a fair and dynamic conclusion to each debate, while keeping users more involved throughout.
-
 ### Pages
 
 * Home Page: 
@@ -89,6 +84,11 @@ Users can update their profile details, see their past activity, and check their
 * Login/Sign-up Page: 
 Provides a form for users to log into the system or create a new account.
 Users can enter their credentials to access debates or sign up if they are new.
+
+### Proposal for a higher grade
+
+The JudgeAPI is an advanced feature that leverages OpenAI's GPT models to automatically analyze debate arguments, factoring in user votes and likes, to determine the winner. This feature enhances our core platform by providing AI-driven, objective decisions on which side presents the stronger case, ensuring a fair and unbiased outcome at the conclusion of each debate.
+This feature not only increases the platform's capabilities but also aligns with our goal of promoting structured and fair debates, making the experience more interactive and engaging for users. By automating the decision-making process, we ensure a fair and dynamic conclusion to each debate, while keeping users more involved throughout.
 
 ### Entity-Relationship (ER) Diagram
 
