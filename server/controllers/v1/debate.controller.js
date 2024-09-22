@@ -78,19 +78,42 @@ const postDebate = async (req, res, next) => {
 };
 
 const getDebates = async (req, res, next) => {
-  // TODO: Add pagination and filtering options
-  // e.g., limit, offset, sort, filter by status, etc.
-
   try {
-    // Find all debates and populate references to creator and arguments
-    const debates = await Debate.find();
-    // Send the retrieved debates as JSON response
-    res.json({ debates: debates });
+    const { category, status, sortOrder } = req.query;
+    const allowedFilters = [...Debate.schema.path('category').enumValues, ...Debate.schema.path('status').enumValues];
+
+    let filter = {};
+    
+    // If category specified, add it to the filter
+    if (category) {
+      if (!allowedFilters.includes(category)) {
+        return res.status(400).json({ message: 'Invalid category' });
+      }
+      filter.category = category;
+    }
+
+    // If status specified, add it to the filter
+    if (status) {
+      filter.status = status;
+    }
+
+    let query = Debate.find(filter);
+
+    // If sortOrder is provided, apply sorting by totalVotes
+    if (sortOrder) {
+      const sortOption = sortOrder === 'asc' ? 1 : -1;
+      query = query.sort({ totalVotes: sortOption });
+    }
+
+    // Execute the query and get the debates
+    const debates = await query; 
+
+    res.status(200).json({ debates });
   } catch (err) {
-    // Pass any errors to the next middleware (usually an error handler)
     return next(err);
   }
 };
+
 
 const deleteAllDebates = async (req, res, next) => {
   // TODO: Add more validation
