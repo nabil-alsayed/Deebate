@@ -81,7 +81,8 @@ const signup = async (req, res) => {
       // Return a success message and token to login
       res.status(201).json({ message: 'Login successful', token });
     } catch (error) {
-      res.status(500).json({ message: 'Internal Server Error.', error: error.message });
+      console.error('Error during login:', error); // Log error to help identify the issue
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
   };
 

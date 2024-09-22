@@ -173,7 +173,8 @@
 							"    pm.response.to.have.status(201);",
 							"});",
 							"",
-							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+							"pm.environment.set(\"debateId\", pm.response.json()._id);",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -185,7 +186,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -227,15 +228,92 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/debates/",
+					"raw": "localhost:3001/api/debates",
 					"host": [
 						"localhost"
 					],
 					"port": "3001",
 					"path": [
 						"api",
-						"debates",
-						""
+						"debates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Sports Debates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates?category=Sports",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "Sports"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Open Debates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/debates?status=open",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"debates"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "open"
+						}
 					]
 				}
 			},
@@ -391,7 +469,7 @@
 			"response": []
 		},
 		{
-			"name": "Successfully Join a Debate",
+			"name": "Join a Debate",
 			"event": [
 				{
 					"listen": "test",
@@ -435,7 +513,7 @@
 			"response": []
 		},
 		{
-			"name": "Post Successful Argument",
+			"name": "Post Argument",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -494,7 +572,7 @@
 			"response": []
 		},
 		{
-			"name": "Post Successful Comment",
+			"name": "Post Comment",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -1022,7 +1100,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1114,7 +1192,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1379,7 +1457,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1471,7 +1549,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
