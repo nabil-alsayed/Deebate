@@ -79,12 +79,11 @@ const postDebate = async (req, res, next) => {
 
 const getDebates = async (req, res, next) => {
   try {
-    const { category, status, sortOrder } = req.query;
+    const { category, status, sort } = req.query;
     const allowedCategories = Debate.schema.path('category').enumValues;
     const allowedStatus = Debate.schema.path('status').enumValues;
     const allowedSortOrders = ['asc', 'desc'];
     const asc = allowedSortOrders[0];
-    const desc = allowedSortOrders[1];
 
     let filter = {};
 
@@ -107,12 +106,12 @@ const getDebates = async (req, res, next) => {
     let query = Debate.find(filter);
 
     // If sortOrder is provided, apply sorting by totalVotes
-    if (sortOrder) {
-      if (!allowedSortOrders.includes(sortOrder)) {
+    if (sort) {
+      if (!allowedSortOrders.includes(sort)) {
         return res.status(400).json({ message: 'Invalid sortOrder' });
       }
-      const sortOption = sortOrder === asc ? 1 : -1;
-      query = query.sort({ totalVotes: sortOption });
+      const sortOption = sort === asc ? 1 : -1;
+      query = query.sort({ endTime: sortOption });
     }
 
     // Execute the query and get the debates
