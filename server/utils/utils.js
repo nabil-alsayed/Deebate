@@ -3,9 +3,9 @@ var jwt = require('jsonwebtoken');
 
 // This can be used to generate a verification token for email verification
 
-// const generateVerificationToken = () => {
-//     return Math.floor(100000 + Math.random() * 900000).toString();
-// }
+const generateVerificationToken = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 const generateTokenAndSetCookie = (res, user) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -21,6 +21,6 @@ const generateTokenAndSetCookie = (res, user) => {
 }
 
 module.exports = {
-    // generateVerificationToken,
+    generateVerificationToken,
     generateTokenAndSetCookie
 };
