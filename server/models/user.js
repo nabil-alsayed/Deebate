@@ -47,7 +47,27 @@ const UserModel = new Schema({
   debates: [{
     type: Schema.Types.ObjectId, 
     ref: "Debate"
-  }]
+  }],
+  lastLogin: {
+    type: Date,
+    default: Date.now
+  },
+  // isVerified: { // we can use this to check if a user has verified their email
+  //   type: Boolean,
+  //   default: false
+  // },
+  verificationToken: {
+    type: String
+  },
+  verificationTokenExpires: {
+    type: Date
+  },
+  resetPasswordToken: {
+    type: String
+  },
+  resetPasswordExpires: {
+    type: Date
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", UserModel);
