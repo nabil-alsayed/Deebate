@@ -188,9 +188,23 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const deleteAllUsers = async (req, res) => {
+  try {
+    if (process.env.NODE_ENV !== 'test') {
+      return res.status(400).json({ message: 'This endpoint is only available in test environment' });
+    }
+
+    await User.deleteMany();
+    res.status(200).json({ message: 'All users deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getAllUsers,
   getUser,
   editUser,
   deleteUser,
+  deleteAllUsers
 };

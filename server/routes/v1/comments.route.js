@@ -7,6 +7,7 @@ router.post('/', commentController.addComment);
 router.get('/', commentController.getCommentsForArgument);
 router.get('/:commentId', commentController.getCommentById);  
 router.delete('/:commentId', commentController.deleteComment); 
+router.delete('/', commentController.deleteAllComments); 
 router.put('/:commentId', commentController.updateComment);
 router.patch('/:commentId', commentController.updateComment);
 

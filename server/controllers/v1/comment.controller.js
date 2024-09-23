@@ -86,6 +86,29 @@ const deleteComment = async (req, res) => {
   }
 };
 
+// Delete all comments of a specific argument
+const deleteAllComments = async (req, res) => {
+  const { argumentId } = req.params;
+  try {
+    const argument = await Argument.findById(argumentId);
+    if (!argument) {
+      return res.status(404).json({ error: 'Argument not found' });
+    }
+
+    // Delete all comments
+    await Comment.deleteMany({ _id: { $in: argument.comments } });
+
+    // Remove all comments from the argument's comments array
+    argument.comments = [];
+    await argument.save();
+
+    res.status(200).json({ message: 'All comments deleted' });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 
 const updateComment = async (req, res) => {
  // Get the user's id and updates from the request params and body
@@ -176,6 +199,7 @@ module.exports = {
   getCommentsForArgument,
   getCommentById,
   deleteComment,
+  deleteAllComments,
   updateComment,
   addLikeToComment,
   removeLikeFromComment,

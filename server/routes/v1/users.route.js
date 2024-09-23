@@ -4,6 +4,7 @@ const userController = require('../../controllers/v1/user.controller');
 
 // User routes
 router.get('/', userController.getAllUsers);
+router.delete('/', userController.deleteAllUsers);
 router.get('/:userId', userController.getUser);
 router.patch('/:userId', userController.editUser);
 router.delete('/:userId', userController.deleteUser);

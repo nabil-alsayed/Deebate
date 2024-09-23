@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Signup",
+			"name": "Signup as User",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -19,10 +19,15 @@
 							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
 							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
 							"",
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
 							"const roles = [\"user\", \"admin\"];",
-							"// Randomly select a role from the array",
-							"const randomRole = roles[Math.floor(Math.random() * roles.length)];",
-							"pm.variables.set(\"dynamicRole\", randomRole);",
+							"pm.variables.set(\"dynamicRole\", roles[0]);",
+							"",
 							""
 						],
 						"type": "text/javascript",
@@ -265,7 +270,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3001/api/v1/debates?category=Sports",
+					"raw": "localhost:3001/api/v1/debates?category=Politics&sort=asc",
 					"host": [
 						"localhost"
 					],
@@ -278,7 +283,11 @@
 					"query": [
 						{
 							"key": "category",
-							"value": "Sports"
+							"value": "Politics"
+						},
+						{
+							"key": "sort",
+							"value": "asc"
 						}
 					]
 				}
@@ -649,52 +658,6 @@
 			"response": []
 		},
 		{
-			"name": "Edit Debate",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"topic\": \"Debate Topic Edited\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3001/api/v1/debates/{{debateId}}",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"v1",
-						"debates",
-						"{{debateId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Edit Comment",
 			"event": [
 				{
@@ -939,6 +902,190 @@
 			"response": []
 		},
 		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Join a Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/join",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"join"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"Debate Topic Edited\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Comment",
 			"event": [
 				{
@@ -1045,6 +1192,473 @@
 						"v1",
 						"debates",
 						"{{debateId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Join a Debate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/join",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"join"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Argument",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicContent\", `Argument Content Test #${Math.floor(Math.random() * 1000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.environment.set(\"argumentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = 0;",
+							"",
+							"counter++;",
+							"",
+							"pm.environment.set(\"dynamicCommentContent\", `Comment #${counter}`)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"",
+							"pm.environment.set(\"commentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicCommentContent}}\",\n    \"owner\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = 0;",
+							"",
+							"counter++;",
+							"",
+							"pm.environment.set(\"dynamicCommentContent\", `Comment #${counter}`)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"",
+							"pm.environment.set(\"commentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicCommentContent}}\",\n    \"owner\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Comments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/comments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Argument",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicContent\", `Argument Content Test #${Math.floor(Math.random() * 1000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.environment.set(\"argumentId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Argument",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/{{argumentId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						"{{debateId}}",
+						"arguments",
+						"{{argumentId}}",
 						""
 					]
 				}
@@ -1258,6 +1872,15 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "localhost:3001/api/v1/debates/",
 					"host": [
@@ -1344,7 +1967,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1483,7 +2106,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1576,7 +2199,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-10-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1594,6 +2217,139 @@
 						"v1",
 						"debates",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Debate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define dynamic topics and categories",
+							"const topics = [",
+							"  \"Climate Change Debate\",",
+							"  \"Future of AI\",",
+							"  \"Universal Basic Income\",",
+							"  \"Impact of Social Media\",",
+							"  \"Ethics of Genetic Engineering\"",
+							"];",
+							"const categories = [",
+							"  \"Politics\",",
+							"  \"Technology\",",
+							"  \"Sports\",",
+							"  \"Health\",",
+							"  \"Education\",",
+							"  \"Social Issues\",",
+							"];",
+							"",
+							"// Pick a random topic and category",
+							"const randomTopic = topics[Math.floor(Math.random() * topics.length)];",
+							"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+							"",
+							"// Set a dynamic endTime (one week from now)",
+							"const endTime = new Date();",
+							"endTime.setDate(endTime.getDate() + 7); // 7 days from now",
+							"const formattedEndTime = endTime.toISOString(); // ISO string format for MongoDB",
+							"",
+							"",
+							"// Set the maximum number of participants (between 2 and 4 to match the schema limit)",
+							"const maxAllowedParticipants = 4;  // Maximum allowed by the schema",
+							"const maxParticipants = Math.floor(Math.random() * (maxAllowedParticipants - 1)) + 2; // Random number between 2 and 4",
+							"",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"topic\", randomTopic);",
+							"pm.variables.set(\"category\", randomCategory);",
+							"// Set these dynamic values as Postman variables",
+							"pm.variables.set(\"endTime\", formattedEndTime);  // Correctly set the \"endTime\" variable",
+							"pm.variables.set(\"maxParticipants\", maxParticipants);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.environment.set(\"debateId\", pm.response.json()._id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2026-01-22T15:35:57.726+00:00\", \n    \"creator\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/debates/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Open Debates Sorted in Endtime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/debates?status=open",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"debates"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "open"
+						}
 					]
 				}
 			},
@@ -1639,6 +2395,323 @@
 						"debates",
 						"user",
 						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Log User Out",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/auth/logout",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Signup as Admin",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"adminEmail\", `admin${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"adminUsername\", `adminUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"adminFirstName\", \"adminFirstName\");",
+							"pm.variables.set(\"adminLastName\", \"adminLastName\");",
+							"pm.variables.set(\"adminPassword\", \"adminPassword123\");",
+							"",
+							"const roles = [\"user\", \"admin\"];",
+							"pm.variables.set(\"adminRole\", roles[1]);",
+							"",
+							"pm.variables.set(\"invitationCode\", \"invitationCode\")",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							"pm.environment.set(\"userId\", pm.response.json().user._id); // Set creatorId from the response",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"{{adminEmail}}\",\n    \"username\": \"{{adminUsername}}\",\n    \"password\": \"{{adminPassword}}\",\n    \"firstName\": \"{{adminFirstName}}\",\n    \"lastName\": \"{{adminLastName}}\",\n    \"role\": \"{{adminRole}}\",\n    \"invitationCode\": \"{{invitationCode}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/users/{{userId}}/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{userId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Signup as User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
+							"const roles = [\"user\", \"admin\"];",
+							"pm.variables.set(\"dynamicRole\", roles[0]);",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							"pm.environment.set(\"userId\", pm.response.json().user._id); // Set creatorId from the response",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"{{dynamicEmail}}\",\n    \"username\": \"{{dynamicUsername}}\",\n    \"password\": \"{{dynamicPassword}}\",\n    \"firstName\": \"{{dynamicFirstName}}\",\n    \"lastName\": \"{{dynamicLastName}}\",\n    \"role\": \"{{dynamicRole}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Signup as User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
+							"pm.variables.set(\"dynamicEmail\", `test${Math.floor(Math.random() * 1000)}@gmail.com`);",
+							"pm.variables.set(\"dynamicUsername\", `testUser${Math.floor(Math.random() * 1000)}`);",
+							"pm.variables.set(\"dynamicFirstName\", \"TestFirstName\");",
+							"pm.variables.set(\"dynamicLastName\", \"TestLastName\");",
+							"pm.variables.set(\"dynamicPassword\", \"testPassword123\");",
+							"",
+							"const roles = [\"user\", \"admin\"];",
+							"pm.variables.set(\"dynamicRole\", roles[0]);",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							"pm.environment.set(\"userId\", pm.response.json().user._id); // Set creatorId from the response",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"{{dynamicEmail}}\",\n    \"username\": \"{{dynamicUsername}}\",\n    \"password\": \"{{dynamicPassword}}\",\n    \"firstName\": \"{{dynamicFirstName}}\",\n    \"lastName\": \"{{dynamicLastName}}\",\n    \"role\": \"{{dynamicRole}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/api/v1/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/api/v1/users/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						""
 					]
 				}
 			},

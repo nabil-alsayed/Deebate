@@ -101,6 +101,34 @@ const deleteArgument = async (req, res) => {
   }
 };
 
+// Delete all arguments of a specific debate
+const deleteAllArgumentsOfDebate = async (req, res) => {
+  const { debateId } = req.params;
+
+  try {
+    // Find the debate by ID
+    const debate = await Debate.findById(debateId);
+
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    // Delete all arguments associated with the debate
+    await Argument.deleteMany({ _id: { $in: debate.arguments } });
+
+    // Clear the arguments array in the debate document
+    debate.arguments = [];
+    await debate.save();
+
+    res.status(200).json({ message: 'All arguments deleted successfully for the debate' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { deleteAllArgumentsOfDebate };
+
+
 const editArgument = async (req, res) => {
   const { debateId, argumentId } = req.params; 
   const updates = req.body; 
@@ -139,5 +167,6 @@ module.exports = {
   getAllArguments,
   getArgumentById,
   deleteArgument,
+  deleteAllArgumentsOfDebate,
   editArgument
 };

@@ -3,15 +3,6 @@ const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const User = require('../../models/user');
 
-/* TODO: Add more validation
-   Requires more error handling ex. if creator is not a valid user
-   or if endTime is not a valid date 
-   or if topic is not a string
-   or if status is not a string
-   or if arguments is not an array
-   or if arguments is not an array of valid argument ids
-   or if it has an argument from a different debate 
-   since debates can't share arguments */
 
 const postDebate = async (req, res, next) => {
   const { topic, category, endTime, creator, maxParticipants, participants } =
@@ -79,72 +70,52 @@ const postDebate = async (req, res, next) => {
 
 const getDebates = async (req, res, next) => {
   try {
-    const { category, status, sortOrder, limit = 10, page = 1 } = req.query;
-    const allowedFilters = [...Debate.schema.path('category').enumValues, ...Debate.schema.path('status').enumValues];
+    const { category, status, sort } = req.query;
+    const allowedCategories = Debate.schema.path('category').enumValues;
+    const allowedStatus = Debate.schema.path('status').enumValues;
+    const allowedSortOrders = ['asc', 'desc'];
+    const asc = allowedSortOrders[0];
 
     let filter = {};
 
+    // If category specified, add it to the filter
     if (category) {
-      if (!allowedFilters.includes(category)) {
+      if (!allowedCategories.includes(category)) {
         return res.status(400).json({ message: 'Invalid category' });
       }
       filter.category = category;
     }
 
+    // If status specified, add it to the filter
     if (status) {
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
       filter.status = status;
     }
 
     let query = Debate.find(filter);
 
-    if (sortOrder) {
-      const sortOption = sortOrder === 'asc' ? 1 : -1;
-      query = query.sort({ totalVotes: sortOption });
+    // If sortOrder is provided, apply sorting by totalVotes
+    if (sort) {
+      if (!allowedSortOrders.includes(sort)) {
+        return res.status(400).json({ message: 'Invalid sort order' });
+      }
+      const sortOption = sort === asc ? 1 : -1;
+      query = query.sort({ endTime: sortOption });
     }
 
-    const debatesPerPage = parseInt(limit, 10);
-    const currentPage = parseInt(page, 10);
-
-    const totalDebates = await Debate.countDocuments(filter);
-
-    query = query.skip((currentPage - 1) * debatesPerPage).limit(debatesPerPage);
-
+    // Execute the query and get the debates
     const debates = await query;
 
-    const buildLink = (page, limit) => {
-      return `${req.protocol}://${req.get('host')}${req.baseUrl}?page=${page}&limit=${limit}`;
-    };
-
-    res.status(200).json({
-      totalDebates,
-      currentPage,
-      totalPages: Math.ceil(totalDebates / debatesPerPage),
-      debates: debates.map(debate => ({
-        ...debate.toObject(),
-        links: {
-          self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
-          arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
-          update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
-          delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
-        }
-      })),
-      links: {
-        first: buildLink(1, debatesPerPage),
-        previous: currentPage > 1 ? buildLink(currentPage - 1, debatesPerPage) : null,
-        next: currentPage < Math.ceil(totalDebates / debatesPerPage) ? buildLink(currentPage + 1, debatesPerPage) : null,
-        last: buildLink(Math.ceil(totalDebates / debatesPerPage), debatesPerPage),
-      }
-    });
+    res.status(200).json({ debates });
   } catch (err) {
     return next(err);
   }
 };
 
 
-
 const deleteAllDebates = async (req, res, next) => {
-  // TODO: Add more validation
-  // e.g. check if user is an admin or if there are any debates to delete
 
   try {
     const result = await Debate.deleteMany();
@@ -201,32 +172,38 @@ const getDebateByID = async (req, res, next) => {
 };
 
 const updateDebate = async (req, res, next) => {
-  // TODO: Add more validation and error handling for debate owner or admin only access to update debates
-  // check if the debate end time passed or not before updating, cause it should not be updated after the end time.
+  const { debateId } = req.params; 
+  const updatedFields = req.body; 
 
-  const { debateId } = req.params; // Get id from URL
-  const updatedFields = req.body; // Get update fields from request body
-
-  // Validate that id is a valid ObjectId
+  // Validate that id 
   if (!mongoose.Types.ObjectId.isValid(debateId)) {
     return res.status(400).json({ message: 'Invalid ID format' });
   }
 
   try {
-    const debate = await Debate.findByIdAndUpdate(debateId, updatedFields, {
-      new: true,
-      runValidators: true,
-    });
+    // Find the debate and update it
+    const updatedDebate = await Debate.findOneAndUpdate(
+      {
+        _id: debateId,
+        endTime: { $gt: new Date() }, // Only update if debate hasn't ended
+      },
+      updatedFields,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
-    if (!debate) {
-      return res.status(404).json({ message: 'Debate not found' });
+    if (!updatedDebate) {
+      return res.status(404).json({ message: 'Debate not found or already ended' });
     }
 
-    res.status(200).json(debate);
+    res.status(200).json(updatedDebate);
   } catch (err) {
     return next(err);
   }
 };
+
 
 const joinDebate = async (req, res, next) => {
   const { debateId } = req.params;
