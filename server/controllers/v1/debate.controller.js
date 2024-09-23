@@ -3,15 +3,6 @@ const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const User = require('../../models/user');
 
-/* TODO: Add more validation
-   Requires more error handling ex. if creator is not a valid user
-   or if endTime is not a valid date 
-   or if topic is not a string
-   or if status is not a string
-   or if arguments is not an array
-   or if arguments is not an array of valid argument ids
-   or if it has an argument from a different debate 
-   since debates can't share arguments */
 
 const postDebate = async (req, res, next) => {
   const { topic, category, endTime, creator, maxParticipants, participants } =
