@@ -87,8 +87,22 @@ Users can enter their credentials to access debates or sign up if they are new.
 
 ### Proposal for a higher grade
 
-The JudgeAPI is an advanced feature that leverages OpenAI's GPT models to automatically analyze debate arguments, factoring in user votes and likes, to determine the winner. This feature enhances our core platform by providing AI-driven, objective decisions on which side presents the stronger case, ensuring a fair and unbiased outcome at the conclusion of each debate.
-This feature not only increases the platform's capabilities but also aligns with our goal of promoting structured and fair debates, making the experience more interactive and engaging for users. By automating the decision-making process, we ensure a fair and dynamic conclusion to each debate, while keeping users more involved throughout.
+JudgeAPI for Fair and Automated Debate Conclusions
+Objective: Implement the JudgeAPI to enhance the debate web application by providing automated, more unbiased analysis and conclusions for each debate. The JudgeAPI will ensure fairness by evaluating arguments based on predefined criteria and detecting any instances of "crossing the line" or inappropriate content.
+
+Key Components:
+
+* Automated Debate Conclusion:
+Function: Automatically determines the winner of the debate based on the strength and validity of arguments presented by each side.
+Implementation: Use OpenAI’s GPT models to analyze and compare arguments, providing a fair and unbiased assessment of which side presents a stronger case.
+
+* Argument Integrity Checking:
+Function: Ensures that arguments adhere to debate rules and ethical standards, flagging any content that crosses the line or violates the debate’s code of conduct.
+Implementation: Implement checks to identify inappropriate language, personal attacks, or irrelevant content, providing feedback to users to maintain a respectful and constructive debate environment.
+
+* Detailed Analysis Reports:
+Function: Generates detailed reports on the debate’s outcome, including strengths and weaknesses of each argument and reasons for the final decision.
+Implementation: Provide users with comprehensive feedback, including AI-driven insights into why a particular side won and suggestions for improving argument quality in future debates.
 
 ### Entity-Relationship (ER) Diagram
 

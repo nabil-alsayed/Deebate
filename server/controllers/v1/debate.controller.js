@@ -86,7 +86,6 @@ const getDebates = async (req, res, next) => {
       filter.category = category;
     }
 
-    // If status specified, add it to the filter
     if (status) {
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: 'Invalid status' });
@@ -108,11 +107,41 @@ const getDebates = async (req, res, next) => {
     // Execute the query and get the debates
     const debates = await query;
 
-    res.status(200).json({ debates });
+    const totalDebates = await Debate.countDocuments(filter);
+
+    query = query.skip((currentPage - 1) * debatesPerPage).limit(debatesPerPage);
+
+    const debates = await query;
+
+    const buildLink = (page, limit) => {
+      return `${req.protocol}://${req.get('host')}${req.baseUrl}?page=${page}&limit=${limit}`;
+    };
+
+    res.status(200).json({
+      totalDebates,
+      currentPage,
+      totalPages: Math.ceil(totalDebates / debatesPerPage),
+      debates: debates.map(debate => ({
+        ...debate.toObject(),
+        links: {
+          self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
+          update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
+        }
+      })),
+      links: {
+        first: buildLink(1, debatesPerPage),
+        previous: currentPage > 1 ? buildLink(currentPage - 1, debatesPerPage) : null,
+        next: currentPage < Math.ceil(totalDebates / debatesPerPage) ? buildLink(currentPage + 1, debatesPerPage) : null,
+        last: buildLink(Math.ceil(totalDebates / debatesPerPage), debatesPerPage),
+      }
+    });
   } catch (err) {
     return next(err);
   }
 };
+
 
 
 const deleteAllDebates = async (req, res, next) => {
