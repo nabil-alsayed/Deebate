@@ -412,7 +412,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"66e6f16e5f521317298e347\"\n}",
+					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"66e6f16e5f521317298e347\",\n    \"debate\": \"{{debateId}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
