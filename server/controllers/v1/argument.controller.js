@@ -1,3 +1,5 @@
+/* This controller is for managing the Arguments Endpoints */
+
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
@@ -6,9 +8,6 @@ const Comment = require('../../models/comment');
 
 // Create a new argument
 const createArgument =  async (req, res, next) => {
-  // TODO: check if the argument user is one of the two debaters, and if the debate is still open
-  // if the owner is not one of the debaters, return 403 Forbidden
-  // if the debate is closed, return 403 Forbidden
 
   const { debateId } = req.params;
   const { content, userId } = req.body;
@@ -94,7 +93,7 @@ const deleteArgument = async (req, res) => {
     // Delete the argument
     await argument.deleteOne();
     res
-      .status(200)
+      .status(204)
       .json({ message: 'Argument and associated comments deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -120,13 +119,11 @@ const deleteAllArgumentsOfDebate = async (req, res) => {
     debate.arguments = [];
     await debate.save();
 
-    res.status(200).json({ message: 'All arguments deleted successfully for the debate' });
+    res.status(204).json({ message: 'All arguments deleted successfully for the debate' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-module.exports = { deleteAllArgumentsOfDebate };
 
 
 const editArgument = async (req, res) => {

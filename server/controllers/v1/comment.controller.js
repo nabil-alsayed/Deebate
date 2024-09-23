@@ -1,3 +1,5 @@
+/* This controller is for managing the Comment Endpoints */
+
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
@@ -5,10 +7,10 @@ const Comment = require('../../models/comment');
 // Add a comment to a specific argument
 const addComment = async (req, res) => {
   const { debateId, argumentId } = req.params;
-  const { content } = req.body;
+  const { content, owner } = req.body;
 
-  if (!content) {
-    return res.status(400).json({ error: 'Content is required' });
+  if (!content || !owner) {
+    return res.status(400).json({ error: 'Missing Required Fields' });
   }
 
   try {
@@ -23,7 +25,7 @@ const addComment = async (req, res) => {
       return res.status(404).json({ error: 'Argument not found' });
     }
 
-    const newComment = new Comment({ content });
+    const newComment = new Comment({ content, owner: owner, argument: argumentId });
     const savedComment = await newComment.save();
 
     // Add the comment to the argument's comments array
@@ -73,14 +75,13 @@ const deleteComment = async (req, res) => {
     if (!comment) {
       return res.status(404).json({ error: 'Comment not found' });
     }
-    // TODO: Check ownership
 
     // Remove the comment from the argument's comments array
     await Argument.updateMany({ comments: commentId }, { $pull: { comments: commentId } });
 
     // Delete the comment
     await comment.deleteOne();
-    res.status(200).json({ message: 'Comment deleted' });
+    res.status(204).json({ message: 'Comment deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -102,7 +103,7 @@ const deleteAllComments = async (req, res) => {
     argument.comments = [];
     await argument.save();
 
-    res.status(200).json({ message: 'All comments deleted' });
+    res.status(204).json({ message: 'All comments deleted' });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
