@@ -21,6 +21,6 @@ const generateTokenAndSetCookie = (res, user) => {
 }
 
 module.exports = {
-    generateVerificationToken,
+    // generateVerificationToken,
     generateTokenAndSetCookie
 };
