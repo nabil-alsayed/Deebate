@@ -5,10 +5,10 @@ const Comment = require('../../models/comment');
 // Add a comment to a specific argument
 const addComment = async (req, res) => {
   const { debateId, argumentId } = req.params;
-  const { content } = req.body;
+  const { content, owner } = req.body;
 
-  if (!content) {
-    return res.status(400).json({ error: 'Content is required' });
+  if (!content || !owner) {
+    return res.status(400).json({ error: 'Missing Required Fields' });
   }
 
   try {
@@ -23,7 +23,7 @@ const addComment = async (req, res) => {
       return res.status(404).json({ error: 'Argument not found' });
     }
 
-    const newComment = new Comment({ content });
+    const newComment = new Comment({ content, owner: owner, argument: argumentId });
     const savedComment = await newComment.save();
 
     // Add the comment to the argument's comments array

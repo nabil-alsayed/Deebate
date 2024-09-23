@@ -6,9 +6,6 @@ const Comment = require('../../models/comment');
 
 // Create a new argument
 const createArgument =  async (req, res, next) => {
-  // TODO: check if the argument user is one of the two debaters, and if the debate is still open
-  // if the owner is not one of the debaters, return 403 Forbidden
-  // if the debate is closed, return 403 Forbidden
 
   const { debateId } = req.params;
   const { content, userId } = req.body;
@@ -125,8 +122,6 @@ const deleteAllArgumentsOfDebate = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-module.exports = { deleteAllArgumentsOfDebate };
 
 
 const editArgument = async (req, res) => {

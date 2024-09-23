@@ -1,6 +1,3 @@
-// File: ./models/argument.js
-// A mongoose model for an argument
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

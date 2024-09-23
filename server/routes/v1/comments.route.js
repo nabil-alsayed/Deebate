@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const commentController = require('../../controllers/v1/comment.controller');
+const methodOverride = require('method-override');
+
+// Apply method-override of a specific comment
+router.use('/:commentId', methodOverride('X-HTTP-Method-Override'));
 
 // Comment routes (nested under arguments)
 router.post('/', commentController.addComment);  
