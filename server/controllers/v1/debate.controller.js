@@ -1,3 +1,5 @@
+/* This controller is for managing the Debate Endpoints */
+
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
@@ -127,7 +129,7 @@ const deleteAllDebates = async (req, res, next) => {
 
     // Respond with the number of debates deleted
     res
-      .status(200)
+      .status(204)
       .json({ message: `${result.deletedCount} debates deleted successfully` });
   } catch (err) {
     return next(err);
@@ -148,7 +150,7 @@ const deleteDebateByID = async (req, res, next) => {
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
-    res.status(200).json({ message: 'Debate deleted successfully', debate });
+    res.status(204).json({ message: 'Debate deleted successfully', debate });
   } catch (err) {
     return next(err);
   }
@@ -259,7 +261,7 @@ const deleteAllUserDebates = async (req, res, next) => {
       return res.status(404).json({ message: 'No debates found for this user' });
     }
 
-    return res.status(200).json({ message: `${results.deletedCount} debates deleted successfully` });
+    return res.status(204).json({ message: `${results.deletedCount} debates deleted successfully` });
   } catch (err) {
     return next(err);
   }
@@ -283,7 +285,7 @@ const deleteSpecificUserDebate = async (req, res, next) => {
       return res.status(404).json({ message: 'No debate found for this user with the specified ID' });
     }
 
-    return res.status(200).json({ message: `Debate --> ${result.topic} <-- deleted successfully` });
+    return res.status(204).json({ message: `Debate --> ${result.topic} <-- deleted successfully` });
   } catch (err) {
     return next(err);
   }

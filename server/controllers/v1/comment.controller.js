@@ -1,3 +1,5 @@
+/* This controller is for managing the Comment Endpoints */
+
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
@@ -73,14 +75,13 @@ const deleteComment = async (req, res) => {
     if (!comment) {
       return res.status(404).json({ error: 'Comment not found' });
     }
-    // TODO: Check ownership
 
     // Remove the comment from the argument's comments array
     await Argument.updateMany({ comments: commentId }, { $pull: { comments: commentId } });
 
     // Delete the comment
     await comment.deleteOne();
-    res.status(200).json({ message: 'Comment deleted' });
+    res.status(204).json({ message: 'Comment deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -102,7 +103,7 @@ const deleteAllComments = async (req, res) => {
     argument.comments = [];
     await argument.save();
 
-    res.status(200).json({ message: 'All comments deleted' });
+    res.status(204).json({ message: 'All comments deleted' });
 
   } catch (error) {
     res.status(500).json({ error: error.message });

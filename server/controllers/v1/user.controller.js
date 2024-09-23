@@ -5,8 +5,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// TODO: use 404 for forbidden when the user make request that only admins can make
-
 // Get all users
 
 const getAllUsers = async (req, res) => {
@@ -176,7 +174,7 @@ const deleteUser = async (req, res) => {
     const deletedUser = await User.findByIdAndDelete(userId);
 
     res
-      .status(200)
+      .status(204)
       .json({
         message: `${user.username}'s was deleted sucessfully!`,
         deletedUser,
@@ -195,7 +193,7 @@ const deleteAllUsers = async (req, res) => {
     }
 
     await User.deleteMany();
-    res.status(200).json({ message: 'All users deleted' });
+    res.status(204).json({ message: 'All users deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

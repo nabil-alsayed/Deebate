@@ -1,3 +1,5 @@
+/* This controller is for managing the API Endpoints */
+
 const express = require('express');
 const router = express.Router();
 
