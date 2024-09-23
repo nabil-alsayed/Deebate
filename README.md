@@ -94,15 +94,14 @@ Key Components:
 
 * Automated Debate Conclusion:
 Function: Automatically determines the winner of the debate based on the strength and validity of arguments presented by each side.
-Implementation: Use OpenAI’s GPT models to analyze and compare arguments, providing a fair and unbiased assessment of which side presents a stronger case.
-
-* Argument Integrity Checking:
-Function: Ensures that arguments adhere to debate rules and ethical standards, flagging any content that crosses the line or violates the debate’s code of conduct.
-Implementation: Implement checks to identify inappropriate language, personal attacks, or irrelevant content, providing feedback to users to maintain a respectful and constructive debate environment.
+Implementation: Use OpenAI’s GPT models to analyze and compare arguments, providing a fair and unbiased assessment of which side presents a stronger case. 
 
 * Detailed Analysis Reports:
 Function: Generates detailed reports on the debate’s outcome, including strengths and weaknesses of each argument and reasons for the final decision.
 Implementation: Provide users with comprehensive feedback, including AI-driven insights into why a particular side won and suggestions for improving argument quality in future debates.
+
+Form of Presentation:
+The evaluation will be presented in form of a separate field below the final debate in the body of the debate component, and it will highlighted as Final AI Judge's Evaluation
 
 ### Entity-Relationship (ER) Diagram
 
