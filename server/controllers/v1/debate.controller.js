@@ -99,7 +99,7 @@ const getDebates = async (req, res, next) => {
     // If sortOrder is provided, apply sorting by totalVotes
     if (sort) {
       if (!allowedSortOrders.includes(sort)) {
-        return res.status(400).json({ message: 'Invalid sortOrder' });
+        return res.status(400).json({ message: 'Invalid sort order' });
       }
       const sortOption = sort === asc ? 1 : -1;
       query = query.sort({ endTime: sortOption });
