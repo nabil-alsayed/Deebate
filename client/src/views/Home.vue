@@ -1,45 +1,106 @@
 <template>
-  <div>
-    <b-container fluid>
-      <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
-      <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
-      <b-button class="btn_message" variant="primary" v-on:click="getDebates()" >Get Debates from Server</b-button>
-      <p class="col-xl-9">Debates from the server:<br/>
-        <ul>
-          <li v-for="debate in message" :key="debate._id">{{ debate.topic }}</li>
-        </ul>
-      </p>
-    </b-container>
+  <div class="page-layout">
+    <!-- Left Menu Bar (with Home and Profile buttons) -->
+    <div class="menu-bar">
+      <MenuBar />
+      <button :class="{ active: currentView === 'home' }" @click="showHome">
+        Home
+      </button>
+      <!-- Button to show leaderboard -->
+      <button
+        :class="{ active: currentView === 'profile' }"
+        @click="showProfile"
+      >
+        Profile
+      </button>
+      <!-- Button to show edit profile -->
+    </div>
+
+    <!-- Main Content (Debates) -->
+    <div class="main-content">
+      <SearchBar :onSearch="handleSearch" />
+      <DebateList :debates="filteredDebates" />
+    </div>
+
+    <!-- Right Sidebar (Conditional rendering for Profile or Leaderboard) -->
+    <div class="right-sidebar">
+      <!-- Show Leaderboard when 'Home' is clicked -->
+      <Leaderboard v-if="currentView === 'home'" />
+
+      <!-- Show EditProfile when 'Profile' is clicked -->
+      <EditProfile v-else-if="currentView === 'profile'" />
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import { Api } from '@/Api'
+import MenuBar from '@/components/MenuBar.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import DebateList from '@/components/DebateList.vue'
+import Leaderboard from '@/components/Leaderboard.vue'
+import EditProfile from '@/components/EditProfile.vue'
 
 export default {
-  name: 'home',
+  components: {
+    MenuBar,
+    SearchBar,
+    DebateList,
+    Leaderboard,
+    EditProfile
+  },
   data() {
     return {
-      message: []
+      debates: [],
+      searchQuery: '',
+      currentView: 'home' // Initially showing 'home' view with Leaderboard
+    }
+  },
+  computed: {
+    filteredDebates() {
+      return this.debates.filter((debate) =>
+        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
-    getDebates() {
-      Api.get('/v1/debates')
-        .then(response => {
-          this.message = response.data.debates
-        })
-        .catch(error => {
-          this.message = error
-        })
+    handleSearch(query) {
+      this.searchQuery = query
+    },
+    showHome() {
+      this.currentView = 'home' // Switch to showing Leaderboard
+    },
+    showProfile() {
+      this.currentView = 'profile' // Switch to showing EditProfile
     }
   }
 }
 </script>
 
-<style>
-.btn_message {
-  margin-bottom: 1em;
+<style scoped>
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1.5fr; /* Adjust the right column size */
+  grid-gap: 20px;
+}
+
+.menu-bar,
+.right-sidebar {
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+.active {
+  background-color: #007bff;
+  color: white;
 }
 </style>
