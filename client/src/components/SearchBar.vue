@@ -1,20 +1,29 @@
 <template>
   <div class="search-bar">
-    <!-- TODO -->
-    <p>Search Bar</p>
+    <input type="text" placeholder="Search..." @input="onInput" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SearchBar'
+  methods: {
+    onInput(event) {
+      this.$emit('onSearch', event.target.value)
+    }
+  }
 }
 </script>
 
 <style scoped>
 .search-bar {
-  /* BASIC STYLE TO TRY THE SIDE BAR */
-  background-color: #f9f9f9;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
   padding: 10px;
+  border-radius: 20px; /* Rounded corners */
+  border: none;
+  background-color: white; /* White */
 }
 </style>

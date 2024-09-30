@@ -1,34 +1,31 @@
 <template>
   <div class="page-layout">
-    <!-- Left Menu Bar (with Home and Profile buttons) -->
     <div class="menu-bar">
-      <MenuBar />
-      <button :class="{ active: currentView === 'home' }" @click="showHome">
-        Home
-      </button>
-      <!-- Button to show leaderboard -->
-      <button
-        :class="{ active: currentView === 'profile' }"
-        @click="showProfile"
-      >
-        Profile
-      </button>
-      <!-- Button to show edit profile -->
+      <MenuBar :activePage="activePage" @changePage="handlePageChange" />
     </div>
-
-    <!-- Main Content (Debates) -->
     <div class="main-content">
       <SearchBar :onSearch="handleSearch" />
+      <div class="user-info">
+        <div class="user-score">
+          <img
+            src="@/assets/avatars/user-avatar.svg"
+            alt="User Avatar"
+            class="avatar"
+          />
+          <div>
+            <div class="username">@username</div>
+            <div class="score">Score: 1234</div>
+          </div>
+        </div>
+      </div>
       <DebateList :debates="filteredDebates" />
-    </div>
-
-    <!-- Right Sidebar (Conditional rendering for Profile or Leaderboard) -->
-    <div class="right-sidebar">
-      <!-- Show Leaderboard when 'Home' is clicked -->
-      <Leaderboard v-if="currentView === 'home'" />
-
-      <!-- Show EditProfile when 'Profile' is clicked -->
-      <EditProfile v-else-if="currentView === 'profile'" />
+      <div v-if="activePage === 'Home'">
+        <Categories />
+        <Leaderboard />
+      </div>
+      <div v-else-if="activePage === 'Profile'">
+        <EditProfile />
+      </div>
     </div>
   </div>
 </template>
@@ -37,22 +34,16 @@
 import MenuBar from '@/components/MenuBar.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import DebateList from '@/components/DebateList.vue'
+import Categories from '@/components/Categories.vue'
 import Leaderboard from '@/components/Leaderboard.vue'
 import EditProfile from '@/components/EditProfile.vue'
 
 export default {
-  components: {
-    MenuBar,
-    SearchBar,
-    DebateList,
-    Leaderboard,
-    EditProfile
-  },
   data() {
     return {
       debates: [],
       searchQuery: '',
-      currentView: 'home' // Initially showing 'home' view with Leaderboard
+      activePage: 'Home' // default to home
     }
   },
   computed: {
@@ -66,41 +57,40 @@ export default {
     handleSearch(query) {
       this.searchQuery = query
     },
-    showHome() {
-      this.currentView = 'home' // Switch to showing Leaderboard
-    },
-    showProfile() {
-      this.currentView = 'profile' // Switch to showing EditProfile
+    handlePageChange(page) {
+      this.activePage = page
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 .page-layout {
-  display: grid;
-  grid-template-columns: 1fr 3fr 1.5fr; /* Adjust the right column size */
-  grid-gap: 20px;
+  display: flex;
+  background-color: #e7e7e7; /* Light Muted */
 }
 
-.menu-bar,
-.right-sidebar {
-  padding: 20px;
-  background-color: #f0f0f0;
+.menu-bar {
+  width: 20%; /* 1/5th of the width */
+  background-color: #007769; /* Primary color */
+  color: white;
 }
 
 .main-content {
+  flex: 1;
   padding: 20px;
 }
 
-.right-sidebar {
+.user-info {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
 }
-.active {
-  background-color: #007bff;
-  color: white;
+
+.avatar {
+  width: 50px;
+  border-radius: 50%;
 }
+
+/* Add styles for categories and debates as needed */
 </style>

@@ -1,44 +1,31 @@
 <template>
   <div class="edit-profile">
     <div class="profile-header">
-      <!-- Avatar -->
-      <img :src="user.avatarUrl" alt="User Avatar" class="avatar" />
-
-      <!-- User Info -->
-      <div class="user-info">
-        <h3>{{ user.firstName }}</h3>
-        <p>@{{ user.username }}</p>
-      </div>
+      <h2 class="first-name">First Name</h2>
+      <p class="username muted">@username</p>
     </div>
-
-    <!-- Edit Profile Form -->
     <form @submit.prevent="saveProfile">
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="text" v-model="user.firstName" id="firstName" />
+      <div class="field">
+        <label>First Name</label>
+        <input type="text" v-model="firstName" />
       </div>
-
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input type="text" v-model="user.lastName" id="lastName" />
+      <div class="field">
+        <label>Last Name</label>
+        <input type="text" v-model="lastName" />
       </div>
-
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" v-model="user.username" id="username" />
+      <div class="field">
+        <label>Username</label>
+        <input type="text" v-model="username" />
       </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" v-model="user.email" id="email" />
+      <div class="field">
+        <label>Email</label>
+        <input type="email" v-model="email" />
       </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" v-model="user.password" id="password" />
+      <div class="field">
+        <label>Password</label>
+        <input type="password" v-model="password" />
       </div>
-
-      <button type="submit" class="save-btn">Save</button>
+      <button type="submit" class="save-button">Save</button>
     </form>
   </div>
 </template>
@@ -55,24 +42,24 @@ export default {
         username: 'john_doe',
         email: 'john@example.com',
         password: 'password123',
-        avatarUrl: 'https://example.com/avatar.jpg' // Mock avatar URL
+        avatarUrl: require('@/assets/avatars/user-avatar.svg')
       }
     }
   },
   methods: {
     getUserProfile() {
-      // Mock data for now
+      // TODO
       this.user = {
         firstName: 'John',
         lastName: 'Doe',
         username: 'john_doe',
         email: 'john@example.com',
         password: '',
-        avatarUrl: 'https://example.com/avatar.jpg'
+        avatarUrl: require('@/assets/avatars/user-avatar.png')
       }
     },
     saveProfile() {
-      // Eventually replace with real API request
+      // TODO
       console.log('Saving mock profile:', this.user)
       alert('Profile updated successfully!')
     }
@@ -82,66 +69,34 @@ export default {
 
 <style scoped>
 .edit-profile {
-  width: 300px;
+  background-color: #e7e7e7; /* Light Muted */
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
 }
 
-.profile-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 15px;
-}
-
-.user-info h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.user-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.form-group {
+.field {
   margin-bottom: 15px;
 }
 
-.form-group label {
+label {
   display: block;
   margin-bottom: 5px;
-  font-size: 14px;
-  color: #333;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.save-btn {
+input {
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
-  color: #fff;
+  border-radius: 20px;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  background-color: white;
 }
 
-.save-btn:hover {
-  background-color: #0056b3;
+.save-button {
+  background-color: #007769;
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
 }
 </style>
