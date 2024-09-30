@@ -4,38 +4,18 @@ const User = require('../../models/user');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const {authenticateRole} = require("../../utils/utils");
 
 // Get all users
 
 const getAllUsers = async (req, res) => {
-  // TODO: only admin or a signed in user should be able to perform this request
-
-  // Destructure the request body
-  const { emailAddress, password } = req.body;
 
   try {
-    // Check if credentials are provided correctly
-    if (!emailAddress || !password) {
-      return res
-        .status(400)
-        .json({ message: 'Both email and password are required.' });
-    }
-
-    // Find user by email
-    const user = await User.findOne({ emailAddress, role: 'admin' });
-
-    // Check if user is not found or password does not match
-    if (!user) {
-      return res
-        .status(401)
-        .json({ message: 'Invalid credentials or admin was not found.' });
-    }
-
-    // Use bcrypt to compare the plain password with the hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    // Check if the current user has permission (owner or admin)
+    try {
+      await authenticateRole('admin');
+    } catch (error) {
+      return res.status(403).json({ message: error.message });
     }
 
     const users = await User.find();
@@ -56,7 +36,12 @@ const getAllUsers = async (req, res) => {
 // Get a specific user
 
 const getUser = async (req, res) => {
-  // TODO: only admin or a signed in user should be able to perform this request
+  // Check if the current user has permission (owner or admin)
+  try {
+    await authenticateRole('user');
+  } catch (error) {
+    return res.status(403).json({ message: error.message });
+  }
 
   const { userId } = req.params;
   try {
@@ -92,7 +77,13 @@ const getUser = async (req, res) => {
 // Modify one user's info
 
 const editUser = async (req, res) => {
-  // TODO: only admin or the owner of the user account should be able to perform this request
+  // Check if the current user has permission (owner or admin)
+  try {
+    await authenticateRole('user');
+  } catch (error) {
+    return res.status(403).json({ message: error.message });
+  }
+
 
   // Get the user's id and updates from the request params and body
   const { userId } = req.params;
@@ -124,6 +115,7 @@ const editUser = async (req, res) => {
   }
 
   try {
+
     // find the user
     const user = await User.findById(userId);
 
@@ -151,7 +143,12 @@ const editUser = async (req, res) => {
 
 // Delete a user
 const deleteUser = async (req, res) => {
-  // TODO: only admin or the owner of the user account should be able to perform this request
+  // Check if the current user has permission (owner or admin)
+  try {
+    await authenticateRole('user');
+  } catch (error) {
+    return res.status(403).json({ message: error.message });
+  }
 
   const { userId } = req.params;
   try {
