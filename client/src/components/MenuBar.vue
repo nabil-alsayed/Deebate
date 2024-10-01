@@ -30,12 +30,14 @@ export default {
 
 <style>
 .sidebar {
-    background-color: #007B7B;
+    background-color: #007769;
     color: white;
     height: 100vh;
     padding: 20px;
     display: flex;
     flex-direction: column;
+    border: none;
+    border-radius: 30px;
 }
 
 .logo {
@@ -72,7 +74,7 @@ nav ul {
 
 .logout-btn {
     margin-top: auto;
-    background-color: #E57373;
+    background-color: #BB4545;
     color:white;
     border: none;
     padding: 10px;
