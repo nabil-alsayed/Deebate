@@ -1,20 +1,40 @@
 <template>
-    <input v-model="searchQuery" @input="filterDebates" placeholder="Search debates by topic" />
+    <div class="search-bar">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        @input="emitSearch"
+        placeholder="Search for a debate..."
+      >
+    </div>
   </template>
   
   <script>
   export default {
-    props: ['onSearch'],
+    name: 'SearchBar',
     data() {
       return {
         searchQuery: ''
       }
     },
     methods: {
-      filterDebates() {
-        this.onSearch(this.searchQuery);
+      emitSearch() {
+        this.$emit('search', this.searchQuery)
       }
     }
   }
   </script>
   
+  <style scoped>
+  .search-bar {
+    width: 100%;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  </style>
