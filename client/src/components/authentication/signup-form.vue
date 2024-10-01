@@ -59,8 +59,8 @@ export default {
         // Handle errors and show an error message
         this.message = error.response && error.response.data.message
           ? error.response.data.message
-          : 'Login failed, please try again.';
-        console.error('Login failed:', this.message);
+          : 'Sign up failed, please try again.';
+        console.error('Sign up failed:', this.message);
       }
     }
   }
