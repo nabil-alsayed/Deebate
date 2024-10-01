@@ -2,7 +2,7 @@
   <div class="signup-form-container">
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold">Welcome to Deebate! 👋</b-card-title>
-      <b-form @submit.prevent="login" class="signup-form">
+      <b-form @submit.prevent="signup" class="signup-form">
         <b-input type="email" v-model="user.email" placeholder="Email" />
         <b-input type="text" v-model="user.username" placeholder="@Username" />
         <b-input type="text" v-model="user.firstname" placeholder="First Name" />
@@ -36,7 +36,7 @@ export default {
     };
   },
   methods: {
-    async login() {
+    async signup() {
       try {
         const response = await axios.post('http://localhost:3001/api/v1/auth/signup', {
           emailAddress: this.user.email,

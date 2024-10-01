@@ -1,6 +1,6 @@
 <template>
   <div class="auth-container">
-    <div class="login-section">
+    <div class="signup-section">
       <signup-form />
     </div>
     <div class="poster-section">
@@ -26,14 +26,94 @@ export default {
 };
 </script>
 
-<style scoped>
- .container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
- }
- .right {
-   order: 1;
- }
+<style>
+/* Set full height for html and body */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-section, .poster-section {
+  width: 100%;
+  height: 100%;
+}
+
+.poster-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #007769;
+}
+
+.poster {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 5px;
+}
+
+.logo {
+  width: 84px;
+}
+
+.slogan {
+  color: white;
+  text-align: center;
+}
+
+/* Initially, hide the dark logo and show the light logo */
+.light-logo {
+  display: block;
+}
+
+.dark-logo {
+  display: none;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column; /* Stack the items vertically */
+  }
+
+  .login-section, .poster-section {
+    width: 100%; /* Make both sections take up the full width */
+    height: auto; /* Adjust height to content */
+  }
+
+  .poster-section {
+    order: -1; /* Move poster section above login form */
+    background-color: transparent; /* Remove dark background on small screens */
+  }
+
+  /* On smaller screens, hide the light logo and show the dark logo */
+  .light-logo {
+    display: none;
+  }
+
+  .dark-logo {
+    display: block;
+  }
+
+  .slogan {
+    color: #007769;
+    text-align: center;
+  }
+
+  .removable {
+    display: none;
+  }
+}
 </style>
