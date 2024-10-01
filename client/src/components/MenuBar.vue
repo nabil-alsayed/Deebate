@@ -24,7 +24,7 @@
 
 <script>
 export default {
-    name: 'MenuBar'
+  name: 'MenuBar'
 }
 </script>
 
