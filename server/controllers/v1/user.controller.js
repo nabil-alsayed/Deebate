@@ -69,7 +69,7 @@ const editUser = async (req, res) => {
   const requestedUserId = userId;
   const requestingUserId = id;
 
-  // Check if the current user has permission (owner or admin)
+  // if the user is not the owner or an admin, return a 403 response
   if (requestedUserId !== requestingUserId) {
     try {
       await authenticateRole('admin');
