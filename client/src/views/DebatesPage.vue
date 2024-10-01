@@ -12,8 +12,7 @@
       </div>
     </div>
   </template>
-  
-  <script>
+<script>
   import MenuBar from '@/components/MenuBar.vue'
   import SearchBar from '@/components/SearchBar.vue'
   import DebateList from '@/components/DebateList.vue'
@@ -24,13 +23,13 @@
       return {
         debates: [],
         searchQuery: ''
-      };
+      }
     },
     computed: {
       filteredDebates() {
         return this.debates.filter(debate =>
           debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
+        )
       }
     },
     methods: {
@@ -54,4 +53,4 @@
   .main-content {
     padding: 20px;
   }
-  </style>
+</style>
