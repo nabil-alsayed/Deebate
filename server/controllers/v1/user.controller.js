@@ -2,8 +2,6 @@
 
 const User = require('../../models/user');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const {authenticateRole} = require("../../utils/utils");
 
 // Get all users
@@ -11,13 +9,6 @@ const {authenticateRole} = require("../../utils/utils");
 const getAllUsers = async (req, res) => {
 
   try {
-    // Check if the current user has permission (owner or admin)
-    try {
-      await authenticateRole('admin');
-    } catch (error) {
-      return res.status(403).json({ message: error.message });
-    }
-
     const users = await User.find();
 
     if (users.length < 1) {
@@ -36,14 +27,7 @@ const getAllUsers = async (req, res) => {
 // Get a specific user
 
 const getUser = async (req, res) => {
-  // Check if the current user has permission (owner or admin)
-  try {
-    await authenticateRole('user');
-  } catch (error) {
-    return res.status(403).json({ message: error.message });
-  }
 
-  const { userId } = req.params;
   try {
     // Check if the id provided is valid mongoose id
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -77,17 +61,22 @@ const getUser = async (req, res) => {
 // Modify one user's info
 
 const editUser = async (req, res) => {
-  // Check if the current user has permission (owner or admin)
-  try {
-    await authenticateRole('user');
-  } catch (error) {
-    return res.status(403).json({ message: error.message });
-  }
-
-
-  // Get the user's id and updates from the request params and body
-  const { userId } = req.params;
+  // Get the requesting user's id and the requested user's id and updates from the request params and body
   const updates = req.body;
+  const { userId } = req.params;
+  const { id } = req.user;
+
+  const requestedUserId = userId;
+  const requestingUserId = id;
+
+  // Check if the current user has permission (owner or admin)
+  if (requestedUserId !== requestingUserId) {
+    try {
+      await authenticateRole('admin');
+    } catch (error) {
+      return res.status(403).json({ message: error.message });
+    }
+  }
 
   // List of allowed attributes to update
   const allowedAttributes = [
@@ -143,25 +132,25 @@ const editUser = async (req, res) => {
 
 // Delete a user
 const deleteUser = async (req, res) => {
-  // Check if the current user has permission (owner or admin)
-  try {
-    await authenticateRole('user');
-  } catch (error) {
-    return res.status(403).json({ message: error.message });
-  }
-
   const { userId } = req.params;
+  const { id } = req.user;
+
+  const requestedUserId = userId;
+  const requestingUserId = id;
+
   try {
-    // Check if the ID provided is valid mongoose id
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log('Invalid ID format');
-      return res
-        .status(400)
-        .json({ message: `ID format provided is invalid: ${userId}` });
+
+    // if the user is not the owner or an admin, return a 403 response
+    if (requestedUserId !== requestingUserId) {
+      try {
+        await authenticateRole('admin');
+      } catch (error) {
+        return res.status(403).json({ message: error.message });
+      }
     }
 
     // Find the user by its ID
-    const user = await User.findById(userId);
+    const user = await User.findById(requestedUserId);
 
     // check if the user exist
     if (!user) {
