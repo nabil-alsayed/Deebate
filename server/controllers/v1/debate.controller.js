@@ -2,16 +2,14 @@
 
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
-const Argument = require('../../models/argument');
 const User = require('../../models/user');
 
-
 const postDebate = async (req, res, next) => {
-  const { topic, category, endTime, creator, maxParticipants, participants } =
+  const { topic, category, endTime, owner, maxParticipants, participants } =
     req.body;
 
   // Basic validation
-  if (!topic || !category || !endTime || !creator || !participants) {
+  if (!topic || !category || !endTime || !owner || !participants) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
@@ -26,25 +24,13 @@ const postDebate = async (req, res, next) => {
       .json({ message: 'Participants number is exceeding the maximum limit' });
   }
 
-  if( mongoose.Types.ObjectId.isValid(creator) === false){
-    return res.status(400).json({ message: 'Invalid creator ID format' });
+  if( mongoose.Types.ObjectId.isValid(owner) === false){
+    return res.status(400).json({ message: 'Invalid owner ID format' });
   }
-
-  const minParticipants = Debate.schema.path('maxParticipants').options.min;
 
   try {
     // Fetch all participants
     const participantsDB = await User.find({ _id: { $in: participants } });
-
-    // Create a Set of participant IDs
-    const uniqueParticipants = new Set(
-      participants.map((participant) => participant.toString())
-    );
-
-    // Check if the number of provided participants matches the number of unique IDs
-    if (participants.length !== uniqueParticipants.size) {
-      return res.status(400).json({ message: 'Participants should be unique' });
-    }
 
     // Check if the number of fetched participants matches the provided participants
     if (participantsDB.length !== participants.length) {
@@ -58,7 +44,7 @@ const postDebate = async (req, res, next) => {
       topic,
       category,
       endTime,
-      creator,
+      owner,
       maxParticipants,
       participants,
     });
@@ -98,7 +84,7 @@ const getDebates = async (req, res, next) => {
 
     let query = Debate.find(filter);
 
-    // If sortOrder is provided, apply sorting by totalVotes
+    // If sort is provided, apply sorting by the debate end time
     if (sort) {
       if (!allowedSortOrders.includes(sort)) {
         return res.status(400).json({ message: 'Invalid sort order' });
@@ -110,7 +96,18 @@ const getDebates = async (req, res, next) => {
     // Execute the query and get the debates
     const debates = await query;
 
-    res.status(200).json({ debates });
+    // Send the debates along with HATEOAS links
+    res.status(200).json({
+      debates: debates.map(debate => ({
+        ...debate.toObject(),
+        links: {
+          self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
+          update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+          delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
+        }
+      })),
+    });
   } catch (err) {
     return next(err);
   }
@@ -129,7 +126,7 @@ const deleteAllDebates = async (req, res, next) => {
 
     // Respond with the number of debates deleted
     res
-      .status(204)
+      .status(200)
       .json({ message: `${result.deletedCount} debates deleted successfully` });
   } catch (err) {
     return next(err);
@@ -137,9 +134,7 @@ const deleteAllDebates = async (req, res, next) => {
 };
 
 const deleteDebateByID = async (req, res, next) => {
-  // TODO: check if user is an admin or if the debate exists
-
-  const { debateId } = req.params; // Using const for id as it's not reassigned
+  const { debateId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(debateId)) {
     return res.status(404).json({ message: 'Invalid ID format' });
@@ -175,7 +170,7 @@ const getDebateByID = async (req, res, next) => {
 
 const updateDebate = async (req, res, next) => {
   const { debateId } = req.params; 
-  const updatedFields = req.body; 
+  const updatedFields = req.body;
 
   // Validate that id 
   if (!mongoose.Types.ObjectId.isValid(debateId)) {
@@ -253,15 +248,15 @@ const deleteAllUserDebates = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Delete all debates owned by the user 
-    const results = await Debate.deleteMany({ creator: userId });
+    // Delete all debates owned by the user
+    const results = await Debate.deleteMany({ owner: userId });
 
     // Check if any debates were deleted
     if (results.deletedCount === 0) {
       return res.status(404).json({ message: 'No debates found for this user' });
     }
 
-    return res.status(204).json({ message: `${results.deletedCount} debates deleted successfully` });
+    return res.status(200).json({ message: `${results.deletedCount} debates deleted successfully` });
   } catch (err) {
     return next(err);
   }
@@ -278,14 +273,14 @@ const deleteSpecificUserDebate = async (req, res, next) => {
     }
 
     // Delete specific debate owned by the user
-    const result = await Debate.findOneAndDelete({ creator: userId, _id: debateId });
+    const result = await Debate.findOneAndDelete({ owner: userId, _id: debateId });
 
     // Check if a debate was deleted
     if (!result) {
       return res.status(404).json({ message: 'No debate found for this user with the specified ID' });
     }
 
-    return res.status(204).json({ message: `Debate --> ${result.topic} <-- deleted successfully` });
+    return res.status(200).json({ message: `Debate --> ${result.topic} <-- deleted successfully` });
   } catch (err) {
     return next(err);
   }
