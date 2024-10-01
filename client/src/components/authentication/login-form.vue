@@ -1,38 +1,64 @@
 <template>
   <div class="login-form-container">
-    <div class="login-form">
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold">Welcome back! 👋</b-card-title>
-      <b-input type="email" v-model="email" placeholder="Email" />
-      <b-input type="password" v-model="password" placeholder="Password" />
-      <b-card-body class="small fw-semibold">Don't have an account? <router-link to="/signup" style="text-decoration: none">Sign up</router-link></b-card-body>
-      <b-button type="submit" class="login-button" @click="login">Login</b-button>
+      <b-form @submit.prevent="login" class="login-form">
+        <b-input type="email" v-model="user.email" placeholder="Email" />
+        <b-input type="password" v-model="user.password" placeholder="Password" />
+        <b-button type="submit" class="login-button">Login</b-button>
+      </b-form>
+      <div class="flex flex-column column-gap-4 text-center">
+        <p class="small fw-medium">Don't have an account? <router-link to="/signup" style="text-decoration: none">Sign up</router-link></p>
+        <p class="small fw-medium">{{ message }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 
+import axios from "axios";
+
+let message = 'none';
+
 export default {
   name: 'authentication',
   data() {
     return {
-      user: {}
-    }
+      user: {
+        email: '',
+        password: ''
+      },
+      message: ''
+    };
   },
   methods: {
-    login() {
-      this.user = {
-        email: this.email,
-        password: this.password
+    async login() {
+      try {
+        const response = await axios.post('http://localhost:3001/api/v1/auth/login', {
+          emailAddress: this.user.email,
+          password: this.user.password
+        });
+
+        // Handle the response, save the token if necessary
+        console.log('Login successful:', response.data);
+        this.message = response.data.message || 'Login successful!';
+
+        // Save the token in local storage
+        localStorage.setItem('token', response.data.token);
+
+        // Redirect the user to the profile page
+        this.$router.push('/profile');
+      } catch (error) {
+        // Handle errors and show an error message
+        this.message = error.response && error.response.data.message
+          ? error.response.data.message
+          : 'Login failed, please try again.';
+        console.error('Login failed:', this.message);
       }
-    },
-    getUser(){
-      this.user = {
-        email: this.email
-      }
-    },
+    }
   }
-}
+};
 </script>
 
 <style>
