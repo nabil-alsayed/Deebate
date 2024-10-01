@@ -1,8 +1,5 @@
 <template>
   <div class="auth-container">
-    <div class="login-section">
-      <login-form />
-    </div>
     <div class="poster-section">
       <div class="poster">
         <!-- Display different logos based on screen size -->
@@ -13,6 +10,9 @@
           <p class="m-0 removable .rubik-text fw-lighter">Stand for your belief!</p>
         </b-card-text>
       </div>
+    </div>
+    <div class="login-section">
+      <login-form />
     </div>
   </div>
 </template>

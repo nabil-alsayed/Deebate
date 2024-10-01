@@ -24,7 +24,7 @@ const signup = async (req, res) => {
     const user = await User.findOne({ $or: [{ emailAddress }, { username }] });
 
     if(user){
-        return res.status(400).json({ message: `${role} with same email or username already exist.`})
+        return res.status(400).json({ message: "A user with same email or username already exist."})
     }
   
     // Hash the password and salt round it to 10

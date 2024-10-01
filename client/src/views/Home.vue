@@ -4,7 +4,7 @@
       <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
       <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
       <div style="display: flex; flex-direction: row; gap: 10px; justify-content: center">
-        <b-button class="btn_message" style="background-color: red; border: none" variant="primary" href="/auth" >Authentication</b-button>
+        <b-button class="btn_message" style="background-color: red; border: none" variant="primary" href="/login" >Authentication</b-button>
         <b-button class="btn_message" variant="primary" v-on:click="getMessage()" >Get Message from Server</b-button>
       </div>
       <p class="col-xl-9">Message from the server:<br/>
@@ -38,7 +38,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .btn_message {
   margin-bottom: 1em;
 }
