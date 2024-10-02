@@ -1,15 +1,15 @@
 <template>
-  <div class="login-form-container">
+  <div class="signup-form-container">
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold">Welcome back! 👋</b-card-title>
-      <b-form @submit.prevent="login" class="login-form">
+      <b-form @submit.prevent="login" class="signup-form">
         <b-input type="email" v-model="user.email" placeholder="Email" />
         <b-input type="password" v-model="user.password" placeholder="Password" />
-        <b-button type="submit" class="login-button">Login</b-button>
+        <b-button type="submit" class="signup-button">Log in</b-button>
       </b-form>
       <div class="flex flex-column column-gap-4 text-center">
         <p class="small fw-medium">Don't have an account? <router-link to="/signup" style="text-decoration: none">Sign up</router-link></p>
-        <p class="small fw-medium">{{ message }}</p>
+        <p class="small fw-medium alert-message">{{ message }}</p>
       </div>
     </div>
   </div>
@@ -47,8 +47,8 @@ export default {
         // Save the token in local storage
         localStorage.setItem('token', response.data.token);
 
-        // Redirect the user to the profile page
-        this.$router.push('/profile');
+        // Redirect the user to the home page
+        this.$router.push('/');
       } catch (error) {
         // Handle errors and show an error message
         this.message = error.response && error.response.data.message
@@ -62,14 +62,14 @@ export default {
 </script>
 
 <style>
-  .login-form-container {
+  .signup-form-container {
     display:flex;
     justify-content: center;
     align-items: center;
     height: 100%;
   }
 
-  .login-form {
+  .signup-form {
     display:flex;
     flex-direction: column;
     justify-content: center;
@@ -80,22 +80,26 @@ export default {
     gap: 20px;
   }
 
-  .login-button {
+  .signup-button {
     width: 100%;
     background-color: #007769;
     font-weight: bold;
     border: none;
   }
 
-  .login-button:hover {
+  .signup-button:hover {
     background-color: #014a4a;
   }
 
-  .login-button:active {
+  .signup-button:active {
     background-color: #007769;
   }
 
-  .login-button:focus {
+  .signup-button:focus {
     background-color: #007769;
+  }
+
+  .alert-message {
+    color: red;
   }
 </style>

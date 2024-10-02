@@ -1,7 +1,7 @@
 <template>
   <div class="auth-container">
-    <div class="login-section">
-      <login-form />
+    <div class="signup-section">
+      <signup-form />
     </div>
     <div class="poster-section">
       <div class="poster">
@@ -18,38 +18,11 @@
 </template>
 
 <script>
-import LoginForm from "@/components/authentication/login-form.vue";
+import SignupForm from "@/components/authentication/signup-form.vue";
 
 export default {
-  name: "authentication",
-  components: {LoginForm},
-  data() {
-    return {
-      user: {}
-    };
-  },
-  methods: {
-    login() {
-      this.user = {
-        email: this.email,
-        password: this.password
-      };
-    },
-    signup() {
-      this.user = {
-        firstname: this.firstname,
-        lastname: this.lastname,
-        email: this.email,
-        username: this.username,
-        password: this.password
-      };
-    },
-    getUser() {
-      this.user = {
-        email: this.email
-      };
-    }
-  }
+  name: "signup",
+  components: { SignupForm }
 };
 </script>
 
@@ -68,7 +41,7 @@ html, body {
   align-items: center;
 }
 
-.login-section, .poster-section {
+.signup-section, .poster-section {
   width: 100%;
   height: 100%;
 }
