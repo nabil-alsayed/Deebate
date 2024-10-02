@@ -13,33 +13,34 @@
     </div>
   </template>
 <script>
-  import MenuBar from '@/components/MenuBar.vue'
-  import SearchBar from '@/components/SearchBar.vue'
-  import DebateList from '@/components/DebateList.vue'
-  import Leaderboard from '@/components/Leaderboard.vue'
-  
-  export default {
-    data() {
-      return {
-        debates: [],
-        searchQuery: ''
-      }
-    },
-    computed: {
-      filteredDebates() {
-        return this.debates.filter(debate =>
-          debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
-      }
-    },
-    methods: {
-      handleSearch(query) {
-        this.searchQuery = query
-      }
+
+import MenuBar from '@/components/MenuBar.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import DebateList from '@/components/DebateList.vue'
+import Leaderboard from '@/components/Leaderboard.vue'
+
+export default {
+  data() {
+    return {
+      debates: [],
+      searchQuery: ''
+    }
+  },
+  computed: {
+    filteredDebates() {
+      return this.debates.filter(debate =>
+        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
+    }
+  },
+  methods: {
+    handleSearch(query) {
+      this.searchQuery = query
     }
   }
-  </script>
-  
+}
+</script>
+
   <style>
   .page-layout {
     display: grid;
