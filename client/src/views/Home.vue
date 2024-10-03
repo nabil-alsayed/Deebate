@@ -4,8 +4,8 @@
         <MenuBar />
       </div>
       <div class="main-content">
-        <SearchBar :onSearch="handleSearch" />
-        <DebateList :debates="filteredDebates" />
+        <SearchBar @search-results="updateDebates" />
+        <DebateList :searchResults="searchResults" />
       </div>
       <div class="leaderboard">
         <Leaderboard />
@@ -20,10 +20,15 @@ import DebateList from '@/components/DebateList.vue'
 import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
+  components: {
+    SearchBar,
+    DebateList
+  },
   data() {
     return {
       debates: [],
-      searchQuery: ''
+      searchQuery: '',
+      searchResults: []
     }
   },
   computed: {
@@ -36,6 +41,10 @@ export default {
   methods: {
     handleSearch(query) {
       this.searchQuery = query
+    },
+
+    updateDebates(results) {
+      this.searchResults = results
     }
   }
 }
@@ -58,8 +67,8 @@ export default {
 }
 
 .main-content {
-  margin-left: 350px; 
-  margin-right: 350px; 
+  margin-left: 350px;
+  margin-right: 350px;
   padding: 20px;
   overflow-y: auto;
 }

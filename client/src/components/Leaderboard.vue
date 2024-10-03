@@ -1,15 +1,10 @@
 <template>
     <div class="leaderboard">
       <h2>Leaderboard</h2>
-      <ul>
-        <li v-for="(user, index) in users" :key="user._id" class="leaderboard-item">
-          <span class="rank">{{ index + 1 }}{{ getOrdinal(index + 1) }}</span>
-          <img :src="user.profileImg || placeholderImage" :alt="user.username" class="user-avatar">
-          <span class="username">{{ user.username }}</span>
-          <!-- Placeholder for future points field -->
-          <span class="points">Points: Coming soon</span>
-        </li>
-      </ul>
+      <div v-for="user in users" :key="user._id" class="leaderboard-item">
+      <img :src="user.profileImg" alt="User Avatar" class="user-avatar" />
+      <div class="username">{{ user.username }}</div>
+    </div>
     </div>
   </template>
 
@@ -20,33 +15,11 @@ export default {
   name: 'Leaderboard',
   data() {
     return {
-      users: [],
-      placeholderImage: 'path-to-placeholder-image.jpg' // Use a placeholder if no profileImg is available
+      users: []
     }
-  },
-  methods: {
-    // Fetch all users for the leaderboard
-    fetchUsers() {
-      Api.get('/v1/users')
-        .then(response => {
-          this.users = response.data // Assuming the API returns an array of users
-        })
-        .catch(error => {
-          console.error('Error fetching users:', error)
-        })
-    },
-    // Helper function to get ordinal suffix for ranking
-    getOrdinal(n) {
-      const s = ['th', 'st', 'nd', 'rd']
-      const v = n % 100
-      return (s[(v - 20) % 10] || s[v] || s[0])
-    }
-  },
-  mounted() {
-    // Fetch users data when component mounts
-    this.fetchUsers()
   }
 }
+
 </script>
 
   <style scoped>

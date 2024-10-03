@@ -1,7 +1,7 @@
 <template>
-    <div class="debate-list">
-      <h2>{{debates.length}} Debates</h2>
-      <ul v-if="debates.length">
+  <div class="debate-list">
+    <h2>{{ debates.length }} Debates</h2>
+    <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
           <div class="debate-header">
             <span class="debate-time">{{ getTimeLeft(debate.endTime) }}</span>
@@ -31,22 +31,33 @@
           </button>
         </li>
       </ul>
-      <p v-else>No debates found.</p>
-      <div v-if="error" class="error-message">
-        {{ error }}
-      </div>
+    <p v-else>No such debates.</p>
+    <div v-if="error" class="error-message">
+      {{ error }}
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
 import { Api } from '@/Api'
 
 export default {
   name: 'DebateList',
+  props: {
+    searchResults: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       debates: [],
       error: null
+    }
+  },
+  watch: {
+    searchResults(newResults) {
+      this.debates = newResults
     }
   },
   created() {
@@ -90,8 +101,8 @@ export default {
 }
 </script>
 
-  <style scoped>
-  .debate-list {
+<style scoped>
+.debate-list {
     margin-top: 20px;
   }
 
@@ -179,4 +190,4 @@ export default {
     color: red;
     margin-top: 20px;
   }
-  </style>
+</style>
