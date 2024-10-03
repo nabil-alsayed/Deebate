@@ -74,7 +74,12 @@ export default {
 <style scoped>
 .search-bar {
   position: relative;
-  width: 100%;
+  padding: 2px;
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
 }
 
 input {
@@ -87,12 +92,12 @@ input {
 
 button {
   padding: 10px 15px;
-  margin-left: 5px;
   border: none;
-  background-color: #007B7B;
+  background-color: #007769;
   color: white;
-  border-radius: 4px;
+  border-radius: 10%;
   cursor: pointer;
+  margin: 3px;
 }
 
 button:hover {
