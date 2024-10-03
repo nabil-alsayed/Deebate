@@ -1,45 +1,75 @@
 <template>
-  <div>
-    <b-container fluid>
-      <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
-      <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
-      <b-button class="btn_message" variant="primary" v-on:click="getDebates()" >Get Debates from Server</b-button>
-      <p class="col-xl-9">Debates from the server:<br/>
-        <ul>
-          <li v-for="debate in message" :key="debate._id">{{ debate.topic }}</li>
-        </ul>
-      </p>
-    </b-container>
-  </div>
-</template>
-
+    <div class="page-layout">
+      <div class="menu-bar">
+        <MenuBar />
+      </div>
+      <div class="main-content">
+        <SearchBar :onSearch="handleSearch" />
+        <DebateList :debates="filteredDebates" />
+      </div>
+      <div class="leaderboard">
+        <Leaderboard />
+      </div>
+    </div>
+  </template>
 <script>
-// @ is an alias to /src
-import { Api } from '@/Api'
+
+import MenuBar from '@/components/MenuBar.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import DebateList from '@/components/DebateList.vue'
+import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
-  name: 'home',
   data() {
     return {
-      message: []
+      debates: [],
+      searchQuery: ''
+    }
+  },
+  computed: {
+    filteredDebates() {
+      return this.debates.filter(debate =>
+        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
-    getDebates() {
-      Api.get('/v1/debates')
-        .then(response => {
-          this.message = response.data.debates
-        })
-        .catch(error => {
-          this.message = error
-        })
+    handleSearch(query) {
+      this.searchQuery = query
     }
   }
 }
 </script>
 
-<style>
-.btn_message {
-  margin-bottom: 1em;
+  <style>
+.page-layout {
+  grid-template-columns: 1fr 3fr 1fr;
+  grid-gap: px;
+  background-color: #f0f0f0;
+}
+
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 18vw;
+  height: 100vw;
+  padding: 10px;
+}
+
+.main-content {
+  margin-left: 350px; 
+  margin-right: 350px; 
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.leaderboard {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 18vw;
+  height: 100vw;
+  padding: 20px;
 }
 </style>
