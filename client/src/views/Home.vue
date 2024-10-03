@@ -1,45 +1,84 @@
 <template>
-  <div>
-    <b-container fluid>
-      <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
-      <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
-      <div style="display: flex; flex-direction: row; gap: 10px; justify-content: center">
-        <b-button class="btn_message" style="background-color: red; border: none" variant="primary" href="/login" >Authentication</b-button>
-        <b-button class="btn_message" variant="primary" v-on:click="getMessage()" >Get Message from Server</b-button>
+    <div class="page-layout">
+      <div class="menu-bar">
+        <MenuBar />
       </div>
-      <p class="col-xl-9">Message from the server:<br/>
-      {{ message }}</p>
-    </b-container>
-  </div>
-</template>
-
+      <div class="main-content">
+        <SearchBar @search-results="updateDebates" />
+        <DebateList :searchResults="searchResults" />
+      </div>
+      <div class="leaderboard">
+        <Leaderboard />
+      </div>
+    </div>
+  </template>
 <script>
-// @ is an alias to /src
-import { Api } from '@/Api'
+
+import MenuBar from '@/components/MenuBar.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import DebateList from '@/components/DebateList.vue'
+import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
-  name: 'home',
+  components: {
+    SearchBar,
+    DebateList
+  },
   data() {
     return {
-      message: 'none'
+      debates: [],
+      searchQuery: '',
+      searchResults: []
+    }
+  },
+  computed: {
+    filteredDebates() {
+      return this.debates.filter(debate =>
+        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
-    getMessage() {
-      Api.get('/')
-        .then(response => {
-          this.message = response.data.message
-        })
-        .catch(error => {
-          this.message = error
-        })
+    handleSearch(query) {
+      this.searchQuery = query
+    },
+
+    updateDebates(results) {
+      this.searchResults = results
     }
   }
 }
 </script>
 
-<style scoped>
-.btn_message {
-  margin-bottom: 1em;
+  <style>
+.page-layout {
+  grid-template-columns: 1fr 3fr 1fr;
+  grid-gap: px;
+  background-color: #f0f0f0;
+}
+
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 18vw;
+  height: 100vw;
+  padding: 10px;
+}
+
+.main-content {
+  margin-left: 350px;
+  margin-right: 350px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.leaderboard {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 18vw;
+  height: 100vw;
+  padding: 20px;
 }
 </style>
