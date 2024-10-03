@@ -1,29 +1,29 @@
 <template>
   <div class="edit-profile">
     <div class="profile-header">
-      <h2 class="first-name">First Name</h2>
-      <p class="username muted">@username</p>
+      <h2 class="user-name">{{ user.firstName }}</h2>
+      <p class="username">@{{ user.username }}</p>
     </div>
     <form @submit.prevent="saveProfile">
       <div class="field">
         <label>First Name</label>
-        <input type="text" v-model="firstName" />
+        <input type="text" v-model="editedUser.firstName" />
       </div>
       <div class="field">
         <label>Last Name</label>
-        <input type="text" v-model="lastName" />
+        <input type="text" v-model="editedUser.lastName" />
       </div>
       <div class="field">
         <label>Username</label>
-        <input type="text" v-model="username" />
+        <input type="text" v-model="editedUser.username" />
       </div>
       <div class="field">
         <label>Email</label>
-        <input type="email" v-model="email" />
+        <input type="email" v-model="editedUser.email" />
       </div>
-      <div class="field">
+      <div class="field password-field">
         <label>Password</label>
-        <input type="password" v-model="password" />
+        <input type="password" v-model="editedUser.password" />
       </div>
       <button type="submit" class="save-button">Save</button>
     </form>
@@ -31,8 +31,6 @@
 </template>
 
 <script>
-import { Api } from '@/Api'
-
 export default {
   data() {
     return {
@@ -41,62 +39,86 @@ export default {
         lastName: 'Doe',
         username: 'john_doe',
         email: 'john@example.com',
-        password: 'password123',
-        avatarUrl: require('@/assets/avatars/user-avatar.svg')
-      }
-    }
-  },
-  methods: {
-    getUserProfile() {
-      // TODO
-      this.user = {
+        password: ''
+      },
+      editedUser: {
         firstName: 'John',
         lastName: 'Doe',
         username: 'john_doe',
         email: 'john@example.com',
-        password: '',
-        avatarUrl: require('@/assets/avatars/user-avatar.png')
+        password: ''
       }
-    },
+    }
+  },
+  methods: {
     saveProfile() {
-      // TODO
-      console.log('Saving mock profile:', this.user)
+      this.user = { ...this.editedUser }
+      console.log('Saving profile:', this.user)
       alert('Profile updated successfully!')
     }
+  },
+  created() {
+    this.editedUser = { ...this.user }
   }
 }
 </script>
 
 <style scoped>
 .edit-profile {
-  background-color: #e7e7e7; /* Light Muted */
+  background-color: #ffffff;
   padding: 20px;
-  border-radius: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.profile-header {
+  margin-bottom: 20px;
+}
+
+.user-name {
+  font-weight: bold;
+  margin: 0;
+}
+
+.username {
+  font-weight: bold;
+  color: #a5a4a4;
+  margin: 0;
 }
 
 .field {
   margin-bottom: 15px;
 }
 
+.password-field {
+  margin-bottom: 25px;
+}
+
 label {
   display: block;
   margin-bottom: 5px;
+  color: #a5a4a4;
+  font-weight: bold;
+  text-align: left;
 }
 
 input {
   width: 100%;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
   border: none;
-  background-color: white;
+  background-color: #e7e7e7;
+  font-weight: bold;
 }
 
 .save-button {
+  width: 100%;
   background-color: #007769;
   color: white;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
+  font-weight: bold;
 }
 </style>
