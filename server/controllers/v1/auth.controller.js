@@ -1,9 +1,7 @@
 /* This controller is for managing the Authentication Endpoints */
 
 const User = require('../../models/user')
-const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const utils = require('../../utils/utils');
 
 // Register a user
@@ -26,7 +24,7 @@ const signup = async (req, res) => {
     const user = await User.findOne({ $or: [{ emailAddress }, { username }] });
 
     if(user){
-        return res.status(400).json({ message: `${role} with same email or username already exist.`})
+        return res.status(400).json({ message: "A user with same email or username already exist."})
     }
   
     // Hash the password and salt round it to 10
@@ -90,13 +88,13 @@ const signup = async (req, res) => {
       }
   
       // Generate a token and set cookie
-      utils.generateTokenAndSetCookie(res, user);
+    const token = utils.generateTokenAndSetCookie(res, user);  // Ensure you return the token here
 
       user.lastLogin = Date.now();
       await user.save();
   
       // Return a success message and token to login
-      res.status(201).json({ message: 'Login successful', user: {...user._doc, password: null} });
+      res.status(201).json({ message: 'Login successful', token, user: {...user._doc, password: null} });
     } catch (error) {
       console.error('Error during login:', error); // Log error to help identify the issue
       res.status(500).json({ message: 'Internal Server Error', error: error.message });

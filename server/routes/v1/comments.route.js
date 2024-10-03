@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const commentController = require('../../controllers/v1/comment.controller');
 const methodOverride = require('method-override');
+const {authenticateRole} = require("../../utils/utils");
 
 // Apply method-override of a specific comment
-router.use('/:commentId', methodOverride('X-HTTP-Method-Override'));
+router.use('/:commentId', methodOverride('X-HTTP-Method-Override'), authenticateRole("user"));
 
 // Comment routes (nested under arguments)
-router.post('/', commentController.addComment);  
+router.post('/', authenticateRole("user"), commentController.addComment);
 router.get('/', commentController.getCommentsForArgument);
 router.get('/:commentId', commentController.getCommentById);  
-router.delete('/:commentId', commentController.deleteComment); 
-router.delete('/', commentController.deleteAllComments); 
-router.put('/:commentId', commentController.updateComment);
-router.patch('/:commentId', commentController.updateComment);
+router.delete('/:commentId', authenticateRole("user"), commentController.deleteComment);
+router.delete('/', authenticateRole("user"), commentController.deleteAllComments);
+router.put('/:commentId', authenticateRole("user"), commentController.updateComment);
+router.patch('/:commentId', authenticateRole("user"), commentController.updateComment);
 
 // Like routes
-router.post('/:commentId/like', commentController.addLikeToComment); 
-router.delete('/:commentId/like', commentController.removeLikeFromComment); 
+router.post('/:commentId/like', authenticateRole("user"), commentController.addLikeToComment);
+router.delete('/:commentId/like', authenticateRole("user"), commentController.removeLikeFromComment);
 
 module.exports = router;

@@ -1,5 +1,3 @@
-/* This controller is for managing the Comment Endpoints */
-
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
@@ -7,14 +5,14 @@ const Comment = require('../../models/comment');
 // Add a comment to a specific argument
 const addComment = async (req, res) => {
   const { debateId, argumentId } = req.params;
-  const { content, owner } = req.body;
+  const { content } = req.body;
+  const { id: userId } = req.user;
 
-  if (!content || !owner) {
+  if (!content) {
     return res.status(400).json({ error: 'Missing Required Fields' });
   }
 
   try {
-
     const debate = await Debate.findById(debateId);
     if (!debate) {
       return res.status(404).json({ error: 'Debate not found' });
@@ -25,7 +23,8 @@ const addComment = async (req, res) => {
       return res.status(404).json({ error: 'Argument not found' });
     }
 
-    const newComment = new Comment({ content, owner: owner, argument: argumentId });
+    // Create and save the comment with the authenticated user's ID as the owner
+    const newComment = new Comment({ content, owner: userId, argument: argumentId });
     const savedComment = await newComment.save();
 
     // Add the comment to the argument's comments array
@@ -70,10 +69,17 @@ const getCommentById = async (req, res) => {
 // Delete a specific comment by ID
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
+  const { id: userId } = req.user;
+
   try {
     const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    // Check if the user is the owner of the comment
+    if (comment.owner.toString() !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to delete this comment' });
     }
 
     // Remove the comment from the argument's comments array
@@ -90,87 +96,75 @@ const deleteComment = async (req, res) => {
 // Delete all comments of a specific argument
 const deleteAllComments = async (req, res) => {
   const { argumentId } = req.params;
+  const { id: userId } = req.user;
+
   try {
     const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(404).json({ error: 'Argument not found' });
     }
 
+    // Check if the user is the owner of the argument
+    if (argument.owner.toString() !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to delete comments for this argument' });
+    }
+
     // Delete all comments
     await Comment.deleteMany({ _id: { $in: argument.comments } });
 
-    // Remove all comments from the argument's comments array
+    // Clear the comments array in the argument
     argument.comments = [];
     await argument.save();
 
     res.status(204).json({ message: 'All comments deleted' });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
-
+// Update a specific comment
 const updateComment = async (req, res) => {
- // Get the user's id and updates from the request params and body
- const { debateId, argumentId, commentId } = req.params;
- const updates = req.body;
+  const { commentId } = req.params;
+  const updates = req.body;
+  const { id: userId } = req.user;
 
- // List of allowed attributes to update
- const allowedAttributes = [
-   'content'
- ];
+  const allowedAttributes = ['content'];
 
- // Check every requested update if it is valid
- const isValidRequest = Object.keys(updates).every((key) =>
-   allowedAttributes.includes(key)
- );
+  const isValidRequest = Object.keys(updates).every((key) => allowedAttributes.includes(key));
 
- if (!isValidRequest) {
-   return res
-     .status(400)
-     .json({
-       message:
-         'Invalid update request. One or more attributes are not allowed.',
-     });
- }
+  if (!isValidRequest) {
+    return res.status(400).json({ message: 'Invalid update request. One or more attributes are not allowed.' });
+  }
 
- try {
-   // find the comment
-   const comment = await Comment.findById(commentId)
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment was not found.' });
+    }
 
-   // check if the comment exist
-   if (!comment) {
-     return res.status(404).json({ message: 'Comment was not found.' });
-   }
-   // find the user and update the informations as per the request
-   const updatedComment = await Comment.findByIdAndUpdate(commentId, updates, {
-     new: true,
-   });
+    // Check if the user is the owner of the comment
+    if (comment.owner.toString() !== userId) {
+      return res.status(403).json({ message: 'You are not authorized to update this comment.' });
+    }
 
-   res
-     .status(200)
-     .json({
-       message: "Comment Updated Successfully",
-       updatedComment,
-     });
- } catch (error) {
-   res
-     .status(500)
-     .json({ message: 'Internal Server Error.', error: error.message });
- }
+    // Update only allowed fields
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, updates, { new: true });
+
+    res.status(200).json({ message: "Comment updated successfully", updatedComment });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error.', error: error.message });
+  }
 };
 
 // Add like to a comment
 const addLikeToComment = async (req, res) => {
   const { commentId } = req.params;
-  const { userId } = req.body;
 
   try {
     const comment = await Comment.findByIdAndUpdate(
-      commentId,
-      { $addToSet: { likes: userId } },
-      { new: true }
+        commentId,
+        { $addToSet: { likes: req.user._id } },
+        { new: true }
     );
     res.status(200).json(comment);
   } catch (error) {
@@ -181,13 +175,12 @@ const addLikeToComment = async (req, res) => {
 // Remove like from a comment
 const removeLikeFromComment = async (req, res) => {
   const { commentId } = req.params;
-  const { userId } = req.body;
 
   try {
     const comment = await Comment.findByIdAndUpdate(
-      commentId,
-      { $pull: { likes: userId } },
-      { new: true }
+        commentId,
+        { $pull: { likes: req.user._id } },
+        { new: true }
     );
     res.status(200).json(comment);
   } catch (error) {
