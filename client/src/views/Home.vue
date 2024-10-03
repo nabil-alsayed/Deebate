@@ -1,9 +1,35 @@
 <template>
-  <div class="page-layout">
-    <!-- Main Content (Debates) -->
-    <div class="main-content">
-      <EditProfile v-if="currentView === 'profile'" />
-    </div>
+  <div>
+    <b-container fluid>
+      <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
+      <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          justify-content: center;
+        "
+      >
+        <b-button
+          class="btn_message"
+          style="background-color: red; border: none"
+          variant="primary"
+          href="/login"
+          >Authentication</b-button
+        >
+        <b-button
+          class="btn_message"
+          variant="primary"
+          v-on:click="getMessage()"
+          >Get Message from Server</b-button
+        >
+      </div>
+      <p class="col-xl-9">
+        Message from the server:<br />
+        {{ message }}
+      </p>
+    </b-container>
   </div>
 </template>
 
@@ -23,13 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.page-layout {
-  display: grid;
-  grid-template-columns: 1fr 3fr 1.5fr;
-  grid-gap: 20px;
-}
-
-.main-content {
-  padding: 20px;
+.btn_message {
+  margin-bottom: 1em;
 }
 </style>
