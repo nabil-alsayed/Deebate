@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import SignupForm from "@/components/authentication/signup-form.vue";
+import SignupForm from "@/components/authentication/SignupForm.vue";
 
 export default {
   name: "signup",

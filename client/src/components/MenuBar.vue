@@ -1,6 +1,6 @@
 <template>
-  <div class="menu-bar">
-    <div class="logo">
+  <div class="menu-bar p-3 text-white justify-content-center h-100 w-auto flex flex-column rounded-4">
+    <div class="logo w-100">
       <img :src="logoSrc" alt="Deebate Logo" />
       <h1>Deebate</h1>
       <p>Stand for your belief!</p>
@@ -28,11 +28,13 @@
 </template>
 
 <script>
+import logoSrc from '/logo/deebate-logo-light.png';
+
 export default {
-  name: 'SideBar',
+  name: 'MenuBar',
   data() {
     return {
-      logoSrc: require('@/assets/DeebateLogo.png')
+      logoSrc
     };
   },
   methods: {
@@ -46,16 +48,10 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .menu-bar {
   background-color: #007769;
-  color: white;
-  height: 100vh;
-  width: 250px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 30px;
 }
 
 .logo {
@@ -64,7 +60,6 @@ export default {
 }
 
 .logo img {
-  max-width: 100%;
   height: auto;
   width: 85px;
 }

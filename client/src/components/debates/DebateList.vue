@@ -3,32 +3,17 @@
     <h2>{{ debates.length }} Debates</h2>
     <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
-          <div class="debate-header">
-            <span class="debate-time">{{ getTimeLeft(debate.endTime) }}</span>
-            <span :class="['debate-status', debate.status]">{{ debate.status }}</span>
-          </div>
-          <h3>{{ debate.topic }}</h3>
-          <div class="debate-category">{{ debate.category }}</div>
-          <div class="debate-info">
-            <span>Participants: {{ debate.participants.length }} / {{ debate.maxParticipants }}</span>
-          </div>
-          <div class="debate-arguments">
-            Arguments: {{ debate.arguments.length }}
-          </div>
-          <button
-            v-if="debate.status === 'open' && debate.participants.length < debate.maxParticipants"
-            class="debate-btn"
-            @click="joinDebate(debate._id, debate.creator)"
-          >
-            Press to debate against {{ debate.creator }}
-          </button>
-          <button
-            v-else-if="debate.status === 'open' && debate.participants.length === debate.maxParticipants"
-            class="follow-btn"
-            @click="followDebate(debate._id)"
-          >
-            Follow the debate
-          </button>
+          <debate-item
+            :key="debate._id"
+            :topic="debate.topic"
+            :endTime="debate.endTime"
+            :status="debate.status"
+            :category="debate.category"
+            :participants="debate.participants"
+            :maxParticipants="debate.maxParticipants"
+            :arguments="debate.arguments"
+            :creator="debate.creator"
+          />
         </li>
       </ul>
     <p v-else>No such debates.</p>
@@ -40,9 +25,11 @@
 
 <script>
 import { Api } from '@/Api.js'
+import DebateItem from "@/components/debates/DebateItem.vue";
 
 export default {
   name: 'DebateList',
+  components: {DebateItem},
   props: {
     searchResults: {
       type: Array,
@@ -67,12 +54,13 @@ export default {
     getDebates() {
       Api.get('/v1/debates')
         .then(response => {
-          this.debates = response.data.debates
+          console.log(response.data.debates);
+          this.debates = response.data.debates;
         })
         .catch(error => {
-          console.error(error)
-          this.error = 'An error occurred while fetching debates. Please try again later.'
-        })
+          console.error(error);
+          this.error = 'An error occurred while fetching debates. Please try again later.';
+        });
     },
     getTimeLeft(endTime) {
       const now = new Date()
@@ -102,9 +90,16 @@ export default {
 </script>
 
 <style scoped>
-.debate-list {
-    margin-top: 20px;
-  }
+
+ul, li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+  .debate-list {
+      margin-top: 20px;
+      width: 100%;
+    }
 
   .debate-item {
     background-color: white;

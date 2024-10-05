@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="bg-black">
+  <div class="flex flex-grow-1">
     <h1>Filters</h1>
   </div>
 </template>

@@ -1,45 +1,78 @@
 <template>
-  <div>
-    <b-container fluid>
-      <h1 class="display-5 fw-bold">DIT342 Frontend</h1>
-      <p class="fs-4">Welcome to your DIT342 Frontend Vue.js App</p>
-      <div style="display: flex; flex-direction: row; gap: 10px; justify-content: center">
-        <b-button class="btn_message" style="background-color: red; border: none" variant="primary" href="/login" >Authentication</b-button>
-        <b-button class="btn_message" variant="primary" v-on:click="getMessage()" >Get Message from Server</b-button>
+  <div class="d-flex w-100 column-gap-2">
+    <!--    MENU -->
+    <div class="h-100" style="width: 250px">
+      <MenuBar />
+    </div>
+    <!-- MAIN CONTENT -->
+    <div class="main-content flex-grow-1 column-gap-2">
+      <!-- SEARCH -->
+      <SearchBar @search-results="updateDebates" />
+      <!-- DEBATE LIST AND WIDGETS -->
+      <div class="d-flex">
+        <!-- DEBATE LIST -->
+          <div class="w-100">
+            <DebateForm />
+            <DebateList :searchResults="searchResults" />
+          </div>
+        <!-- WIDGETS -->
+        <div style="width: 350px">
+          <Widgets />
+        </div>
       </div>
-      <p class="col-xl-9">Message from the server:<br/>
-      {{ message }}</p>
-    </b-container>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import { Api } from '@/Api'
+
+import MenuBar from '@/components/MenuBar.vue'
+import SearchBar from '@/components/top-bar/SearchBar.vue'
+import DebateList from '@/components/debates/DebateList.vue'
+import Widgets from "@/components/Widgets.vue";
+import DebateForm from "@/components/debates/DebateForm.vue";
 
 export default {
-  name: 'home',
+  name: 'Home',
+  components: {
+    DebateForm,
+    Widgets,
+    SearchBar,
+    DebateList,
+    MenuBar,
+  },
   data() {
     return {
-      message: 'none'
+      debates: [],
+      searchQuery: '',
+      searchResults: [],
+    }
+  },
+  computed: {
+    filteredDebates() {
+      return this.debates.filter(debate =>
+        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
-    getMessage() {
-      Api.get('/')
-        .then(response => {
-          this.message = response.data.message
-        })
-        .catch(error => {
-          this.message = error
-        })
+    handleSearch(query) {
+      this.searchQuery = query
+    },
+
+    updateDebates(results) {
+      this.searchResults = results
     }
   }
 }
 </script>
 
-<style scoped>
-.btn_message {
-  margin-bottom: 1em;
-}
+<style>
+
+ .main-content {
+   display: flex;
+   flex-direction: column;
+   overflow-y: auto;
+ }
+
 </style>

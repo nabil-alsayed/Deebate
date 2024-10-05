@@ -74,13 +74,12 @@ export default {
 <style scoped>
 .search-bar {
   position: relative;
-  padding: 2px;
-  flex: 1;
+  width: 100%;
 }
 
 .search-input-group {
   display: flex;
-  max-width: 650px;
+  width: 100%;
   align-items: center;
 }
 

@@ -1,6 +1,6 @@
 <script setup>
 
-import Leaderboard from "@/components/Leaderboard.vue";
+import Leaderboard from "@/components/Filters.vue";
 </script>
 
 <template>

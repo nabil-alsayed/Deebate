@@ -8,7 +8,7 @@
     <!-- Main content area -->
     <div class="flex-grow-1 p-3">
       <top-bar />
-      <router-view /> <!-- This is where authenticated routes will be rendered -->
+      <router-view />
     </div>
   </div>
 </template>

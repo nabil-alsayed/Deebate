@@ -1,12 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from './views/Home.vue'
+// Protect authentication routes with a meta field
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
-  { path: '/login', name: 'login', component: () => import('./views/Login.vue') },
-  { path: '/signup', name: 'signup', component: () => import('./views/Signup.vue') },
-  { path: '/profile', name: 'profile', component: () => import('./views/Profile.vue') },
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('./views/Home.vue'),
+    requireAuth: true
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('./views/Login.vue'),
+    requireAuth: true
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: () => import('./views/Signup.vue'),
+    requireAuth: true
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('./views/Profile.vue'),
+    requireAuth: true
+  }
 ]
 
 const router = createRouter({
