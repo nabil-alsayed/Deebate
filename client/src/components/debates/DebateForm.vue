@@ -1,11 +1,11 @@
-<script setup>
-
+<script>
+export default {
+name: "DebateForm"
+}
 </script>
 
 <template>
-  <div>
-    <Leaderboard />
-  </div>
+  $END$
 </template>
 
 <style scoped>

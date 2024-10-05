@@ -49,7 +49,7 @@ const signup = async (req, res) => {
   
       // Return a success message and the new registeration record of the user
       res.status(201).json({ 
-        message: `${role} registered successfully`, 
+        message: `User registered successfully`,
         user: {...newUser._doc, password: null},
        });
     } catch (error) {

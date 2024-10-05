@@ -82,7 +82,7 @@ const getDebates = async (req, res, next) => {
       filter.status = status;
     }
 
-    let query = Debate.find(filter);
+    let query = Debate.find(filter).populate('owner', 'username');
 
     // If sort is provided, apply sorting by the debate end time
     if (sort) {

@@ -27,34 +27,35 @@ const getAllUsers = async (req, res) => {
 // Get a specific user
 
 const getUser = async (req, res) => {
+  const { userId } = req.params;
 
   try {
-    // Check if the id provided is valid mongoose id
+    // Check if the ID provided is a valid mongoose ObjectId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       console.log('Invalid ID format');
       return res
-        .status(400)
-        .json({ message: `ID format provided is invalid: ${userId}` });
+          .status(400)
+          .json({ message: `ID format provided is invalid: ${userId}` });
     }
 
-    // Find the user by its ID
+    // Find the user by ID
     const user = await User.findById(userId);
 
     // If the user is not found, return a 404 response
     if (!user) {
       return res
-        .status(404)
-        .json({ message: `User with ID: ${userId} cannot be found.` });
+          .status(404)
+          .json({ message: `User with ID: ${userId} cannot be found.` });
     }
 
     // Return a 200 response with the user data
     return res
-      .status(200)
-      .json({ message: `Successfully found user with ID ${userId}`, user });
+        .status(200)
+        .json({ message: `Successfully found user with ID ${userId}`, user });
   } catch (error) {
     res
-      .status(500)
-      .json({ message: 'Internal Server Error.', error: error.message });
+        .status(500)
+        .json({ message: 'Internal Server Error.', error: error.message });
   }
 };
 
