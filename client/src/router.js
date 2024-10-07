@@ -7,31 +7,48 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('./views/Home.vue'),
-    requireAuth: true
+    meta: { requireAuth: true }
   },
   {
     path: '/login',
     name: 'login',
     component: () => import('./views/Login.vue'),
-    requireAuth: true
   },
   {
     path: '/signup',
     name: 'signup',
     component: () => import('./views/Signup.vue'),
-    requireAuth: true
   },
   {
     path: '/profile',
     name: 'profile',
     component: () => import('./views/Profile.vue'),
-    requireAuth: true
-  }
+    meta: { requireAuth: true }
+    }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+// Add a navigation guard to protect routes that require authentication
+router.beforeEach((to, from, next) => {
+  const isAuth = localStorage.getItem('token');
+
+  if (to.meta.requireAuth && !isAuth) {
+    next('/login');  // Redirect to login if not authenticated
+  } else if ((to.name === 'login' || to.name === 'signup') && isAuth) {
+    // If the user is authenticated and trying to access login or signup, redirect to home
+    next('/');
+  } else {
+    next();
+  }
+
+  if (to.meta.guardAuth && isAuth) {
+    next('/'); // Redirect to home if authenticated
+  }
+});
+
 
 export default router

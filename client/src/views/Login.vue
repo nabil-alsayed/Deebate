@@ -93,7 +93,7 @@ html, body {
 }
 
 .logo {
-  width: 100px;
+  max-width: 84px;
 }
 
 .slogan {

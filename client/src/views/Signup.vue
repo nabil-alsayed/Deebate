@@ -65,7 +65,7 @@ html, body {
 }
 
 .logo {
-  width: 84px;
+  max-width: 84px;
 }
 
 .slogan {

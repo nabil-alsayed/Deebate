@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="d-flex vh-100 vw-100 p-3">
+  <div id="app" class="d-flex vh-100 vw-100 bg-white">
     <!-- Conditionally render either the authenticated layout or the auth layout -->
     <router-view v-if="isAuth" :layout="AuthenticatedLayout" />
     <router-view v-else :layout="AuthLayout" />
