@@ -1,9 +1,7 @@
 <template>
-  <div class="d-flex w-100 column-gap-2">
+  <div class="d-flex w-100 vh-100 column-gap-2 p-3">
     <!--    MENU -->
-    <div class="h-100" style="width: 250px">
-      <MenuBar />
-    </div>
+    <MenuBar />
     <!-- MAIN CONTENT -->
     <div class="main-content flex-grow-1 column-gap-2">
       <!-- SEARCH -->
