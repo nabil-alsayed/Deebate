@@ -3,17 +3,7 @@
     <h2>{{ debates.length }} Debates</h2>
     <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
-          <debate-item
-            :_id="debate._id"
-            :topic="debate.topic"
-            :endTime="debate.endTime"
-            :status="debate.status"
-            :category="debate.category"
-            :participants="debate.participants"
-            :maxParticipants="debate.maxParticipants"
-            :arguments="debate.arguments"
-            :creator="debate.creator"
-          />
+          <debate-item :debate="debate"/>
         </li>
       </ul>
     <p v-else>No such debates.</p>
@@ -81,10 +71,6 @@ export default {
     joinDebate(debateId, opponent) {
       console.log(`Joining debate with ID: ${debateId} against ${opponent}`)
       // Implement API call to join the debate
-    },
-    followDebate(debateId) {
-      console.log(`Following debate with ID: ${debateId}`)
-      // Implement API call to follow the debate
     }
   }
 }
@@ -108,78 +94,6 @@ ul, li {
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
-  }
-
-  .debate-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .debate-time {
-    color: #888;
-  }
-
-  .debate-status {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-  }
-
-  .debate-status.open {
-    background-color: #4CAF50;
-    color: white;
-  }
-
-  .debate-status.closed {
-    background-color: #F44336;
-    color: white;
-  }
-
-  .debate-status.locked {
-    background-color: #FFC107;
-    color: black;
-  }
-
-  .debate-category {
-    display: inline-block;
-    background-color: #007769;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 1em;
-    margin-bottom: 10px;
-  }
-
-  .debate-info, .debate-arguments {
-    margin-bottom: 10px;
-  }
-
-  .debate-btn, .follow-btn {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .debate-btn {
-    background-color: #007769;
-    color: white;
-  }
-
-  .follow-btn {
-    background-color: #FFC107;
-    color: black;
-  }
-
-  .debate-btn:hover {
-    background-color: #005a5a;
-  }
-
-  .follow-btn:hover {
-    background-color: #FFA000;
   }
 
   .error-message {

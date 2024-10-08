@@ -7,8 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import AuthLayout from "@/layouts/AuthLayout.vue";
+
 
 // Check if the user is authenticated by the presence of the token
 const isAuth = computed(() => {
@@ -21,9 +20,9 @@ const isAuth = computed(() => {
 });
 </script>
 
-<style scoped>
+<style>
 #app {
-  font-family: 'Inter', Rubik, sans-serif;
+  font-family: Inter, Rubik, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
