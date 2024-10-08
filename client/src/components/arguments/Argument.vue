@@ -1,15 +1,20 @@
 <template>
-  <div class="argument-item p-3 mb-2 rounded shadow-sm">
+  <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm">
     <!-- Display the argument content -->
-    <div class="argument-item p-3 mb-2 rounded shadow-sm">
-      <h5>{{ this.content }}</h5>
+    <div class="d-flex flex-row align-items-center column-gap-1">
+      <img :src="this.owner.avatar || '../../../assets/avatars/avatar.png'"
+           alt="User Avatar"
+           class="rounded-circle"
+           style="width: 48px;"
+      >
+      <h5 class="fw-bold">{{ this.owner }}</h5>
     </div>
-
-    <p><strong>Owner:</strong> {{ this.owner }}</p>
-    <p v-if="this.comments && this.comments.length">
-      <strong>Comments:</strong> {{ this.comments.length }}
-    </p>
-    <p><strong>Votes:</strong> {{ this.votes || 0 }}</p>
+    <div class="p-2 fs-5">
+      <h6>{{ this.content }}</h6>
+    </div>
+    <div class="d-flex flex-row column-gap-2 align-items-center">
+      <i class="bi bi-chat-fill text-muted"></i> <p class="fw-bold mb-0" style="font-size: 14px">{{ this.comments.length }}</p>
+    </div>
   </div>
 </template>
 
