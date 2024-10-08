@@ -9,23 +9,23 @@
 
     <!-- Navigation Section -->
     <nav class="flex-grow-1 flex-column py-5 justify-content-center">
-      <ul class="nav flex-column">
+      <ul class="nav flex-column text-start">
         <li class="nav-item mb-2">
-          <router-link to="/" class="nav-link text-white" active-class="active">
-            <i class="fa fa-house"></i> Home
+          <router-link to="/" class="nav-link text-white px-4" active-class="active">
+            <i class="bi bi-house-fill"></i> <span>Home</span>
           </router-link>
         </li>
         <li class="nav-item mb-2">
-          <router-link to="/profile" class="nav-link text-white" active-class="active">
-            <i class="fa-solid fa-user"></i> Profile
+          <router-link to="/profile" class="nav-link text-white px-4" active-class="active">
+            <i class="bi-person-fill"></i> Profile
           </router-link>
         </li>
       </ul>
     </nav>
 
     <!-- Logout Button -->
-    <button class="logout-btn mt-auto" @click="logout">
-      <i class="icon-logout"></i> Log out
+    <button class="logout-btn mt-auto" style="font-weight: 800" @click="logout">
+      Log out
     </button>
   </div>
 </template>
@@ -33,6 +33,7 @@
 
 <script>
 import logoSrc from '/logo/deebate-logo-light.png';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default {
   name: 'MenuBar',
@@ -66,6 +67,7 @@ export default {
 h1 {
   margin-top: 10px;
   font-size: 1.5em;
+  font-weight: 800;
 }
 
 p {
@@ -76,6 +78,7 @@ p {
 nav ul {
   list-style-type: none;
   padding: 0;
+  font-weight: 600;
 }
 
 .nav-link {
@@ -86,9 +89,15 @@ nav ul {
   transition: background-color 0.3s ease;
 }
 
-.active,
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+/* Ensures the active link is styled correctly */
+.nav-link.active {
+  background-color: #16B771;
+  color: white;
+}
+
+/* Hover styling, only applied when the link is not active */
+.nav-link:hover:not(.active) {
+  background-color: rgba(22, 183, 113, 0.17);
 }
 
 .logout-btn {

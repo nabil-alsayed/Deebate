@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Api } from './Api';
 
 export const getLoggedInUser = async () => {
   try {
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    const token = localStorage.getItem('token');
 
     if (!token) {
       throw new Error('Token not found');
