@@ -1,19 +1,21 @@
 <template>
-    <div class="page-layout">
-      <div class="menu-bar">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 menu-bar">
         <MenuBar />
       </div>
-      <div class="main-content">
+      <div class="col-md-6 main-content">
         <SearchBar @search-results="updateDebates" />
         <DebateList :searchResults="searchResults" />
       </div>
-      <div class="leaderboard">
+      <div class="col-md-3 leaderboard">
         <Leaderboard />
       </div>
     </div>
-  </template>
-<script>
+  </div>
+</template>
 
+<script>
 import MenuBar from '@/components/MenuBar.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import DebateList from '@/components/DebateList.vue'
@@ -21,8 +23,10 @@ import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
   components: {
+    MenuBar,
     SearchBar,
-    DebateList
+    DebateList,
+    Leaderboard
   },
   data() {
     return {
@@ -42,7 +46,6 @@ export default {
     handleSearch(query) {
       this.searchQuery = query
     },
-
     updateDebates(results) {
       this.searchResults = results
     }
@@ -50,35 +53,58 @@ export default {
 }
 </script>
 
-  <style>
-.page-layout {
-  grid-template-columns: 1fr 3fr 1fr;
-  grid-gap: px;
+<style>
+.container-fluid {
   background-color: #f0f0f0;
 }
 
 .menu-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 18vw;
-  height: 100vw;
   padding: 10px;
 }
 
 .main-content {
-  margin-left: 350px;
-  margin-right: 350px;
   padding: 20px;
   overflow-y: auto;
 }
 
 .leaderboard {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 18vw;
-  height: 100vw;
   padding: 20px;
+}
+
+/* Custom styles */
+.custom-header {
+  font-size: 24px;
+  color: #333;
+}
+
+.custom-paragraph {
+  line-height: 1.6;
+  color: #666;
+}
+
+#search-container {
+  margin-bottom: 20px;
+}
+
+#debate-list {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.highlight {
+  background-color: yellow;
+}
+
+@media (max-width: 767px) {
+  .menu-bar, .leaderboard {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 </style>
