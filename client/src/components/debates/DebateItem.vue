@@ -42,7 +42,7 @@
 
 
 <script>
-import { Api } from "@/Api.js";
+import { Api } from "@/api/v1/Api.js";
 
 export default {
   name: 'DebateItem',

@@ -43,11 +43,6 @@ export default {
         username: this.username,
         password: this.password
       };
-    },
-    getUser() {
-      this.user = {
-        email: this.email
-      };
     }
   }
 };

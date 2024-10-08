@@ -5,7 +5,7 @@
     <!-- MAIN CONTENT -->
     <div class="main-content flex-grow-1 column-gap-2">
       <!-- SEARCH -->
-      <SearchBar @search-results="updateDebates" />
+      <top-bar @search-results="updateDebates" />
       <!-- DEBATE LIST AND WIDGETS -->
       <div class="d-flex">
         <!-- DEBATE LIST -->
@@ -29,10 +29,12 @@ import SearchBar from '@/components/top-bar/SearchBar.vue'
 import DebateList from '@/components/debates/DebateList.vue'
 import Widgets from "@/components/Widgets.vue";
 import DebateForm from "@/components/debates/DebateForm.vue";
+import TopBar from "@/components/TopBar.vue";
 
 export default {
   name: 'Home',
   components: {
+    TopBar,
     DebateForm,
     Widgets,
     SearchBar,
@@ -46,18 +48,7 @@ export default {
       searchResults: [],
     }
   },
-  computed: {
-    filteredDebates() {
-      return this.debates.filter(debate =>
-        debate.topic.toLowerCase().includes(this.searchQuery.toLowerCase())
-      )
-    }
-  },
   methods: {
-    handleSearch(query) {
-      this.searchQuery = query
-    },
-
     updateDebates(results) {
       this.searchResults = results
     }

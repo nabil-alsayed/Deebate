@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { Api } from '@/Api.js'
+import { Api } from '@/api/v1/Api.js'
 import DebateItem from "@/components/debates/DebateItem.vue";
 
 export default {
@@ -51,8 +51,9 @@ export default {
     this.getDebates()
   },
   methods: {
+    //TODO: Move to Api file
     getDebates() {
-      Api.get('/v1/debates')
+      Api.get('/debates')
         .then(response => {
           console.log(response.data.debates);
           this.debates = response.data.debates;
