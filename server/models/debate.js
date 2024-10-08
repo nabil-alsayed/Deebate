@@ -49,6 +49,8 @@ const debateSchema = new Schema({
     },
     { timestamps: true },
   ],
+    votesWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    votesAgainst: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
 
 const Debate = mongoose.model('Debate', debateSchema);

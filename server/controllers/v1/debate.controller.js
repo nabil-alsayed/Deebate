@@ -4,6 +4,63 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const User = require('../../models/user');
 
+const voteDebate = async (req, res) => {
+  const { debateId } = req.params;
+  const { userId } = req.body;
+  const { vote } = req.query;
+
+  const allowedVotes = ['with', 'against'];
+
+  try {
+    // Find the debate and user
+    const debate = await Debate.findById(debateId);
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    const userAlreadyVotedWith = debate.votesWith.includes(userId);
+    const userAlreadyVotedAgainst = debate.votesAgainst.includes(userId);
+
+    // Prevent users from voting more than once or changing their vote
+    if (userAlreadyVotedWith || userAlreadyVotedAgainst) {
+      // remove the vote from the respective list
+      const voteList = userAlreadyVotedWith ? debate.votesWith : debate.votesAgainst;
+      const voteIndex = voteList.indexOf(userId);
+      voteList.splice(voteIndex, 1);
+
+      return res.status(400).json({ message: 'User already voted. Vote removed successfully' });
+    }
+
+    // Validate the vote type (either 'with' or 'against')
+    if (!allowedVotes.includes(vote)) {
+      return res.status(400).json({ message: 'Invalid vote type. Must be "with" or "against"' });
+    }
+
+    // Add the user to the respective vote list
+    if (vote === 'with') {
+      debate.votesWith.push(userId);
+    } else if (vote === 'against') {
+      debate.votesAgainst.push(userId);
+    }
+
+    // Save the updated debate with the votes
+    await debate.save();
+
+    // Respond with the updated debate info
+    res.status(200).json({
+      message: 'Vote cast successfully',
+      debate: {
+        topic: debate.topic,
+        votesWith: debate.votesWith.length,
+        votesAgainst: debate.votesAgainst.length,
+      },
+    });
+  } catch (error) {
+    console.error('Error voting on debate:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 const postDebate = async (req, res, next) => {
   const { topic, category, endTime, owner, maxParticipants, participants } =
     req.body;
@@ -288,6 +345,7 @@ const deleteSpecificUserDebate = async (req, res, next) => {
     
 
 module.exports = {
+  voteDebate,
   postDebate,
   getDebates,
   deleteAllDebates,

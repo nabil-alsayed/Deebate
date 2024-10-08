@@ -11,6 +11,7 @@ router.get('/', debateController.getDebates);
 router.delete('/',authenticateRole("admin"), debateController.deleteAllDebates);
 router.delete('/user/:userId',authenticateRole("user"),  debateController.deleteAllUserDebates);
 router.post('/:debateId/join',authenticateRole("user"), debateController.joinDebate);
+router.patch('/:debateId/vote', authenticateRole("user"), debateController.voteDebate);
 
 // Apply method-override of a specific debate
 router.use('/:debateId', methodOverride('X-HTTP-Method-Override'), authenticateRole('user'));
