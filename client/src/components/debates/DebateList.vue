@@ -4,7 +4,7 @@
     <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
           <debate-item
-            :key="debate._id"
+            :_id="debate._id"
             :topic="debate.topic"
             :endTime="debate.endTime"
             :status="debate.status"

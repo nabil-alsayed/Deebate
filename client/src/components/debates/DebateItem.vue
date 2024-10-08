@@ -1,46 +1,31 @@
-<!-- <template>
-  <li class="debate-item">
-    <div class="debate-header">
-      <span class="debate-time">{{ getTimeLeft(endTime) }}</span>
-      <span :class="['debate-status', status]">{{ status }}</span>
-    </div>
-    <h3>{{ topic }}</h3>
-    <div class="debate-category">{{ category }}</div>
-    <div class="debate-info">
-      <span>Participants: {{ participants.length }} / {{ maxParticipants }}</span>
-    </div>
-    <div class="debate-arguments">
-      Arguments: {{ arguments.length }}
-    </div>
-
-   
-    <p v-if="creatorName">Created by: {{ creatorName }}</p>
-
-    <p v-if="debatorName">Debating against: {{ debatorName }}</p>
-
-
-    <button
-      v-if="status === 'open' && participants.length < maxParticipants"
-      class="debate-btn"
-      @click="joinDebate(_id, debatorName || creatorName)"
-    >
-      Press to debate against {{ debatorName || creatorName || 'someone'}}
-    </button>
-
-    <button
-      v-else-if="status === 'open' && participants.length === maxParticipants"
-      class="follow-btn"
-      @click="followDebate(_id)"
-    >
-      Follow the debate
-    </button>
-  </li>
-</template>-->
-
 <template>
-<!-- header -->
-  <div>
-    <h3 class="fw-bold" style="font-size: small;">{{ endTime }}</h3>
+  <div class="d-flex flex-column row-gap-1">
+    <!-- header -->
+    <div class="d-flex flex-row justify-content-between">
+      <div v-if="status !== 'closed'">
+        <h3 class="fw-bold" style="font-size: small;">{{ endTime }}</h3>
+      </div>
+      <i class="bi bi-three-dots-vertical"></i>
+    </div>
+
+    <div class="text-start">
+      <!-- Title -->
+      <h1 class="fs-4 fw-bold">{{ topic }}</h1>
+      <!-- Category Tag -->
+      <div class="d-inline-block bg-success px-3 rounded text-white fw-bold" style="font-size: 14px;">
+        <p class="m-0">{{ category }}</p>
+      </div>
+       <!-- Arguments -->
+       <div v-if="arguments.length > 0">
+        <!-- List of Arguments -->
+        <div v-for="argument in arguments" :key="argument._id">
+          <!-- Argument Card -->
+          <div>
+           {{ argument.content }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,6 +33,7 @@
 
 <script>
 import { Api } from "@/api/v1/Api.js";
+import avatar from "../../../assets/avatars/avatar.png";
 
 export default {
   name: 'DebateItem',
@@ -57,20 +43,22 @@ export default {
     endTime: String,
     status: String,
     category: String,
-    participants: Array, // The participants array
+    participants: Array,
     maxParticipants: Number,
     arguments: Array,
-    creator: String, // The creator's ID
+    creator: String,
   },
   data() {
     return {
-      creatorName: null,  // Name of the debate creator
-      debatorName: null,  // Name of the participant (debator)
+      creatorName: null,
+      debatorName: null,
+      arguments: [],
     };
   },
   mounted() {
     this.getCreator();
     this.getDebator();
+    this.getArguments();
   },
   methods: {
     getTimeLeft(endTime) {
@@ -94,15 +82,14 @@ export default {
 
     // Fetch creator details
     getCreator() {
-      const token = this.getToken();
       if (this.creator) {
         Api.get(`/users/${this.creator}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${this.token}`,
           },
         })
           .then((response) => {
-            this.creatorName = response.data.username; 
+            this.creatorName = response.data.username;
           })
           .catch((error) => {
             console.error("Error fetching creator:", error);
@@ -133,6 +120,26 @@ export default {
       }
     },
 
+    async getArguments() {
+      const token = this.getToken();
+      console.log(token);
+      console.log(this._id);
+
+      try {
+        const fetchedArguments = await Api.get(`/debates/${this._id}/arguments/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Arguments: ", fetchedArguments.data);
+
+        this.arguments = fetchedArguments.data;
+      } catch (error) {
+        console.error("Error fetching arguments:", error);
+      }
+    },
+
     joinDebate(debateId, opponent) {
       console.log(`Joining debate with ID: ${debateId} against ${opponent}`);
       // Implement API call to join the debate
@@ -147,13 +154,4 @@ export default {
 </script>
 
 
-<style scoped>
-/* Reuse the same styles from the original debate item */
-.debate-item {
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-</style>
+<style scoped></style>

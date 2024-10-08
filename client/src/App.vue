@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="d-flex vh-100 vw-100 bg-white">
+  <div id="app" class="d-flex vh-100 vw-100">
     <!-- Conditionally render either the authenticated layout or the auth layout -->
     <router-view/>
   </div>

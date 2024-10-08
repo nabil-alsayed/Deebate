@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-2 p-3">
+  <div class="d-flex w-100 vh-100 column-gap-2 p-3 ">
     <!--    MENU -->
     <MenuBar />
     <!-- MAIN CONTENT -->

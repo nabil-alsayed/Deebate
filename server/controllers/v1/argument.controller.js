@@ -47,7 +47,6 @@ const createArgument =  async (req, res, next) => {
 // Get all arguments
 const getAllArguments = async (req, res) => {
   const { debateId } = req.params;
-
   try {
     const debate = await Debate.findById(debateId).populate('arguments');
 
@@ -55,9 +54,12 @@ const getAllArguments = async (req, res) => {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
-    const arguments = await Argument.find({ debate });
 
-    res.status(200).json(arguments);
+    if (debate.arguments.length === 0) {
+      return res.status(404).json({ message: 'No arguments found for this debate' });
+    }
+
+    res.status(200).json(debate.arguments);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
