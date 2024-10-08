@@ -2,7 +2,37 @@
 
 const User = require('../../models/user');
 const mongoose = require('mongoose');
-const {authenticateRole} = require("../../utils/utils");
+const { authenticateRole } = require("../../utils/utils");
+
+// Search for user
+
+const searchUsers = async (req, res) => {
+  const { search, limit } = req.query;
+
+  if (!search) {
+    return res.status(400).json({ error: 'Please provide a search query' });
+  }
+
+  try {
+    const users = await User.find({
+      $or: [
+        { username: { $regex: search, $options: 'i' } },
+        { emailAddress: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: search, $options: 'i' } },
+        { lastName: { $regex: search, $options: 'i' } }
+      ]
+    }).limit(Number(limit) || 5);
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'No users found.' });
+    }
+
+    return res.status(200).json({ message: 'Users found', users });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
+
 
 // Get all users
 
@@ -187,6 +217,7 @@ const deleteAllUsers = async (req, res) => {
 }
 
 module.exports = {
+  searchUsers,
   getAllUsers,
   getUser,
   editUser,

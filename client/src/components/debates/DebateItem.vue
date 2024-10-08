@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <li class="debate-item">
     <div class="debate-header">
       <span class="debate-time">{{ getTimeLeft(endTime) }}</span>
@@ -13,13 +13,12 @@
       Arguments: {{ arguments.length }}
     </div>
 
-    <!-- Display creator if the debate is created by them -->
+   
     <p v-if="creatorName">Created by: {{ creatorName }}</p>
 
-    <!-- Display debator if they are participating -->
     <p v-if="debatorName">Debating against: {{ debatorName }}</p>
 
-    <!-- Join debate button logic -->
+
     <button
       v-if="status === 'open' && participants.length < maxParticipants"
       class="debate-btn"
@@ -28,7 +27,6 @@
       Press to debate against {{ debatorName || creatorName || 'someone'}}
     </button>
 
-    <!-- Follow debate button logic -->
     <button
       v-else-if="status === 'open' && participants.length === maxParticipants"
       class="follow-btn"
@@ -37,6 +35,13 @@
       Follow the debate
     </button>
   </li>
+</template>-->
+
+<template>
+<!-- header -->
+  <div>
+    <h3 class="fw-bold" style="font-size: small;">{{ endTime }}</h3>
+  </div>
 </template>
 
 
@@ -91,13 +96,13 @@ export default {
     getCreator() {
       const token = this.getToken();
       if (this.creator) {
-        Api.get(`/v1/users/${this.creator}`, {
+        Api.get(`/users/${this.creator}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
           .then((response) => {
-            this.creatorName = response.data.username; // Store the creator's username
+            this.creatorName = response.data.username; 
           })
           .catch((error) => {
             console.error("Error fetching creator:", error);
@@ -111,13 +116,13 @@ export default {
       const token = this.getToken();
       const debatorId = this.participants[0];
       if (debatorId) {  // Assuming first participant is the debator
-        Api.get(`/v1/users/${debatorId}`, {
+        Api.get(`/users/${debatorId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
           .then((response) => {
-            this.debatorName = response.data.user.username; // Store the debator's username
+            this.debatorName = response.data.user.username;
           })
           .catch((error) => {
             console.error("Error fetching debator:", error);

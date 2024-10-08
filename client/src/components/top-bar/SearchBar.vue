@@ -61,7 +61,7 @@ export default {
     const searchQuery = ref('')
     const filteredUsers = ref([])
     const loading = ref(false)
-    const router = useRouter(); // Use the router instance
+    const router = useRouter();
 
 
     // TODO: Move to API file
