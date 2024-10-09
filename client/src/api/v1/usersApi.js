@@ -24,8 +24,6 @@ export const getLoggedInUser = async () => {
       },
     });
 
-    console.log('Logged-in user:', response.data)
-
     return response.data.user;
   } catch (error) {
     console.error('Error fetching logged-in user:', error.message);

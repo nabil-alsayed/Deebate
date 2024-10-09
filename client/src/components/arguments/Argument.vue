@@ -7,7 +7,7 @@
            class="rounded-circle"
            style="width: 48px;"
       >
-      <h5 class="fw-bold">{{ this.owner }}</h5>
+      <h5 class="fw-bold">{{ this.owner.firstName }}</h5>
     </div>
     <div class="p-2 fs-5">
       <h6>{{ this.content }}</h6>
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import {Api} from "@/api/v1/Api.js";
 
 export default {
   name: "ArgumentItem",
@@ -43,28 +42,11 @@ export default {
     },
   },
   async mounted() {
-    this.argumentObj = await this.fetchArgument();
-    this.content = this.argumentObj.content;
-    this.owner = this.argumentObj.owner;
-    this.comments = this.argumentObj.comments;
-    this.votes = this.argumentObj.votes;
+    this.content = this.argument.content;
+    this.owner = this.argument.owner;
+    this.comments = this.argument.comments;
+    this.votes = this.argument.votes;
   },
-  methods: {
-    async fetchArgument() {
-      try {
-        const response = await Api.get(`/debates/${this.debateId}/arguments/${this.argument}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-        return response.data;
-      } catch (error) {
-        console.error("Failed to fetch argument:", error);
-        return null;
-      }
-    }
-  }
 };
 </script>
 

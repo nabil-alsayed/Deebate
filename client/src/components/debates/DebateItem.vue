@@ -81,16 +81,16 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  setup(props) {
-    const userId = ref(null);
+  }
+  ,setup(props) {
+    let userId = ref(null);
     const newArgument = ref('');
     const token = localStorage.getItem("token");
     const voteType = ref('');
 
-    const numberOfWithVotes = ref(0);
-    const numberOfAgainstVotes = ref(0);
-    const argumentsLimit = ref(5);
+    let numberOfWithVotes = ref(0);
+    let numberOfAgainstVotes = ref(0);
+    let argumentsLimit = ref(5);
 
     const withButtonStyle = computed(() => ({
       backgroundColor: voteType.value === 'with' ? 'green' : '',
@@ -181,7 +181,7 @@ export default {
 
         // Add the new argument to the debate's argument list
         props.debate.arguments.push(response.data);
-        newArgument.value = ''; // Clear the textarea after submission
+        newArgument.value = '';
       } catch (error) {
         console.error("Failed to add argument:", error);
       }
@@ -205,10 +205,10 @@ export default {
       addArgument,
       loadMoreArguments,
     };
-  },
-  async mounted() {
-    await this.fetchLoggedInUserId();
-  },
+  }, async mounted() {
+    this.userId = await getLoggedInUser()
+    console.log(" Mounted user id", this.userId)
+  }
 };
 </script>
 

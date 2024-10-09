@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
+const User = require('../../models/user');
 
 
 // Create a new argument
@@ -14,6 +15,7 @@ const createArgument =  async (req, res, next) => {
 
   try {
     const debate = await Debate.findById(debateId);
+    console.log('here is the debate' + debate);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -22,10 +24,17 @@ const createArgument =  async (req, res, next) => {
       return res.status(403).json({ message: 'Debate is closed' });
     }
 
+    const user = await User.findById(userId);
+    console.log('here is the user' + user);
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
     // Create a new argument (assuming you have an Argument model)
     const argument = new Argument({
       content,
-      owner: userId,
+      owner: user,
       debate: debateId,
     });
     await argument.save();
