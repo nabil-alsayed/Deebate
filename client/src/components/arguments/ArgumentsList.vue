@@ -1,20 +1,20 @@
 <template>
-  <div class="d-flex flex-column row-gap-3">
-    <!-- Display list of arguments -->
-    <div v-if="arguments.length > 0" v-for="argument in arguments" :key="argument._id">
-      <argument :argument="argument" :debate-id="debateId" :key="argument._id" />
+
+  <div  class="d-flex flex-column row-gap-3">
+    <div v-if="arguments.length > 1"
+         v-for="argument in arguments"
+         :key="argument._id"
+    >
+      <argument :argument="argument" :debate="debate" />
+    </div>
+    <div v-else-if="arguments.length === 1" >
+      <argument :argument="arguments[0]" :debate="debate" />
     </div>
 
-    <!-- Show a message if no arguments exist -->
     <div v-else>
       <p>No arguments yet</p>
-      <join-debate :debateId="debateId" :userId="userId" />
+      <h1> Join Debate </h1>
     </div>
-
-    <!-- Load more arguments button -->
-    <button v-if="canLoadMore" @click="loadMoreArguments" class="btn btn-secondary mt-3">
-      Load More Arguments
-    </button>
   </div>
 </template>
 
@@ -25,7 +25,20 @@ import JoinDebate from "@/components/arguments/JoinDebate.vue";
 export default {
   name: "ArgumentsList",
   components: { JoinDebate, Argument },
-  props:["arguments", "debateId", "userId"],
+  props: {
+    arguments: {
+      type: Array,
+      required: true,
+    },
+    debate: {
+      type: String,
+      required: true,
+    },
+    user: {
+      type: String,
+      required: true,
+    },
+  },
 }
 
 </script>

@@ -10,7 +10,7 @@ export default {
     }
   },
   props: {
-    opponentId: {
+    user: {
       type: String,
     },
   },

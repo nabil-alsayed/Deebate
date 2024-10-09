@@ -88,11 +88,24 @@ const getArgumentById = async (req, res) => {
 const deleteArgument = async (req, res) => {
   const { debateId, argumentId } = req.params;
   try {
+
+    const debate = await Debate.findById(debateId);
+    if (!debate) {
+        return res.status(404).json({ error: 'Debate not found' });
+    }
+
     const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(404).json({ error: 'Argument not found' });
     }
-    // TODO: Check ownership
+
+    if (!debate.arguments.includes(argumentId)) {
+      return res.status(404).json({ error: 'Argument not found in debate' });
+    }
+
+    // Remove the argument from the debate's arguments array
+    debate.arguments = debate.arguments.filter(arg => arg.toString() !== argumentId);
+    await debate.save();
 
     // Delete associated comments
     await Comment.deleteMany({ _id: { $in: argument.comments } });

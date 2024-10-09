@@ -3,7 +3,7 @@
     <h2>{{ debates.length }} Debates</h2>
     <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
-          <debate-item :debate="debate"/>
+          <debate-item :debateObj="debate" :key="debate._id"/>
         </li>
       </ul>
     <p v-else>No such debates.</p>

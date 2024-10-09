@@ -2,27 +2,27 @@
   <div>
     <!-- Header -->
     <div class="d-flex flex-row justify-content-between">
-      <div v-if="debate.status !== 'closed'">
-        <h3 class="fw-bold" style="font-size: small;">{{ debate.endTime }}</h3>
+      <div v-if="status !== 'closed'">
+        <h3 class="fw-bold" style="font-size: small;">{{ endTime }}</h3>
       </div>
       <i class="bi bi-three-dots-vertical"></i>
     </div>
 
     <div class="d-flex flex-column text-start">
       <!-- Title -->
-      <h1 class="fs-5 fw-bold">{{ debate.topic }}</h1>
+      <h1 class="fs-5 fw-bold">{{ topic }}</h1>
 
       <!-- Category Tag -->
       <div class="d-inline-block bg-success px-3 rounded text-white fw-bold"
            style="font-size: 14px; max-width: fit-content">
-        <p class="m-0">{{ debate.category }}</p>
+        <p class="m-0">{{ category }}</p>
       </div>
 
       <!-- Arguments List -->
       <arguments-list
-        :arguments="debate.arguments.slice(0, argumentsLimit)"
-        :debateId="debate._id"
-        :userId="userId"
+        :arguments="argumentsList.slice(0, argumentsLimit)"
+        :debate="id"
+        :user="userId"
       />
 
       <!-- Add New Argument -->
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Load More Arguments Button -->
-      <button v-if="argumentsLimit < debate.arguments.length" @click="loadMoreArguments">
+      <button v-if="argumentsLimit < debateObj.arguments.length" @click="loadMoreArguments">
         Load more arguments
       </button>
     </div>
@@ -77,16 +77,29 @@ export default {
   name: "DebateItem",
   components: {ArgumentsList},
   props: {
-    debate: {
+    debateObj: {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      id: '',
+      topic: '',
+      endTime: '',
+      category: '',
+      argumentsList: [],
+      votesWith: [],
+      votesAgainst: [],
+      status: '',
+    };
   }
   ,setup(props) {
     let userId = ref(null);
     const newArgument = ref('');
     const token = localStorage.getItem("token");
     const voteType = ref('');
+
 
     let numberOfWithVotes = ref(0);
     let numberOfAgainstVotes = ref(0);
@@ -105,12 +118,12 @@ export default {
     }));
 
     const updateVoteCounts = () => {
-      numberOfWithVotes.value = props.debate.votesWith.length;
-      numberOfAgainstVotes.value = props.debate.votesAgainst.length;
+      numberOfWithVotes.value = props.debateObj.votesWith.length;
+      numberOfAgainstVotes.value = props.debateObj.votesAgainst.length;
     };
 
     watch(
-      () => props.debate,
+      () => props.debateObj,
       () => {
         updateVoteCounts();
       },
@@ -134,7 +147,7 @@ export default {
 
       try {
         const response = await Api.patch(
-          `/debates/${props.debate._id}/vote`,
+          `/debates/${props.debateObj._id}/vote`,
           {voteType: voteTypeSelected},
           {
             headers: {
@@ -144,13 +157,13 @@ export default {
         );
 
         // Update the debate with actual values from the server
-        props.debate.votesWith = response.data.debate.votesWith;
-        props.debate.votesAgainst = response.data.debate.votesAgainst;
+        props.debateObj.votesWith = response.data.debate.votesWith;
+        props.debateObj.votesAgainst = response.data.debate.votesAgainst;
         updateVoteCounts();
-        voteType.value = voteTypeSelected; // Set the vote type after success
+        voteType.value = voteTypeSelected;
       } catch (error) {
         console.error(`Failed to vote ${voteTypeSelected}:`, error);
-        voteType.value = ''; // Reset vote type in case of error
+        voteType.value = '';
       }
     };
 
@@ -167,7 +180,7 @@ export default {
         }
 
         const response = await Api.post(
-          `/debates/${props.debate._id}/arguments`,
+          `/debates/${props.debateObj._id}/arguments`,
           {
             content: newArgument.value,
             userId: userId.value,
@@ -180,7 +193,7 @@ export default {
         );
 
         // Add the new argument to the debate's argument list
-        props.debate.arguments.push(response.data);
+        this.debateObj.arguments.push(response.data);
         newArgument.value = '';
       } catch (error) {
         console.error("Failed to add argument:", error);
@@ -205,9 +218,18 @@ export default {
       addArgument,
       loadMoreArguments,
     };
-  }, async mounted() {
-    this.userId = await getLoggedInUser()
-    console.log(" Mounted user id", this.userId)
+  },
+  async created() {
+    this.id = this.debateObj._id;
+    console.log("Debate ID:", this.id);
+    this.topic = this.debateObj.topic;
+    this.category = this.debateObj.category;
+    this.argumentsList = this.debateObj.arguments;
+    this.endTime = this.debateObj.endTime;
+    this.votesWith = this.debateObj.votesWith;
+    this.votesAgainst = this.debateObj.votesAgainst;
+    this.status = this.debateObj.status;
+    this.userId = await getLoggedInUser();
   }
 };
 </script>
