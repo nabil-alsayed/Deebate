@@ -22,24 +22,24 @@ const debateSchema = new Schema({
       'Health',
       'Education',
       'Social Issues',
-    ], // Add more categories as needed
+    ],
     required: true,
   },
   endTime: {
     type: Date,
-    required: true, // Debate must have an end time to be locked
+    required: true,
   },
   owner: {
     type: Schema.Types.String,
-    ref: 'User', // Reference to the user who initiated the debate
+    ref: 'User',
     required: true,
   },
   participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   maxParticipants: {
     type: Number,
-    default: 2, // Default set to 2 participants
-    max: 4, // Maximum number of participants
-    min: 2, // Minimum number of participants
+    default: 2,
+    max: 4,
+    min: 2,
     required: true,
   },
   arguments: [

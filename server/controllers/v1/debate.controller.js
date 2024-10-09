@@ -6,14 +6,13 @@ const User = require('../../models/user');
 
 const voteDebate = async (req, res) => {
   const { debateId } = req.params;
-  const { userId } = req.body;
-  const { vote } = req.query;
+  const { userId, voteType } = req.body;
 
   const allowedVotes = ['with', 'against'];
 
   try {
-    // Find the debate and user
-    const debate = await Debate.findById(debateId);
+    // Find the debate and ensure the owner is populated
+    const debate = await Debate.findById(debateId).populate('owner');
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -23,34 +22,34 @@ const voteDebate = async (req, res) => {
 
     // Prevent users from voting more than once or changing their vote
     if (userAlreadyVotedWith || userAlreadyVotedAgainst) {
-      // remove the vote from the respective list
       const voteList = userAlreadyVotedWith ? debate.votesWith : debate.votesAgainst;
       const voteIndex = voteList.indexOf(userId);
       voteList.splice(voteIndex, 1);
 
-      return res.status(400).json({ message: 'User already voted. Vote removed successfully' });
+      await debate.save();
+      return res.status(200).json({ message: 'User vote removed successfully' });
     }
 
-    // Validate the vote type (either 'with' or 'against')
-    if (!allowedVotes.includes(vote)) {
+    // Validate the vote type
+    if (!allowedVotes.includes(voteType)) {
       return res.status(400).json({ message: 'Invalid vote type. Must be "with" or "against"' });
     }
 
-    // Add the user to the respective vote list
-    if (vote === 'with') {
+    // Add user to the correct vote list
+    if (voteType === 'with') {
       debate.votesWith.push(userId);
-    } else if (vote === 'against') {
+    } else if (voteType === 'against') {
       debate.votesAgainst.push(userId);
     }
 
-    // Save the updated debate with the votes
+    // Ensure the owner is retained and save the updated debate
     await debate.save();
 
-    // Respond with the updated debate info
     res.status(200).json({
       message: 'Vote cast successfully',
       debate: {
         topic: debate.topic,
+        owner: debate.owner, // Include the owner
         votesWith: debate.votesWith.length,
         votesAgainst: debate.votesAgainst.length,
       },
@@ -60,6 +59,8 @@ const voteDebate = async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
+
+
 
 const postDebate = async (req, res, next) => {
   const { topic, category, endTime, owner, maxParticipants, participants } =

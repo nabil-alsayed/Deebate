@@ -22,10 +22,6 @@ const createArgument =  async (req, res, next) => {
       return res.status(403).json({ message: 'Debate is closed' });
     }
 
-    if(debate.participants.indexOf(userId) === -1){
-      return res.status(403).json({ message: 'User is not a debater' });
-    }
-
     // Create a new argument (assuming you have an Argument model)
     const argument = new Argument({
       content,
