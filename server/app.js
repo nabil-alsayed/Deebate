@@ -19,7 +19,11 @@ app.use(express.json());
 // HTTP request logger
 app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 // Use routes with controllers
 app.use('/', routes);
