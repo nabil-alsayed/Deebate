@@ -5,25 +5,36 @@
       <li v-for="debate in debates" :key="debate._id" class="debate-item">
         <div class="debate-header">
           <span class="debate-time">{{ getTimeLeft(debate.endTime) }}</span>
-          <span :class="['debate-status', debate.status]">{{ debate.status }}</span>
+          <span :class="['debate-status', debate.status]">{{
+            debate.status
+          }}</span>
         </div>
         <h3>{{ debate.topic }}</h3>
         <div class="debate-category">{{ debate.category }}</div>
         <div class="debate-info">
-          <span>Participants: {{ debate.participants.length }} / {{ debate.maxParticipants }}</span>
+          <span
+            >Participants: {{ debate.participants.length }} /
+            {{ debate.maxParticipants }}</span
+          >
         </div>
         <div class="debate-arguments">
           Arguments: {{ debate.arguments.length }}
         </div>
         <button
-          v-if="debate.status === 'open' && debate.participants.length < debate.maxParticipants"
+          v-if="
+            debate.status === 'open' &&
+            debate.participants.length < debate.maxParticipants
+          "
           class="debate-btn"
           @click="joinDebate(debate._id, debate.creator)"
         >
           Press to debate against {{ debate.creator }}
         </button>
         <button
-          v-else-if="debate.status === 'open' && debate.participants.length === debate.maxParticipants"
+          v-else-if="
+            debate.status === 'open' &&
+            debate.participants.length === debate.maxParticipants
+          "
           class="follow-btn"
           @click="followDebate(debate._id)"
         >
@@ -31,8 +42,10 @@
         </button>
       </li>
     </ul>
-    <p v-else>No debates available in this category.</p>
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <p v-else>No such debates.</p>
+    <div v-if="error" class="error-message">
+      {{ error }}
+    </div>
   </div>
 </template>
 
@@ -56,7 +69,9 @@ export default {
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const hours = Math.floor(
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      )
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
 
       return `${days}d ${hours}h ${minutes}m`
@@ -103,17 +118,17 @@ export default {
 }
 
 .debate-status.open {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
 .debate-status.closed {
-  background-color: #F44336;
+  background-color: #f44336;
   color: white;
 }
 
 .debate-status.locked {
-  background-color: #FFC107;
+  background-color: #ffc107;
   color: black;
 }
 
@@ -123,21 +138,45 @@ export default {
   color: white;
   padding: 3px 8px;
   border-radius: 10px;
-  font-size: 0.85em;
-  margin-bottom: 8px;
+  font-size: 1em;
+  margin-bottom: 10px;
 }
 
-.debate-btn, .follow-btn {
-  display: block;
-  background-color: #007bff;
-  color: white;
+.debate-info,
+.debate-arguments {
+  margin-bottom: 10px;
+}
+
+.debate-btn,
+.follow-btn {
+  width: 100%;
+  padding: 10px;
   border: none;
-  padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.debate-btn {
+  background-color: #007769;
+  color: white;
 }
 
 .follow-btn {
-  background-color: #28a745;
+  background-color: #ffc107;
+  color: black;
+}
+
+.debate-btn:hover {
+  background-color: #005a5a;
+}
+
+.follow-btn:hover {
+  background-color: #ffa000;
+}
+
+.error-message {
+  color: red;
+  margin-top: 20px;
 }
 </style>
