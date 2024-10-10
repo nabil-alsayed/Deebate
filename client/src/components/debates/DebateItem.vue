@@ -8,9 +8,9 @@
       <i class="bi bi-three-dots-vertical"></i>
     </div>
 
-    <div class="d-flex flex-column text-start">
+    <div class="d-flex flex-column text-start row-gap-3">
       <!-- Title -->
-      <h1 class="fs-5 fw-bold">{{ topic }}</h1>
+      <h1 class="m-0" style="font-size: 1.4em; letter-spacing: -1.5px; font-weight: 650">{{ topic }}</h1>
 
       <!-- Category Tag -->
       <div class="d-inline-block bg-success px-3 rounded text-white fw-bold"
@@ -25,6 +25,11 @@
         :user="userId"
       />
 
+      <!-- Load More Arguments Button -->
+      <button v-if="argumentsLimit < debateObj.arguments.length" @click="loadMoreArguments">
+        View more arguments
+      </button>
+
       <!-- Add New Argument -->
       <div class="mt-4">
         <b-form @submit.prevent="addArgument">
@@ -37,11 +42,6 @@
           <button class="btn btn-primary mt-2 w-100" type="submit">Submit Argument</button>
         </b-form>
       </div>
-
-      <!-- Load More Arguments Button -->
-      <button v-if="argumentsLimit < debateObj.arguments.length" @click="loadMoreArguments">
-        Load more arguments
-      </button>
     </div>
 
     <!-- Voting Buttons -->

@@ -1,6 +1,15 @@
 <template>
-  <div class="debate-list">
-    <h2>{{ debates.length }} Debates</h2>
+  <div class="debate-list" style="min-width: 350px">
+    <div
+      class="d-flex flex-row justify-content-between align-items-center"
+      style="font-size: 20px; color: grey"
+    >
+      <h6 style="font-weight: 650;">{{ debates.length }} Debates</h6>
+      <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center">
+        <i class="bi bi-sort-up inactive"></i>
+        <i class="bi bi-sort-down"></i>
+      </div>
+    </div>
     <ul v-if="debates.length">
         <li v-for="debate in debates" :key="debate._id" class="debate-item">
           <debate-item :debateObj="debate" :key="debate._id"/>
@@ -99,5 +108,9 @@ ul, li {
   .error-message {
     color: red;
     margin-top: 20px;
+  }
+
+  .inactive {
+    display: none;
   }
 </style>

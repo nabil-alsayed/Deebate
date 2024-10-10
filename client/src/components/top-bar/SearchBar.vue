@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 position-relative rounded-4 border border-opacity-10" style="background-color: #dfdfdf" >
+  <div class="w-100 position-relative rounded-4 border border-opacity-10 w" style="background-color: #dfdfdf" >
     <div class="search-input d-flex flex-row align-items-center w-100"
          style="padding-left: 30px;"
     >

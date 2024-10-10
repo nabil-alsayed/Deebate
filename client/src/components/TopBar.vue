@@ -28,7 +28,7 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex column-gap-2 justify-content-between">
+  <div class="d-flex column-gap-2 column-gap-5 justify-content-between">
     <div style="width: max(700px)">
       <search-bar @search-results="searchResults" />
     </div>

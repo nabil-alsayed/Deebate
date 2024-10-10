@@ -1,5 +1,8 @@
 <template>
-    <form @submit.prevent="createDebate" class="d-flex flex-column row-gap-1 w-100 p-1 bg-white rounded-3">
+    <form @submit.prevent="createDebate"
+          class="d-flex flex-column row-gap-1 w-100 p-1 bg-white rounded-3"
+          style="min-width: 200px"
+    >
       <div class="subject">
         <b-input type="text" id="topic" name="topic" v-model="topic" class="w-100" required />
       </div>

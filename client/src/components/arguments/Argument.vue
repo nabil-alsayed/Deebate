@@ -98,19 +98,20 @@ export default {
         console.error("Failed to fetch owner:", error);
       }
     },
-    async fetchDebate() {
-      this.debate = this.debateId;
-    },
     async deleteArgument() {
       try {
         console.log("Deleting argument:", this.argument + " in debate " + this.debateId);
-        await Api.delete(`/debates/${this.debate}/arguments/${this.argument}`, {
+        const response = await Api.delete(`/debates/${this.debate}/arguments/${this.argument}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
-        this.$emit("argument-deleted", this.argument);
+        // Only emit the event after confirming success
+        if (response.status === 200) {
+          this.$emit("argument-deleted", this.argument);
+        }
+        return response;
       } catch (error) {
         console.error("Failed to delete argument:", error);
       }

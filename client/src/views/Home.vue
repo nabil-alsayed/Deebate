@@ -1,15 +1,15 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-2 p-3 ">
+  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
     <!--    MENU -->
     <MenuBar />
     <!-- MAIN CONTENT -->
-    <div class="main-content flex-grow-1 column-gap-2">
+    <div class="main-content flex-grow-1 column-gap-2 row-gap-3">
       <!-- SEARCH -->
       <top-bar @search-results="updateDebates" />
       <!-- DEBATE LIST AND WIDGETS -->
       <div class="d-flex">
         <!-- DEBATE LIST -->
-          <div class="w-100">
+          <div id="debates-sections">
             <DebateForm />
             <DebateList :searchResults="searchResults" />
           </div>
@@ -62,6 +62,12 @@ export default {
    display: flex;
    flex-direction: column;
    overflow-y: auto;
+ }
+
+ #debates-sections {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
  }
 
 </style>

@@ -1,13 +1,13 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-2 p-3">
+  <div class="d-flex flex-row w-100 vh-100 column-gap-3 p-3">
     <div class="h-100" style="width: 250px">
       <MenuBar />
     </div>
-    <div class="main-content flex-grow-1 column-gap-2">
+    <div class="d-flex flex-column main-content flex-grow-1 row-gap-3">
       <!-- SEARCH -->
       <SearchBar @search-results="updateDebates" />
       <!-- DEBATE LIST AND WIDGETS -->
-      <div class="d-flex">
+      <div class="d-flex flex-row">
         <!-- DEBATE LIST -->
         <div class="w-100">
           <DebateForm />

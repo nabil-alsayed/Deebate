@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="width: 250px">
+  <div class="d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="min-width: 250px">
     <!-- Logo Section -->
     <div class="text-center mb-4">
       <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid mb-2"/>
