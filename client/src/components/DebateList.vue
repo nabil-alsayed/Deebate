@@ -50,42 +50,15 @@
 </template>
 
 <script>
-import { Api } from '@/Api'
-
 export default {
   name: 'DebateList',
   props: {
-    searchResults: {
+    debates: {
       type: Array,
-      default: () => []
+      required: true // Accepts filtered debates from HomePage
     }
-  },
-  data() {
-    return {
-      debates: [],
-      error: null
-    }
-  },
-  watch: {
-    searchResults(newResults) {
-      this.debates = newResults
-    }
-  },
-  created() {
-    this.getDebates()
   },
   methods: {
-    getDebates() {
-      Api.get('/v1/debates')
-        .then((response) => {
-          this.debates = response.data.debates
-        })
-        .catch((error) => {
-          console.error(error)
-          this.error =
-            'An error occurred while fetching debates. Please try again later.'
-        })
-    },
     getTimeLeft(endTime) {
       const now = new Date()
       const end = new Date(endTime)

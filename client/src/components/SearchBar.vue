@@ -1,71 +1,78 @@
 <template>
   <div class="search-bar">
-    <div class="search-input-group">
-      <input
-        type="text"
-        v-model="searchQuery"
-        @focus="showCategories = true"
-        @input="filterCategories"
-        @keyup.enter="searchDebates"
-        placeholder="Search for a debate..."
-      />
-      <button @click="searchDebates">Search</button>
-    </div>
-
-    <transition name="slide-fade">
-      <div v-if="showCategories && filteredCategories.length" class="category-dropdown">
-        <div
-          v-for="category in filteredCategories"
-          :key="category"
-          class="category-item"
-          @click="selectCategory(category)"
-        >
-          {{ category }}
-        </div>
-      </div>
-    </transition>
+    <input
+      type="text"
+      v-model="searchQuery"
+      @input="onSearchInput"
+      placeholder="Search for a user"
+      aria-label="Search for a user"
+    />
+    <button @click="performSearch">Search</button>
+    <!-- Dropdown to show filtered users -->
+    <ul v-if="filteredUsers.length" class="dropdown">
+      <li v-for="user in filteredUsers" :key="user._id" @click="selectUser(user)">
+        {{ user.username }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { Api } from '@/Api'
 
 export default {
   name: 'SearchBar',
-  emits: ['search-results'],
+  emits: ['userSelected'],
   setup(props, { emit }) {
     const searchQuery = ref('')
-    const showCategories = ref(false)
-    const categories = ['Sports', 'Science', 'Politics', 'Technology', 'Health', 'Education']
+    const users = ref([])
+    const filteredUsers = ref([])
 
-    const filteredCategories = computed(() => 
-      categories.filter(category =>
-        category.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-    )
+    async function fetchUsers() {
+      const token = localStorage.getItem('token') // Get the stored token
+      if (!token) {
+        console.error('No auth token found. You need to log in.')
+        return
+      }
 
-    function selectCategory(category) {
-      searchQuery.value = category
-      showCategories.value = false
-    }
-
-    async function searchDebates() {
       try {
-        const response = await Api.get(`/v1/debates?category=${searchQuery.value}`)
-        emit('search-results', response.data.debates)
+        const response = await Api.get('/v1/users', {
+          headers: {
+            Authorization: `Bearer ${token}` // Include the token in the request
+          }
+        })
+        users.value = response.data.users
       } catch (error) {
-        console.error('Error fetching debates:', error)
-        emit('search-results', [])
+        console.error('Error fetching users:', error)
       }
     }
 
+    function onSearchInput() {
+      if (searchQuery.value.length > 0) {
+        // Filter users based on search input
+        filteredUsers.value = users.value.filter(user =>
+          user.username.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+      } else {
+        filteredUsers.value = []
+      }
+    }
+
+    function selectUser(user) {
+      searchQuery.value = user.username
+      filteredUsers.value = [] // Clear dropdown after selection
+      emit('userSelected', user) // Emit the selected user to parent
+    }
+
+    // Fetch all users when component is mounted
+    fetchUsers()
+
     return {
       searchQuery,
-      showCategories,
-      filteredCategories,
-      selectCategory,
-      searchDebates
+      filteredUsers,
+      onSearchInput,
+      selectUser
     }
   }
 }
@@ -74,12 +81,6 @@ export default {
 <style scoped>
 .search-bar {
   position: relative;
-  padding: 2px;
-}
-
-.search-input-group {
-  display: flex;
-  align-items: center;
 }
 
 input {
@@ -91,62 +92,34 @@ input {
 }
 
 button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #007769;
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #007bff;
   color: white;
-  border-radius: 10%;
-  cursor: pointer;
-  margin: 3px;
+  border: none;
+  border-radius: 4px;
 }
 
-button:hover {
-  background-color: #005f5f;
-}
-
-.category-dropdown {
+.dropdown {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
+  background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
-  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
 }
 
-.category-item {
+.dropdown li {
   padding: 10px;
   cursor: pointer;
 }
 
-.category-item:hover {
-  background: #f0f0f0;
-}
-
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.debate-list {
-  margin-top: 20px;
-}
-
-.debate-list h3 {
-  margin: 0 0 10px 0;
-}
-
-.debate-list ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.debate-list li {
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
+.dropdown li:hover {
+  background-color: #f0f0f0;
 }
 </style>
