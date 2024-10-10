@@ -2,12 +2,11 @@
 
 const User = require('../../models/user');
 const mongoose = require('mongoose');
-const {authenticateRole} = require("../../utils/utils");
+const { authenticateRole } = require('../../utils/utils');
 
 // Get all users
 
 const getAllUsers = async (req, res) => {
-
   try {
     const users = await User.find();
 
@@ -27,7 +26,6 @@ const getAllUsers = async (req, res) => {
 // Get a specific user
 
 const getUser = async (req, res) => {
-
   try {
     // Check if the id provided is valid mongoose id
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -86,7 +84,8 @@ const editUser = async (req, res) => {
     'firstName',
     'lastName',
     'role',
-    'profileImg',
+    /*'profileImg'*/
+    ,
   ];
 
   // Check every requested update if it is valid
@@ -95,16 +94,13 @@ const editUser = async (req, res) => {
   );
 
   if (!isValidRequest) {
-    return res
-      .status(400)
-      .json({
-        message:
-          'Invalid update request. One or more attributes are not allowed.',
-      });
+    return res.status(400).json({
+      message:
+        'Invalid update request. One or more attributes are not allowed.',
+    });
   }
 
   try {
-
     // find the user
     const user = await User.findById(userId);
 
@@ -117,12 +113,10 @@ const editUser = async (req, res) => {
       new: true,
     });
 
-    res
-      .status(200)
-      .json({
-        message: `${user.username}'s information updated sucessfully!`,
-        updatedUser,
-      });
+    res.status(200).json({
+      message: `${user.username}'s information updated sucessfully!`,
+      updatedUser,
+    });
   } catch (error) {
     res
       .status(500)
@@ -139,7 +133,6 @@ const deleteUser = async (req, res) => {
   const requestingUserId = id;
 
   try {
-
     // if the user is not the owner or an admin, return a 403 response
     if (requestedUserId !== requestingUserId) {
       try {
@@ -159,12 +152,10 @@ const deleteUser = async (req, res) => {
     // find the user and update the informations as per the request
     const deletedUser = await User.findByIdAndDelete(userId);
 
-    res
-      .status(204)
-      .json({
-        message: `${user.username}'s was deleted sucessfully!`,
-        deletedUser,
-      });
+    res.status(204).json({
+      message: `${user.username}'s was deleted sucessfully!`,
+      deletedUser,
+    });
   } catch (error) {
     res
       .status(500)
@@ -175,7 +166,9 @@ const deleteUser = async (req, res) => {
 const deleteAllUsers = async (req, res) => {
   try {
     if (process.env.NODE_ENV !== 'test') {
-      return res.status(400).json({ message: 'This endpoint is only available in test environment' });
+      return res.status(400).json({
+        message: 'This endpoint is only available in test environment',
+      });
     }
 
     await User.deleteMany();
@@ -183,12 +176,12 @@ const deleteAllUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 module.exports = {
   getAllUsers,
   getUser,
   editUser,
   deleteUser,
-  deleteAllUsers
+  deleteAllUsers,
 };

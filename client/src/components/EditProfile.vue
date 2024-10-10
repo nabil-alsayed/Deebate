@@ -19,7 +19,7 @@
       </div>
       <div class="field">
         <label>Email</label>
-        <input type="email" v-model="editedUser.email" />
+        <input type="email" v-model="editedUser.emailAddress" />
       </div>
       <div class="field password-field">
         <label>Password</label>
@@ -31,30 +31,45 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
+    const user = JSON.parse(localStorage.getItem('user'))
+    const { emailAddress, username, password, firstName, lastName, role } = user
+    console.log(user, 39)
     return {
-      user: {
-        firstName: 'John',
-        lastName: 'Doe',
-        username: 'john_doe',
-        email: 'john@example.com',
-        password: ''
-      },
+      user: { emailAddress, username, password, firstName, lastName, role },
       editedUser: {
-        firstName: 'John',
-        lastName: 'Doe',
-        username: 'john_doe',
-        email: 'john@example.com',
-        password: ''
+        emailAddress,
+        username,
+        password,
+        firstName,
+        lastName,
+        role
       }
     }
   },
   methods: {
-    saveProfile() {
+    async saveProfile() {
       this.user = { ...this.editedUser }
+      const user = this.user
+      const config = {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }
       console.log('Saving profile:', this.user)
-      alert('Profile updated successfully!')
+      const localUser = JSON.parse(localStorage.getItem('user'))
+      // alert('Profile updated successfully!')
+      // eslint-disable-next-line no-undef
+      const response = await axios.patch(
+        'http://localhost:3000/api/v1/users/' + localUser._id,
+        user,
+        config
+      )
+      // Handle the response, save the token if necessary
+      console.log('successful:', response.data)
     }
   },
   created() {
