@@ -4,7 +4,7 @@
     <div class="category-grid">
       <div v-for="category in categories" :key="category.name" class="category-card" @click="selectCategory(category.name)">
         <div class="icon-container" :class="{ 'active': category.name === activeCategory }">
-          <i :class="category.icon"></i>
+          <i :class="category.icon" style="font-size: 24px;"></i>
         </div>
         <div class="category-name">{{ category.name }}</div>
       </div>

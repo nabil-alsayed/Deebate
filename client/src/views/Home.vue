@@ -5,7 +5,7 @@
         <MenuBar />
       </div>
       <div class="col-md-6 main-content">
-        <SearchBar @search="updateSearchQuery" />
+        <SearchBar @userSelected="handleUserSelected" />
         <!-- Pass the filtered debates to DebateList -->
         <DebateList :debates="filteredDebates" />
       </div>
