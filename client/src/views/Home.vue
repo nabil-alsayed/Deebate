@@ -1,14 +1,16 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid" style="margin-top: 10px;">
     <div class="row">
       <div class="col-md-3 menu-bar">
         <MenuBar />
       </div>
       <div class="col-md-6 main-content">
-        <SearchBar @search-results="updateDebates" />
+        <SearchBar @search="updateSearchQuery" />
+        <!-- Pass the filtered debates to DebateList -->
         <DebateList :debates="filteredDebates" />
       </div>
       <div class="col-md-3 category-selector">
+        <!-- Listen for category selection from CategorySelector -->
         <CategorySelector @category-selected="filterDebatesByCategory" />
       </div>
     </div>
@@ -31,59 +33,48 @@ export default {
     CategorySelector
   },
   setup() {
-    const debates = ref([])
-    const selectedCategory = ref('')
+    const debates = ref([]) // Holds all debates fetched from API
+    const selectedCategory = ref('') // Holds selected category
+    const searchQuery = ref('') // Holds search query
 
+    // Computed property to filter debates based on category and search query
     const filteredDebates = computed(() => {
-      if (selectedCategory.value) {
-        return debates.value.filter(debate => debate.category === selectedCategory.value)
-      }
-      return debates.value
+      return debates.value.filter(debate => {
+        const matchesCategory = !selectedCategory.value || debate.category === selectedCategory.value
+        const matchesSearch = !searchQuery.value || debate.topic.toLowerCase().includes(searchQuery.value.toLowerCase())
+        return matchesCategory && matchesSearch
+      })
     })
 
-    async function updateDebates(results) {
-      debates.value = results
-    }
-
-    async function filterDebatesByCategory(category) {
-      selectedCategory.value = category
+    // Fetch debates from API when component is created
+    async function fetchDebates() {
       try {
-        const response = await Api.get(`/v1/debates?category=${category}`)
-        debates.value = response.data.debates
+        const response = await Api.get('/v1/debates')
+        debates.value = response.data.debates // Store fetched debates
       } catch (error) {
         console.error('Error fetching debates:', error)
-        debates.value = []
+        debates.value = [] // Fallback in case of error
       }
     }
+
+    // Handle category selection from CategorySelector
+    function filterDebatesByCategory(category) {
+      selectedCategory.value = category // Set selected category
+    }
+
+    // Handle search query update
+    function updateSearchQuery(query) {
+      searchQuery.value = query // Set search query
+    }
+
+    // Fetch debates on component creation
+    fetchDebates()
 
     return {
       filteredDebates,
-      updateDebates,
-      filterDebatesByCategory
+      filterDebatesByCategory,
+      updateSearchQuery
     }
   }
 }
 </script>
-
-<style scoped>
-.container-fluid {
-  background-color: #f0f0f0;
-}
-
-.menu-bar, .main-content, .category-selector {
-  padding: 20px;
-}
-
-@media (max-width: 767px) {
-  .menu-bar, .category-selector {
-    position: static;
-    width: 100%;
-    height: auto;
-  }
-  
-  .main-content {
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-</style>

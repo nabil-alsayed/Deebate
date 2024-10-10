@@ -30,8 +30,8 @@ export default {
   },
   methods: {
     selectCategory(category) {
-      this.activeCategory = category;
-      this.$emit('category-selected', category); // Emit selected category
+      this.activeCategory = category // Set active category
+      this.$emit('category-selected', category) // Emit selected category
     }
   }
 }
