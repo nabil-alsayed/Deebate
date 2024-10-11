@@ -1,5 +1,5 @@
 <template>
-  <div class="signup-form-container">
+  <div class="form-container">
     <div
       style="
         display: flex;
@@ -11,7 +11,7 @@
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold"
         >One Step Away! 🎉</b-card-title
       >
-      <b-form @submit.prevent="signup" class="signup-form">
+      <b-form @submit.prevent="signup" class="form">
         <b-input type="email" v-model="user.email" placeholder="Email" />
         <b-input type="text" v-model="user.username" placeholder="@Username" />
         <b-input
@@ -25,7 +25,7 @@
           v-model="user.password"
           placeholder="Password"
         />
-        <b-button type="submit" class="signup-button">Sign up</b-button>
+        <b-button type="submit" class="button">Sign up</b-button>
       </b-form>
       <div class="flex flex-column column-gap-4 text-center">
         <p class="small fw-medium">
@@ -91,14 +91,14 @@ export default {
 </script>
 
 <style>
-.signup-form-container {
+.form-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
 }
 
-.signup-form {
+.form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -109,22 +109,22 @@ export default {
   gap: 20px;
 }
 
-.signup-button {
+.button {
   width: 100%;
   background-color: #007769;
   font-weight: bold;
   border: none;
 }
 
-.signup-button:hover {
+.button:hover {
   background-color: #014a4a;
 }
 
-.signup-button:active {
+.button:active {
   background-color: #007769;
 }
 
-.signup-button:focus {
+.button:focus {
   background-color: #007769;
 }
 

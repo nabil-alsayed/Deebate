@@ -44,6 +44,7 @@ html, body {
 .signup-section, .poster-section {
   width: 100%;
   height: 100%;
+  justify-self: center;
 }
 
 .poster-section {
@@ -88,9 +89,9 @@ html, body {
     flex-direction: column; /* Stack the items vertically */
   }
 
-  .login-section, .poster-section {
+  .signup-section, .poster-section {
     width: 100%; /* Make both sections take up the full width */
-    height: auto; /* Adjust height to content */
+    height: fit-content; /* Adjust height to content */
   }
 
   .poster-section {
