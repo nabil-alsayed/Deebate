@@ -10,7 +10,7 @@
 
     <div class="d-flex flex-column text-start row-gap-3">
       <!-- Title -->
-      <h1 class="m-0" style="font-size: 1.4em; letter-spacing: -1.5px; font-weight: 650">{{ topic }}</h1>
+      <h1 class="m-0" style="font-size: 25px; font-weight: 650">{{ topic }}</h1>
 
       <!-- Category Tag -->
       <div class="d-inline-block bg-success px-3 rounded text-white fw-bold"

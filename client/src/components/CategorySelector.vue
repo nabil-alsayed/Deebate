@@ -30,7 +30,7 @@ export default {
         { name: 'Politics', icon: 'fas fa-landmark' },
         { name: 'Social Issues', icon: 'fas fa-leaf' },
       ],
-      activeCategory: localStorage.getItem('selectedCategory') || ''
+      activeCategory: ''
     };
   },
   mounted() {
@@ -42,12 +42,12 @@ export default {
     selectCategory(category) {
       if (category === this.activeCategory) {
         this.activeCategory = '';
-        localStorage.removeItem('selectedCategory');
-        this.$emit('category-selected', ''); // Emit empty string if category deselected
+        // Emit empty string if category deselected
+        this.$emit('category-selected', '');
       } else {
         this.activeCategory = category;
-        localStorage.setItem('selectedCategory', category);
-        this.$emit('category-selected', category); // Emit selected category
+        // Emit selected category
+        this.$emit('category-selected', category);
       }
     }
   }
