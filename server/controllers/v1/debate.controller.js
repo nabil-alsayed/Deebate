@@ -63,12 +63,21 @@ const voteDebate = async (req, res) => {
 
 
 const postDebate = async (req, res, next) => {
-  const { topic, category, endTime, owner, maxParticipants, participants } =
+  const { topic, category, endTime, owner, maxParticipants } =
     req.body;
 
   // Basic validation
-  if (!topic || !category || !endTime || !owner || !participants) {
-    return res.status(400).json({ message: 'Missing required fields' });
+  if (!topic) {
+    return res.status(400).json({ message: 'Seems like you forgot the Topic!' });
+  }
+  if (!category) {
+    return res.status(400).json({ message: 'Seems like you forgot the Category!' });
+  }
+  if (!endTime) {
+    return res.status(400).json({ message: 'Seems like you forgot the End Time!' });
+  }
+  if (!owner) {
+    return res.status(400).json({ message: 'Seems like you forgot the Owner!' });
   }
 
   // Check that endTime is in the future
@@ -76,26 +85,11 @@ const postDebate = async (req, res, next) => {
     return res.status(400).json({ message: 'End time must be in the future' });
   }
 
-  if (participants.length > maxParticipants) {
-    return res
-      .status(400)
-      .json({ message: 'Participants number is exceeding the maximum limit' });
-  }
-
   if( mongoose.Types.ObjectId.isValid(owner) === false){
     return res.status(400).json({ message: 'Invalid owner ID format' });
   }
 
   try {
-    // Fetch all participants
-    const participantsDB = await User.find({ _id: { $in: participants } });
-
-    // Check if the number of fetched participants matches the provided participants
-    if (participantsDB.length !== participants.length) {
-      return res.status(400).json({
-        message: 'One or more participants are not valid users/participants',
-      });
-    }
 
     // Create a new debate
     const debate = new Debate({
@@ -104,7 +98,6 @@ const postDebate = async (req, res, next) => {
       endTime,
       owner,
       maxParticipants,
-      participants,
     });
 
     await debate.save();

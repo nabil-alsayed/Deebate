@@ -20,8 +20,8 @@ const createArgument =  async (req, res, next) => {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
-    if ( debate.participants.includes(userId) === false) {
-      return res.status(403).json({ message: 'Unauthorized to delete argument' });
+    if ( debate.participants.length >= debate.maxParticipants) {
+      return res.status(403).json({ message: 'The debate already reached capacity!' });
     }
 
     if(debate.status !== 'open'){

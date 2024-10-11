@@ -32,7 +32,7 @@
 
       <!-- Add New Argument -->
       <div class="mt-4">
-        <b-form @submit.prevent="addArgument">
+        <b-form @submit="addArgument">
           <b-form-textarea
             v-model="newArgument"
             placeholder="Enter your argument here"
