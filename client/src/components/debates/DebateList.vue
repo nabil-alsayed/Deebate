@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column full-width row-gap-3" style="min-width: 350px">
+  <div class="d-flex flex-column full-width row-gap-3" style="width:100%">
     <div
       class="d-flex flex-row justify-content-between align-items-center"
       style="color: grey"

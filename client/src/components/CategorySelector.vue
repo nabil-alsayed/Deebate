@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 350px">
+  <div style="width: 100%">
     <h2 style="color: grey; font-size: 20px; font-weight: 550;">Category</h2>
     <div class="category-grid">
       <div
@@ -60,7 +60,7 @@ export default {
 .category-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  gap: 10px;
 }
 
 .category-card {

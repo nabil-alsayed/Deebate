@@ -14,7 +14,9 @@
           <DebateList page="profile"/>
         </div>
         <!-- WIDGETS -->
+        <div class="right-bar" style="min-width: 260px">
           <EditProfile />
+        </div>
       </div>
     </div>
   </div>
@@ -39,11 +41,6 @@ export default{
   mounted() {
     this.userId = localStorage.getItem('userId')
   },
-  methods: {
-    getUserDebates(){
-
-    }
-  }
 }
 </script>
 
@@ -52,5 +49,17 @@ export default{
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .right-bar {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .menu-bar {
+    display: none;
+  }
 }
 </style>

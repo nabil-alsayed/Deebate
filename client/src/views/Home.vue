@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex w-100 vh-100 column-gap-3 p-3">
     <!--    MENU -->
-    <div class="menu">
+    <div class="menu-bar">
       <MenuBar />
     </div>
 
@@ -9,10 +9,6 @@
     <div class="main-content flex-grow-1 flex-column row-gap-3">
       <!-- SEARCH AND USER INFO -->
       <SearchBar />
-
-<!--      &lt;!&ndash; Display active category &ndash;&gt;-->
-<!--      <h2>{{ activeCategory || 'All Categories' }}</h2>-->
-
       <!-- DEBATE LIST AND WIDGETS -->
       <div class="d-flex flex-row column-gap-3">
         <!-- DEBATE LIST -->
@@ -22,7 +18,9 @@
         </div>
 
         <!-- Right side Widgets (CategorySelector or EditProfile) -->
-        <CategorySelector @category-selected="filterDebatesByCategory" />
+        <div class="right-bar" style="min-width: 250px">
+          <CategorySelector @category-selected="filterDebatesByCategory" />
+        </div>
       </div>
     </div>
   </div>
@@ -111,6 +109,7 @@ export default {
 }
 
 /* Responsive */
+
 @media (max-width: 768px) {
   .right-bar {
     display: none;
@@ -118,10 +117,7 @@ export default {
 }
 
 @media (max-width: 576px) {
-  .main-content {
-    padding-top: 70px;
-  }
-  .menu {
+  .menu-bar {
     display: none;
   }
 }
