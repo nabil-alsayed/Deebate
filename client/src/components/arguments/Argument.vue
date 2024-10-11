@@ -108,8 +108,9 @@ export default {
         });
 
         // Only emit the event after confirming success
-        if (response.status === 200) {
+        if (["200", "204", "201"].includes(response.status.toString())) {
           this.$emit("argument-deleted", this.argument);
+          window.location.reload();
         }
         return response;
       } catch (error) {

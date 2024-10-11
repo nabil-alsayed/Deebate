@@ -2,7 +2,7 @@
   <div id="main-container">
 
     <h2 style="color: grey; font-size: 20px; font-weight: 550;">Post a Debate</h2>
-    <form @submit="createDebate"
+    <form @submit.prevent="createDebate"
           class="d-flex flex-column row-gap-1 w-100 p-1 bg-white rounded-3"
           style="min-width: 200px"
     >
@@ -125,6 +125,7 @@ export default {
           this.message.type = "";
           this.message.text = "";
         }, 2000);
+        window.location.reload();
 
       } catch (error) {
         console.error("Error creating debate: ", error);

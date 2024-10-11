@@ -74,10 +74,6 @@ export default {
 
       return `${days}d ${hours}h ${minutes}m`
     },
-    joinDebate(debateId, opponent) {
-      console.log(`Joining debate with ID: ${debateId} against ${opponent}`)
-      // Implement API call to join the debate
-    }
   }
 }
 </script>
