@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
+const User = require('../../models/user');
 
 
 // Create a new argument
@@ -14,28 +15,36 @@ const createArgument =  async (req, res, next) => {
 
   try {
     const debate = await Debate.findById(debateId);
+    console.log('here is the debate' + debate);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    if ( debate.participants.includes(userId) === false) {
+      return res.status(403).json({ message: 'Unauthorized to delete argument' });
     }
 
     if(debate.status !== 'open'){
       return res.status(403).json({ message: 'Debate is closed' });
     }
 
-    if(debate.participants.indexOf(userId) === -1){
-      return res.status(403).json({ message: 'User is not a debater' });
+    const user = await User.findById(userId);
+    console.log('here is the user' + user);
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
     }
 
-    // Create a new argument (assuming you have an Argument model)
+    // Create a new argument
     const argument = new Argument({
       content,
-      owner: userId,
+      owner: user,
       debate: debateId,
     });
     await argument.save();
 
     // Add the argument to the debate's arguments array
-    debate.arguments.push(argument._id);
+    debate.arguments.push(argument);
     await debate.save();
 
     res.status(201).json(argument);
@@ -47,7 +56,6 @@ const createArgument =  async (req, res, next) => {
 // Get all arguments
 const getAllArguments = async (req, res) => {
   const { debateId } = req.params;
-
   try {
     const debate = await Debate.findById(debateId).populate('arguments');
 
@@ -55,9 +63,12 @@ const getAllArguments = async (req, res) => {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
-    const arguments = await Argument.find({ debate });
 
-    res.status(200).json(arguments);
+    if (debate.arguments.length === 0) {
+      return res.status(404).json({ message: 'No arguments found for this debate' });
+    }
+
+    res.status(200).json(debate.arguments);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -81,11 +92,24 @@ const getArgumentById = async (req, res) => {
 const deleteArgument = async (req, res) => {
   const { debateId, argumentId } = req.params;
   try {
+
+    const debate = await Debate.findById(debateId);
+    if (!debate) {
+        return res.status(401).json({ error: 'Debate not found' });
+    }
+
     const argument = await Argument.findById(argumentId);
     if (!argument) {
-      return res.status(404).json({ error: 'Argument not found' });
+      return res.status(401).json({ error: 'Argument not found' });
     }
-    // TODO: Check ownership
+
+    if (!debate.arguments.includes(argumentId)) {
+      return res.status(404).json({ error: 'Argument not found in debate' });
+    }
+
+    // Remove the argument from the debate's arguments array
+    debate.arguments = debate.arguments.filter(arg => arg.toString() !== argumentId);
+    await debate.save();
 
     // Delete associated comments
     await Comment.deleteMany({ _id: { $in: argument.comments } });

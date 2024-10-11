@@ -1,5 +1,5 @@
 <template>
-  <div class="signup-form-container">
+  <div class="form-container">
     <div
       style="
         display: flex;
@@ -9,29 +9,22 @@
       "
     >
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold"
-        >Welcome to Deebate! 👋</b-card-title
+        >Welcome back! 👋</b-card-title
       >
-      <b-form @submit.prevent="signup" class="signup-form">
+      <b-form @submit.prevent="login" class="form">
         <b-input type="email" v-model="user.email" placeholder="Email" />
-        <b-input type="text" v-model="user.username" placeholder="@Username" />
-        <b-input
-          type="text"
-          v-model="user.firstname"
-          placeholder="First Name"
-        />
-        <b-input type="text" v-model="user.lastname" placeholder="Last Name" />
         <b-input
           type="password"
           v-model="user.password"
           placeholder="Password"
         />
-        <b-button type="submit" class="signup-button">Sign up</b-button>
+        <b-button type="submit" class="button">Log in</b-button>
       </b-form>
       <div class="flex flex-column column-gap-4 text-center">
         <p class="small fw-medium">
-          Already have an account?
-          <router-link to="/login" style="text-decoration: none"
-            >Log in</router-link
+          Don't have an account?
+          <router-link to="/signup" style="text-decoration: none"
+            >Sign up</router-link
           >
         </p>
         <p class="small fw-medium alert-message">{{ message }}</p>
@@ -42,6 +35,7 @@
 
 <script>
 import axios from 'axios'
+import { Api } from '@/api/v1/Api.js'
 
 export default {
   name: 'authentication',
@@ -55,26 +49,23 @@ export default {
     }
   },
   methods: {
-    async signup() {
+    async login() {
       try {
-        const response = await axios.post(
-          'http://localhost:3000/api/v1/auth/signup',
+        const response = await Api.post(
+          '/auth/login/',
           {
             emailAddress: this.user.email,
-            username: this.user.username,
-            firstName: this.user.firstname,
-            lastName: this.user.lastname,
             password: this.user.password
           }
         )
 
         // Handle the response, save the token if necessary
-        console.log('Signup successful:', response.data)
-        this.message = response.data.message || 'Signup successful!'
+        console.log('Login successful:', response.data)
+        this.message = response.data.message || 'Login successful!'
 
         // Save the token in local storage
         localStorage.setItem('token', response.data.token)
-
+        localStorage.setItem('user', JSON.stringify(response.data.user))
         // Redirect the user to the home page
         this.$router.push('/')
       } catch (error) {
@@ -82,8 +73,8 @@ export default {
         this.message =
           error.response && error.response.data.message
             ? error.response.data.message
-            : 'Sign up failed, please try again.'
-        console.error('Sign up failed:', this.message)
+            : 'Login failed, please try again.'
+        console.error('Login failed:', this.message)
       }
     }
   }
@@ -91,14 +82,14 @@ export default {
 </script>
 
 <style>
-.signup-form-container {
+.form-container{
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
 }
 
-.signup-form {
+.form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -109,22 +100,22 @@ export default {
   gap: 20px;
 }
 
-.signup-button {
+.button {
   width: 100%;
   background-color: #007769;
   font-weight: bold;
   border: none;
 }
 
-.signup-button:hover {
+.button:hover {
   background-color: #014a4a;
 }
 
-.signup-button:active {
+.button:active {
   background-color: #007769;
 }
 
-.signup-button:focus {
+.button:focus {
   background-color: #007769;
 }
 

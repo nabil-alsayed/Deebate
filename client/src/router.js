@@ -1,29 +1,54 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from './views/Home.vue'
+// Protect authentication routes with a meta field
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('./views/Home.vue'),
+    meta: { requireAuth: true }
+  },
   {
     path: '/login',
     name: 'login',
-    component: () => import('./views/Login.vue')
+    component: () => import('./views/Login.vue'),
   },
   {
     path: '/signup',
     name: 'signup',
-    component: () => import('./views/Signup.vue')
+    component: () => import('./views/Signup.vue'),
   },
   {
     path: '/profile',
     name: 'profile',
-    component: () => import('./views/Profile.vue')
-  }
+    component: () => import('./views/Profile.vue'),
+    meta: { requireAuth: true }
+    }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+// Add a navigation guard to protect routes that require authentication
+router.beforeEach((to, from, next) => {
+  const isAuth = localStorage.getItem('token');
+
+  if (to.meta.requireAuth && !isAuth) {
+    next('/login');  // Redirect to login if not authenticated
+  } else if ((to.name === 'login' || to.name === 'signup') && isAuth) {
+    // If the user is authenticated and trying to access login or signup, redirect to home
+    next('/');
+  } else {
+    next();
+  }
+
+  if (to.meta.guardAuth && isAuth) {
+    next('/'); // Redirect to home if authenticated
+  }
+});
+
 
 export default router

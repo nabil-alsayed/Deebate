@@ -1,37 +1,40 @@
 <template>
   <div class="edit-profile">
-    <div class="profile-header">
-      <h2 class="user-name">{{ user.firstName }}</h2>
-      <p class="username">@{{ user.username }}</p>
+    <h2 style="color: grey; font-size: 20px; font-weight: 550">Edit Profile</h2>
+    <div>
+      <div class="profile-header">
+        <h2 class="user-name">{{ user.firstName }}</h2>
+        <p class="username">@{{ user.username }}</p>
+      </div>
+      <form @submit.prevent="saveProfile">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" v-model="editedUser.firstName" />
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" v-model="editedUser.lastName" />
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" v-model="editedUser.username" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" v-model="editedUser.emailAddress" />
+        </div>
+        <div class="field password-field">
+          <label>Password</label>
+          <input type="password" v-model="editedUser.password" />
+        </div>
+        <button type="submit" class="save-button">Save</button>
+      </form>
     </div>
-    <form @submit.prevent="saveProfile">
-      <div class="field">
-        <label>First Name</label>
-        <input type="text" v-model="editedUser.firstName" />
-      </div>
-      <div class="field">
-        <label>Last Name</label>
-        <input type="text" v-model="editedUser.lastName" />
-      </div>
-      <div class="field">
-        <label>Username</label>
-        <input type="text" v-model="editedUser.username" />
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" v-model="editedUser.emailAddress" />
-      </div>
-      <div class="field password-field">
-        <label>Password</label>
-        <input type="password" v-model="editedUser.password" />
-      </div>
-      <button type="submit" class="save-button">Save</button>
-    </form>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { Api } from '@/api/v1/Api.js'
 
 export default {
   data() {
@@ -63,8 +66,8 @@ export default {
       const localUser = JSON.parse(localStorage.getItem('user'))
       // alert('Profile updated successfully!')
       // eslint-disable-next-line no-undef
-      const response = await axios.patch(
-        'http://localhost:3000/api/v1/users/' + localUser._id,
+      const response = await Api.patch(
+        `/users/${localUser._id}`,
         user,
         config
       )
@@ -80,10 +83,9 @@ export default {
 
 <style scoped>
 .edit-profile {
-  background-color: #ffffff;
-  padding: 20px;
   border-radius: 10px;
-  margin-top: 20px;
+  width: 100%;
+  height: 100%;
 }
 
 .profile-header {

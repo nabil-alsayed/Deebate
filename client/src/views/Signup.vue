@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import SignupForm from "@/components/authentication/signup-form.vue";
+import SignupForm from "@/components/authentication/SignupForm.vue";
 
 export default {
   name: "signup",
@@ -44,6 +44,7 @@ html, body {
 .signup-section, .poster-section {
   width: 100%;
   height: 100%;
+  justify-self: center;
 }
 
 .poster-section {
@@ -65,7 +66,7 @@ html, body {
 }
 
 .logo {
-  width: 84px;
+  max-width: 84px;
 }
 
 .slogan {
@@ -88,9 +89,9 @@ html, body {
     flex-direction: column; /* Stack the items vertically */
   }
 
-  .login-section, .poster-section {
+  .signup-section, .poster-section {
     width: 100%; /* Make both sections take up the full width */
-    height: auto; /* Adjust height to content */
+    height: fit-content; /* Adjust height to content */
   }
 
   .poster-section {

@@ -10,7 +10,7 @@ This [Vue.js](https://vuejs.org/) template provides sample code how to connect t
 | [public/favicon.ico](public/favicon.ico) | [Favicon](https://en.wikipedia.org/wiki/Favicon) website icon | — |
 | [index.html](index.html) | Static HTML entry point page | — |
 | `src/` | src (i.e., source code) | All your code goes in here |
-| [src/Api.js](src/Api.js) | Configures HTTP library to communicate with backend | — |
+| [src/Api.js](src/api/v1/Api.js) | Configures HTTP library to communicate with backend | — |
 | [src/App.vue](src/App.vue) | Main Vue layout template for all view (or pages) | Change your global template for all views |
 | `src/assets/` | Graphical resources | Add your images, logos, etc |
 | `src/components/` | Vue components that are reusable LEGO blocks | Add your custom components here |
