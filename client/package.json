@@ -12,12 +12,17 @@
   "dependencies": {
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "bootstrap-vue-next": "^0.24.9",
+    "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "unplugin-vue-components": "^0.27.4",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@vitejs/plugin-vue": "^5.1.2",
     "@vue/eslint-config-standard": "^8.0.1",
     "eslint": "^8.47.0",
@@ -25,6 +30,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.1.0",
     "eslint-plugin-vue": "^9.27.0",
+    "i": "^0.3.7",
     "vite": "^5.4.1"
   }
 }

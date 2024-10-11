@@ -2,11 +2,42 @@
 
 const User = require('../../models/user');
 const mongoose = require('mongoose');
-const { authenticateRole } = require('../../utils/utils');
+const { authenticateRole } = require("../../utils/utils");
+
+// Search for user
+
+const searchUsers = async (req, res) => {
+  const { search, limit } = req.query;
+
+  if (!search) {
+    return res.status(400).json({ error: 'Please provide a search query' });
+  }
+
+  try {
+    const users = await User.find({
+      $or: [
+        { username: { $regex: search, $options: 'i' } },
+        { emailAddress: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: search, $options: 'i' } },
+        { lastName: { $regex: search, $options: 'i' } }
+      ]
+    }).limit(Number(limit) || 5);
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'No users found.' });
+    }
+
+    return res.status(200).json({ message: 'Users found', users });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
+
 
 // Get all users
 
 const getAllUsers = async (req, res) => {
+
   try {
     const users = await User.find();
 
@@ -26,33 +57,35 @@ const getAllUsers = async (req, res) => {
 // Get a specific user
 
 const getUser = async (req, res) => {
+  const { userId } = req.params;
+
   try {
-    // Check if the id provided is valid mongoose id
+    // Check if the ID provided is a valid mongoose ObjectId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       console.log('Invalid ID format');
       return res
-        .status(400)
-        .json({ message: `ID format provided is invalid: ${userId}` });
+          .status(400)
+          .json({ message: `ID format provided is invalid: ${userId}` });
     }
 
-    // Find the user by its ID
+    // Find the user by ID
     const user = await User.findById(userId);
 
     // If the user is not found, return a 404 response
     if (!user) {
       return res
-        .status(404)
-        .json({ message: `User with ID: ${userId} cannot be found.` });
+          .status(404)
+          .json({ message: `User with ID: ${userId} cannot be found.` });
     }
 
     // Return a 200 response with the user data
     return res
-      .status(200)
-      .json({ message: `Successfully found user with ID ${userId}`, user });
+        .status(200)
+        .json({ message: `Successfully found user with ID ${userId}`, user });
   } catch (error) {
     res
-      .status(500)
-      .json({ message: 'Internal Server Error.', error: error.message });
+        .status(500)
+        .json({ message: 'Internal Server Error.', error: error.message });
   }
 };
 
@@ -84,8 +117,7 @@ const editUser = async (req, res) => {
     'firstName',
     'lastName',
     'role',
-    /*'profileImg'*/
-    ,
+    'profileImg',
   ];
 
   // Check every requested update if it is valid
@@ -94,13 +126,16 @@ const editUser = async (req, res) => {
   );
 
   if (!isValidRequest) {
-    return res.status(400).json({
-      message:
-        'Invalid update request. One or more attributes are not allowed.',
-    });
+    return res
+      .status(400)
+      .json({
+        message:
+          'Invalid update request. One or more attributes are not allowed.',
+      });
   }
 
   try {
+
     // find the user
     const user = await User.findById(userId);
 
@@ -113,10 +148,12 @@ const editUser = async (req, res) => {
       new: true,
     });
 
-    res.status(200).json({
-      message: `${user.username}'s information updated sucessfully!`,
-      updatedUser,
-    });
+    res
+      .status(200)
+      .json({
+        message: `${user.username}'s information updated sucessfully!`,
+        updatedUser,
+      });
   } catch (error) {
     res
       .status(500)
@@ -133,6 +170,7 @@ const deleteUser = async (req, res) => {
   const requestingUserId = id;
 
   try {
+
     // if the user is not the owner or an admin, return a 403 response
     if (requestedUserId !== requestingUserId) {
       try {
@@ -152,10 +190,12 @@ const deleteUser = async (req, res) => {
     // find the user and update the informations as per the request
     const deletedUser = await User.findByIdAndDelete(userId);
 
-    res.status(204).json({
-      message: `${user.username}'s was deleted sucessfully!`,
-      deletedUser,
-    });
+    res
+      .status(204)
+      .json({
+        message: `${user.username}'s was deleted sucessfully!`,
+        deletedUser,
+      });
   } catch (error) {
     res
       .status(500)
@@ -166,9 +206,7 @@ const deleteUser = async (req, res) => {
 const deleteAllUsers = async (req, res) => {
   try {
     if (process.env.NODE_ENV !== 'test') {
-      return res.status(400).json({
-        message: 'This endpoint is only available in test environment',
-      });
+      return res.status(400).json({ message: 'This endpoint is only available in test environment' });
     }
 
     await User.deleteMany();
@@ -176,12 +214,13 @@ const deleteAllUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+}
 
 module.exports = {
+  searchUsers,
   getAllUsers,
   getUser,
   editUser,
   deleteUser,
-  deleteAllUsers,
+  deleteAllUsers
 };

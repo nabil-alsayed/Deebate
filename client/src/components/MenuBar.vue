@@ -1,138 +1,117 @@
 <template>
-  <div class="menubar">
-    <div class="logo">
-      <img src="@/assets/DeebateLogo.png" alt="Deebate Logo" />
-      <h1 class="deebate-title">Deebate</h1>
+  <div class="d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="min-width: 210px">
+    <!-- Logo Section -->
+    <div class="text-center mb-4">
+      <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid mb-2"/>
+      <h1>Deebate</h1>
+      <p>Stand for your belief!</p>
     </div>
 
-    <nav>
-      <ul class="nav-items">
-        <li @click="goHome">
-          <a href="javascript:void(0);" class="nav-item">
-            <i class="fa-solid fa-home"></i> Home
-          </a>
+    <!-- Navigation Section -->
+    <nav class="flex-grow-1 flex-column py-5 justify-content-center">
+      <ul class="nav flex-column text-start">
+        <li class="nav-item mb-2">
+          <router-link to="/" class="nav-link text-white px-4" active-class="active">
+            <i class="bi bi-house-fill"></i> <span>Home</span>
+          </router-link>
         </li>
-        <li @click="goToProfile">
-          <a href="javascript:void(0);" class="nav-item">
-            <i class="fa-solid fa-user"></i> Profile
-          </a>
+        <li class="nav-item mb-2">
+          <router-link to="/profile" class="nav-link text-white px-4" active-class="active">
+            <i class="bi-person-fill"></i> Profile
+          </router-link>
         </li>
       </ul>
     </nav>
 
-    <button class="logout-btn"><i class="icon-logout"></i> Log out</button>
+    <!-- Logout Button -->
+    <button class="logout-btn mt-auto" style="font-weight: 800" @click="logout">
+      Log out
+    </button>
   </div>
 </template>
 
+
 <script>
+import logoSrc from '/logo/deebate-logo-light.png';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 export default {
   name: 'MenuBar',
+  data() {
+    return {
+      logoSrc
+    };
+  },
   methods: {
-    goToProfile() {
-      this.$emit('profile-clicked')
-    },
-    goHome() {
-      this.$emit('home-clicked')
+    logout() {
+      if (localStorage.getItem('token')) {
+        localStorage.removeItem('token');
+      }
+      this.$router.push('/login');
     }
   }
-}
+};
 </script>
 
+
 <style scoped>
-.menubar {
+.primary-color {
   background-color: #007769;
-  color: white;
-  height: 100vh;
-  width: 300px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 30px;
-  border-radius: 10px; /* Add border radius like right bar */
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo img {
-  max-width: 50px;
+  max-width: 100px;
   height: auto;
 }
 
-.deebate-title {
-  margin-left: 10px;
-  font-size: 1.5rem;
+h1 {
+  margin-top: 10px;
+  font-size: 1.5em;
+  font-weight: 800;
+}
+
+p {
+  font-size: 0.9em;
+  margin: 0;
 }
 
 nav ul {
-  list-style-type: none; /* Remove bullet points */
+  list-style-type: none;
   padding: 0;
+  font-weight: 600;
 }
 
-.nav-items {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.nav-item {
+.nav-link {
   color: white;
   text-decoration: none;
+  border-radius: 15px;
   padding: 10px;
-  border-radius: 5px;
   transition: background-color 0.3s ease;
 }
 
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+/* Ensures the active link is styled correctly */
+.nav-link.active {
+  background-color: #16B771;
+  color: white;
+}
+
+/* Hover styling, only applied when the link is not active */
+.nav-link:hover:not(.active) {
+  background-color: rgba(22, 183, 113, 0.17);
 }
 
 .logout-btn {
   background-color: #bb4545;
   color: white;
   border: none;
-  padding: 15px;
-  border-radius: 20px;
+  padding: 12px;
+  border-radius: 15px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto;
 }
 
 .logout-btn:hover {
   background-color: #a13c3c;
 }
-
-/* Mobile styles */
-@media (max-width: 576px) {
-  .menubar {
-    flex-direction: row;
-    justify-content: space-between;
-    height: auto;
-    width: 100vw;
-    padding: 10px 20px;
-  }
-
-  .logo img {
-    max-width: 40px;
-  }
-
-  .deebate-title {
-    font-size: 1.2rem;
-  }
-
-  .nav-items {
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .logout-btn {
-    padding: 10px;
-    font-size: 0.9rem;
-    border-radius: 15px;
-  }
-}
 </style>
+

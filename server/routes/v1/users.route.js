@@ -4,6 +4,7 @@ const userController = require('../../controllers/v1/user.controller');
 const {authenticateRole} = require("../../utils/utils");
 
 // User routes
+router.get('/search', authenticateRole("user"), userController.searchUsers)
 router.get('/', authenticateRole("admin"), userController.getAllUsers);
 router.delete('/', authenticateRole("admin"), userController.deleteAllUsers);
 router.get('/:userId', authenticateRole("user"), userController.getUser);

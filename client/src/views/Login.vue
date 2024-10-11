@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import LoginForm from "@/components/authentication/login-form.vue";
+import LoginForm from "@/components/authentication/LoginForm.vue";
 
 export default {
   name: "authentication",
@@ -43,11 +43,6 @@ export default {
         username: this.username,
         password: this.password
       };
-    },
-    getUser() {
-      this.user = {
-        email: this.email
-      };
     }
   }
 };
@@ -64,6 +59,7 @@ html, body {
   display: flex;
   flex-direction: row;
   height: 100vh;
+  width: 100%;
   justify-content: center;
   align-items: center;
 }
@@ -92,7 +88,7 @@ html, body {
 }
 
 .logo {
-  width: 84px;
+  max-width: 84px;
 }
 
 .slogan {

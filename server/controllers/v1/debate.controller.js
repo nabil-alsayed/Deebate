@@ -4,6 +4,64 @@ const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const User = require('../../models/user');
 
+const voteDebate = async (req, res) => {
+  const { debateId } = req.params;
+  const { userId, voteType } = req.body;
+
+  const allowedVotes = ['with', 'against'];
+
+  try {
+    // Find the debate and ensure the owner is populated
+    const debate = await Debate.findById(debateId).populate('owner');
+    if (!debate) {
+      return res.status(404).json({ message: 'Debate not found' });
+    }
+
+    const userAlreadyVotedWith = debate.votesWith.includes(userId);
+    const userAlreadyVotedAgainst = debate.votesAgainst.includes(userId);
+
+    // Prevent users from voting more than once or changing their vote
+    if (userAlreadyVotedWith || userAlreadyVotedAgainst) {
+      const voteList = userAlreadyVotedWith ? debate.votesWith : debate.votesAgainst;
+      const voteIndex = voteList.indexOf(userId);
+      voteList.splice(voteIndex, 1);
+
+      await debate.save();
+      return res.status(200).json({ message: 'User vote removed successfully' });
+    }
+
+    // Validate the vote type
+    if (!allowedVotes.includes(voteType)) {
+      return res.status(400).json({ message: 'Invalid vote type. Must be "with" or "against"' });
+    }
+
+    // Add user to the correct vote list
+    if (voteType === 'with') {
+      debate.votesWith.push(userId);
+    } else if (voteType === 'against') {
+      debate.votesAgainst.push(userId);
+    }
+
+    // Ensure the owner is retained and save the updated debate
+    await debate.save();
+
+    res.status(200).json({
+      message: 'Vote cast successfully',
+      debate: {
+        topic: debate.topic,
+        owner: debate.owner, // Include the owner
+        votesWith: debate.votesWith.length,
+        votesAgainst: debate.votesAgainst.length,
+      },
+    });
+  } catch (error) {
+    console.error('Error voting on debate:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+
+
 const postDebate = async (req, res, next) => {
   const { topic, category, endTime, owner, maxParticipants, participants } =
     req.body;
@@ -82,7 +140,7 @@ const getDebates = async (req, res, next) => {
       filter.status = status;
     }
 
-    let query = Debate.find(filter);
+    let query = Debate.find(filter).populate('owner', 'username');
 
     // If sort is provided, apply sorting by the debate end time
     if (sort) {
@@ -288,6 +346,7 @@ const deleteSpecificUserDebate = async (req, res, next) => {
     
 
 module.exports = {
+  voteDebate,
   postDebate,
   getDebates,
   deleteAllDebates,
