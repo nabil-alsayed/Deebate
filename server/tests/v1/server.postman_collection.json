@@ -231,7 +231,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -452,73 +452,6 @@
 						"v1",
 						"debates",
 						"{{debateId}}",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Post Argument While Not Participant",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.variables.set(\"dynamicContent\", `Argument Content Test #${Math.floor(Math.random() * 1000)}`);",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 403\", function () {",
-							"    pm.response.to.have.status(403);",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"content\": \"{{dynamicContent}}\",\n    \"userId\": \"66e6f16e5f521317298e347\",\n    \"debate\": \"{{debateId}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3001/api/v1/debates/{{debateId}}/arguments/",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"v1",
-						"debates",
-						"{{debateId}}",
-						"arguments",
 						""
 					]
 				}
@@ -1276,7 +1209,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1536,7 +1469,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2083,7 +2016,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2186,7 +2119,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2334,7 +2267,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}},\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": {{maxParticipants}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2493,7 +2426,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2024-12-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2596,7 +2529,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-10-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2025-10-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2699,7 +2632,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2026-01-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2,\n    \"participants\": []\n}",
+					"raw": "{\n    \"topic\": \"{{topic}}\", \n    \"category\": \"{{category}}\", \n    \"endTime\": \"2026-01-22T15:35:57.726+00:00\", \n    \"owner\": \"{{userId}}\", \n    \"maxParticipants\": 2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
