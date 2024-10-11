@@ -68,7 +68,7 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   transition: all 0.3s ease;

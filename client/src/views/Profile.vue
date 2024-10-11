@@ -14,7 +14,7 @@
           <DebateList page="profile"/>
         </div>
         <!-- WIDGETS -->
-        <div class="right-bar" style="min-width: 260px">
+        <div class="right-bar" style="min-width: 250px">
           <EditProfile />
         </div>
       </div>
