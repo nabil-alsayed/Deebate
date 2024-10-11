@@ -1,10 +1,10 @@
 <template>
-  <div class="debate-list" style="min-width: 350px">
+  <div class="d-flex flex-column full-width row-gap-3" style="min-width: 350px">
     <div
       class="d-flex flex-row justify-content-between align-items-center"
-      style="font-size: 20px; color: grey"
+      style="color: grey"
     >
-      <h6 style="font-weight: 650;">{{ debates.length }} Debates</h6>
+      <h2 style="font-weight: 550; font-size: 20px">{{ debates.length }} Debates</h2>
       <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center">
         <i class="bi bi-sort-up inactive"></i>
         <i class="bi bi-sort-down"></i>
@@ -16,9 +16,6 @@
         </li>
       </ul>
     <p v-else>No such debates.</p>
-    <div v-if="error" class="error-message">
-      {{ error }}
-    </div>
   </div>
 </template>
 
@@ -30,7 +27,7 @@ export default {
   name: 'DebateList',
   components: {DebateItem},
   props: {
-    searchResults: {
+    filteredDebates: {
       type: Array,
       default: () => []
     }
@@ -42,7 +39,7 @@ export default {
     }
   },
   watch: {
-    searchResults(newResults) {
+    filteredDebates(newResults) {
       this.debates = newResults
     }
   },
@@ -92,10 +89,9 @@ ul, li {
   margin: 0;
   padding: 0;
 }
-  .debate-list {
-      margin-top: 20px;
+  .full-width {
       width: 100%;
-    }
+  }
 
   .debate-item {
     background-color: white;

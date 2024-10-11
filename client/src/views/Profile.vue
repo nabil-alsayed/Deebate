@@ -1,22 +1,20 @@
 <template>
-  <div class="d-flex flex-row w-100 vh-100 column-gap-3 p-3">
-    <div class="h-100" style="width: 250px">
+  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
+    <div class="menu-bar">
       <MenuBar />
     </div>
     <div class="d-flex flex-column main-content flex-grow-1 row-gap-3">
       <!-- SEARCH -->
-      <SearchBar @search-results="updateDebates" />
+      <SearchBar />
       <!-- DEBATE LIST AND WIDGETS -->
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row column-gap-3 ">
         <!-- DEBATE LIST -->
-        <div class="w-100">
+        <div class="d-flex flex-column row-gap-3 w-100 h-100">
           <DebateForm />
-          <DebateList :searchResults="searchResults" />
+          <DebateList page="profile"/>
         </div>
         <!-- WIDGETS -->
-        <div style="width: 350px">
-          <Widgets />
-        </div>
+          <EditProfile />
       </div>
     </div>
   </div>
@@ -25,28 +23,34 @@
 <script>
 import DebateList from "@/components/debates/DebateList.vue";
 import SearchBar from "@/components/top-bar/SearchBar.vue";
-import Leaderboard from "@/components/Filters.vue";
+import EditProfile from '@/components/EditProfile.vue'
 import MenuBar from "@/components/MenuBar.vue";
 import DebateForm from "@/components/debates/DebateForm.vue";
-import Widgets from "@/components/Widgets.vue";
 
 export default{
   name: 'Profile',
-  components: {Widgets, DebateForm, MenuBar, Leaderboard, SearchBar, DebateList},
+  components: {DebateForm, MenuBar, EditProfile, SearchBar, DebateList},
   data(){
     return{
-      debates: [],
-      searchQuery: '',
-      searchResults: [],
+      userDebates: [],
       userId: ''
     }
   },
-  computed: {
+  mounted() {
+    this.userId = localStorage.getItem('userId')
+  },
+  methods: {
     getUserDebates(){
-      return this.debates.filter(debate =>
-        debate.userId === this.userId
-      )
+
     }
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+</style>

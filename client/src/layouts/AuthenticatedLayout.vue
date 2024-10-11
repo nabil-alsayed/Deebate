@@ -15,7 +15,6 @@
 
 <script setup>
 import MenuBar from "@/components/MenuBar.vue";
-import TopBar from "@/components/TopBar.vue";
 </script>
 
 <style scoped>
