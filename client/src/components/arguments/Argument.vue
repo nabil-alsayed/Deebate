@@ -14,7 +14,9 @@
     <div class="d-flex align-items-center gap-2">
       <i class="bi bi-chat-fill text-muted"></i>
       <span class="fw-bold" style="font-size: 14px">{{ commentsWithUserDetails.length }}</span>
-      <button @click="showCommentsPopup = true" class="btn btn-link p-0" style="font-size: 14px">View/Add Comments</button>
+      <button @click="showCommentsPopup = true" class="custom-button">
+  View/Add Comments
+</button>
     </div>
 
     <div v-if="showCommentsPopup" class="comments-popup">
@@ -41,10 +43,10 @@
         <div class="mt-4">
           <h5>Add a comment</h5>
           <textarea v-model="newComment" placeholder="Type your comment here" class="form-control mb-2"></textarea>
-          <button @click="submitComment" class="btn btn-primary">Submit Comment</button>
+          <button @click="submitComment" class="btn btn-primary" >Submit Comment</button>
         </div>
 
-        <button @click="showCommentsPopup = false" class="btn btn-outline-secondary mt-3">Close</button>
+        <button  @click="showCommentsPopup = false" class="btn btn-outline-secondary mt-3">Close</button>
       </div>
     </div>
   </div>
@@ -187,5 +189,38 @@ textarea {
   width: 100%;
   height: 100px;
   margin-bottom: 10px;
+}
+
+.btn-primary {
+  background-color: #007769;
+  border-color: #007769;
+}
+
+.btn-primary:hover {
+  background-color: #01675b; /* Darker green on hover */
+  border-color: #01675b; /* Match border color on hover */
+}
+
+.custom-button {
+  background-color: #007769; /* Primary color */
+  color: white; /* Text color */
+  padding: 8px 12px; /* Padding */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 14px; /* Font size */
+  text-align: center; /* Centered text */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.custom-button:hover {
+  background-color: #01675b; /* Darker blue on hover */
+  transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.custom-button:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: #01675b; /* Custom focus outline */
 }
 </style>
