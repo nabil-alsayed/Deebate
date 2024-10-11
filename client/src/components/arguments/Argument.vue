@@ -17,9 +17,33 @@
     <div class="p-2 fs-5">
       <h6>{{ content }}</h6>
     </div>
+
+    <!-- Comments Section -->
     <div class="d-flex flex-row column-gap-2 align-items-center">
       <i class="bi bi-chat-fill text-muted"></i>
       <p class="fw-bold mb-0" style="font-size: 14px">{{ comments.length }}</p>
+      <button @click="showCommentsPopup = true" class="btn btn-link p-0" style="font-size: 14px">View/Add Comments</button>
+    </div>
+
+    <!-- Comments Popup -->
+    <div v-if="showCommentsPopup" class="comments-popup">
+      <div class="comments-popup-content">
+        <h3>Comments</h3>
+
+        <!-- List all comments -->
+        <ul>
+          <li v-for="comment in comments" :key="comment._id">
+            <p><strong>{{ comment.owner.username }}:</strong> {{ comment.content }}</p>
+          </li>
+        </ul>
+
+        <!-- Add New Comment -->
+        <textarea v-model="newComment" placeholder="Type your comment here"></textarea>
+        <button @click="submitComment" class="btn btn-primary mt-2">Submit Comment</button>
+
+        <!-- Close button -->
+        <button @click="showCommentsPopup = false" class="btn btn-outline-secondary mt-2">Close</button>
+      </div>
     </div>
   </div>
 </template>
@@ -39,9 +63,11 @@ export default {
         avatar: '',
       },
       comments: [],
+      newComment: '',
       votes: [],
       isOwner: false,
       debateId: this.debate,
+      showCommentsPopup: false,  // Control the visibility of the comments popup
     };
   },
   props: {
@@ -107,7 +133,6 @@ export default {
           },
         });
 
-        // Only emit the event after confirming success
         if (["200", "204", "201"].includes(response.status.toString())) {
           this.$emit("argument-deleted", this.argument);
           window.location.reload();
@@ -117,6 +142,29 @@ export default {
         console.error("Failed to delete argument:", error);
       }
     },
+
+    // Submit a new comment
+    async submitComment() {
+      if (this.newComment.trim() === '') {
+        alert('Please enter a comment');
+        return;
+      }
+
+      try {
+        const response = await Api.post(`/debates/${this.debateId}/arguments/${this.argument}/comments`, {
+          content: this.newComment,
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        this.comments.push(response.data); // Add the new comment to the list
+        this.newComment = ''; // Clear the input field
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+      }
+    },
   },
 };
 </script>
@@ -124,6 +172,40 @@ export default {
 <style scoped>
 .argument-item {
   background-color: #f9f9f9;
-  border-left: 4px solid #16b771;
+  border-left: 6px solid #16b771;
+}
+
+.comments-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.comments-popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 }
 </style>
