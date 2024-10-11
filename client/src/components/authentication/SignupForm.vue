@@ -42,6 +42,7 @@
 
 <script>
 import axios from 'axios'
+import { Api } from '@/api/v1/Api.js'
 
 export default {
   name: 'authentication',
@@ -57,8 +58,8 @@ export default {
   methods: {
     async signup() {
       try {
-        const response = await axios.post(
-          'http://localhost:3001/api/v1/auth/signup',
+        const response = await Api.post(
+          '/auth/signup',
           {
             emailAddress: this.user.email,
             username: this.user.username,
@@ -72,11 +73,8 @@ export default {
         console.log('Signup successful:', response.data)
         this.message = response.data.message || 'Signup successful!'
 
-        // Save the token in local storage
-        localStorage.setItem('token', response.data.token)
-
         // Redirect the user to the home page
-        this.$router.push('/')
+        this.$router.push('/login')
       } catch (error) {
         // Handle errors and show an error message
         this.message =

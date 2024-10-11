@@ -20,6 +20,10 @@ const createArgument =  async (req, res, next) => {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
+    if ( debate.participants.includes(userId) === false) {
+      return res.status(403).json({ message: 'Unauthorized to delete argument' });
+    }
+
     if(debate.status !== 'open'){
       return res.status(403).json({ message: 'Debate is closed' });
     }
@@ -31,7 +35,7 @@ const createArgument =  async (req, res, next) => {
         return res.status(404).json({ message: 'User not found' });
     }
 
-    // Create a new argument (assuming you have an Argument model)
+    // Create a new argument
     const argument = new Argument({
       content,
       owner: user,
@@ -40,7 +44,7 @@ const createArgument =  async (req, res, next) => {
     await argument.save();
 
     // Add the argument to the debate's arguments array
-    debate.arguments.push(argument._id);
+    debate.arguments.push(argument);
     await debate.save();
 
     res.status(201).json(argument);
@@ -91,12 +95,12 @@ const deleteArgument = async (req, res) => {
 
     const debate = await Debate.findById(debateId);
     if (!debate) {
-        return res.status(404).json({ error: 'Debate not found' });
+        return res.status(401).json({ error: 'Debate not found' });
     }
 
     const argument = await Argument.findById(argumentId);
     if (!argument) {
-      return res.status(404).json({ error: 'Argument not found' });
+      return res.status(401).json({ error: 'Argument not found' });
     }
 
     if (!debate.arguments.includes(argumentId)) {
