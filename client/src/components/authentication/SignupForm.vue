@@ -9,7 +9,7 @@
       "
     >
       <b-card-title style="color: #007769" class=".rubik-text fw-semibold"
-        >Welcome to Deebate! 👋</b-card-title
+        >One Step Away! 🎉</b-card-title
       >
       <b-form @submit.prevent="signup" class="signup-form">
         <b-input type="email" v-model="user.email" placeholder="Email" />
