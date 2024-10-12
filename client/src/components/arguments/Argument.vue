@@ -1,8 +1,8 @@
 <template>
-  <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm">
+  <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm" style="font-family: Inter,serif">
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
-        <img :src="owner.avatar || '../../../assets/avatars/avatar.png'"
+        <img :src="owner.profileImg || '../../../assets/avatars/avatar.png'"
              :alt="owner.username"
              class="rounded-circle"
              style="width: 48px;">
@@ -18,8 +18,7 @@
 
     <div v-if="showCommentsPopup" class="comments-popup">
       <div class="comments-popup-content">
-        <div class="d-flex flex-row justify-content-between">
-          <h3 class="mb-4">Comments</h3>
+        <div class="d-flex flex-row justify-content-end">
           <i class="bi bi-x"
              style="font-size: 30px; color: #007769; cursor: pointer"
              @click="showCommentsPopup = false"
@@ -27,9 +26,9 @@
         </div>
         <div class="comments-list">
           <ul class="list-unstyled">
-            <li v-for="comment in commentsWithUserDetails" :key="comment._id" class="mb-3 p-2 border-bottom">
-              <div class="d-flex gap-2 w-100 p-3 border-bottom border-light">
-                <img :src="comment.userDetails?.profileImg || '../../../public/logo/deebate-logo-dark.png'"
+            <li v-for="comment in commentsWithUserDetails" :key="comment._id" class="mb-3 p-2">
+              <div class="d-flex gap-2 w-100">
+                <img :src="comment.userDetails?.profileImg || '../../../assets/avatars/avatar.png'"
                      :alt="comment.userDetails?.username"
                      class="rounded-5"
                      style="width: 40px; height: 40px;">
@@ -43,9 +42,8 @@
           </ul>
         </div>
 
-        <div class="mt-4">
-          <h5>Add a comment</h5>
-          <textarea v-model="newComment" placeholder="Type your comment here" class="form-control mb-2"></textarea>
+        <div>
+          <textarea v-model="newComment" placeholder="Type your comment" class="form-control mb-2 rounded-4"></textarea>
           <button  @click="submitComment" class="btn btn-primary" style="width: 100%;">Comment</button>
         </div>
       </div>
@@ -172,12 +170,12 @@ export default {
 .comments-popup-content {
   background: white;
   padding: 20px;
-  border-radius: 8px;
   width: 500px;
   max-width: 90%;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
+  border-radius: 20px;
 }
 
 .comments-list {
