@@ -11,17 +11,20 @@
       <button v-if="isOwner" @click="deleteArgument" class="btn btn-outline-primary">Delete</button>
     </div>
     <p class="p-2 fs-5">{{ content }}</p>
-    <div class="d-flex align-items-center gap-2">
+    <div style="cursor: pointer" class="d-flex align-items-center gap-2" @click="showCommentsPopup = true">
       <i class="bi bi-chat-fill text-muted"></i>
       <span class="fw-bold" style="font-size: 14px">{{ commentsWithUserDetails.length }}</span>
-      <button @click="showCommentsPopup = true" class="custom-button">
-  View/Add Comments
-</button>
     </div>
 
     <div v-if="showCommentsPopup" class="comments-popup">
       <div class="comments-popup-content">
-        <h3 class="mb-4">Comments</h3>
+        <div class="d-flex flex-row justify-content-between">
+          <h3 class="mb-4">Comments</h3>
+          <i class="bi bi-x"
+             style="font-size: 30px; color: #007769; cursor: pointer"
+             @click="showCommentsPopup = false"
+          ></i>
+        </div>
         <div class="comments-list">
           <ul class="list-unstyled">
             <li v-for="comment in commentsWithUserDetails" :key="comment._id" class="mb-3 p-2 border-bottom">
@@ -43,10 +46,8 @@
         <div class="mt-4">
           <h5>Add a comment</h5>
           <textarea v-model="newComment" placeholder="Type your comment here" class="form-control mb-2"></textarea>
-          <button @click="submitComment" class="btn btn-primary" >Submit Comment</button>
+          <button  @click="submitComment" class="btn btn-primary" style="width: 100%;">Comment</button>
         </div>
-
-        <button  @click="showCommentsPopup = false" class="btn btn-outline-secondary mt-3">Close</button>
       </div>
     </div>
   </div>
