@@ -2,7 +2,7 @@
 
 const User = require('../../models/user');
 const mongoose = require('mongoose');
-const { authenticateRole } = require("../../utils/utils");
+const { authenticateRole, hashPassword } = require("../../utils/utils");
 
 // Search for user
 
@@ -92,72 +92,50 @@ const getUser = async (req, res) => {
 // Modify one user's info
 
 const editUser = async (req, res) => {
-  // Get the requesting user's id and the requested user's id and updates from the request params and body
-  const updates = req.body;
+  const updates = req.body;  // Get the updates from request body
   const { userId } = req.params;
-  const { id } = req.user;
 
-  const requestedUserId = userId;
-  const requestingUserId = id;
+  // Ensure we only update fields that are allowed
+  const allowedAttributes = ['emailAddress', 'username', 'password', 'firstName', 'lastName', 'profileImg'];
 
-  // if the user is not the owner or an admin, return a 403 response
-  if (requestedUserId !== requestingUserId) {
-    try {
-      await authenticateRole('admin');
-    } catch (error) {
-      return res.status(403).json({ message: error.message });
-    }
-  }
-
-  // List of allowed attributes to update
-  const allowedAttributes = [
-    'emailAddress',
-    'username',
-    'password',
-    'firstName',
-    'lastName',
-    'role',
-    'profileImg',
-  ];
-
-  // Check every requested update if it is valid
-  const isValidRequest = Object.keys(updates).every((key) =>
-    allowedAttributes.includes(key)
-  );
+  // Check if the update request contains only allowed attributes
+  const isValidRequest = Object.keys(updates).every((key) => allowedAttributes.includes(key));
 
   if (!isValidRequest) {
-    return res
-      .status(400)
-      .json({
-        message:
-          'Invalid update request. One or more attributes are not allowed.',
-      });
+    return res.status(400).json({ message: 'Invalid update request. Some attributes are not allowed.' });
+  }
+
+  // Hash the password if provided
+  if (updates.password) {
+    updates.password = await hashPassword(updates.password);
   }
 
   try {
-
-    // find the user
     const user = await User.findById(userId);
 
-    // check if the user exist
     if (!user) {
-      return res.status(404).json({ message: 'User was not found.' });
+      return res.status(404).json({ message: 'User not found.' });
     }
-    // find the user and update the informations as per the request
-    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
-      new: true,
+
+    // Check if another user with the same email or username exists (excluding current user)
+    const existingUser = await User.findOne({
+      _id: { $ne: userId },  // Exclude current user from search
+      $or: [{ emailAddress: updates.emailAddress }, { username: updates.username }],
     });
 
-    res
-      .status(200)
-      .json({
-        message: `${user.username}'s information updated sucessfully!`,
-        updatedUser,
-      });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email or username already in use' });
+    }
+
+    // Perform the update
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true }).lean();
+
+    // Don't return the password in the response
+    delete updatedUser.password;
+
+    res.status(200).json(updatedUser);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error.', error: error.message });
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };
 
