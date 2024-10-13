@@ -94,7 +94,8 @@ export default {
   methods: {
     async createDebate() {
       try {
-        const user = await getLoggedInUser(); // Await the result from getLoggedInUser
+        // Await the result from getLoggedInUser
+        const user = await getLoggedInUser();
 
         // Calculate the end time based on the number of days selected
         const endTime = new Date();
