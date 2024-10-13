@@ -237,9 +237,15 @@ export default {
 }
 
 .alert-box {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 10px;
   border-radius: 5px;
   font-weight: bold;
+  z-index: 1000;
+  transition: opacity 0.3s ease, top 0.3s ease;
 }
 
 .alert-box.success {
