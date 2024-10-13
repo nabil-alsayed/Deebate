@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+var bcrypt = require('bcryptjs');
 
 // This can be used to generate a verification token for email verification
 
@@ -78,8 +79,30 @@ const authenticateRole = (requiredRoles) => {
   };
 };
 
+// Hash the password with a given salt round
+const hashPassword = async (password, saltRounds = 10) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+  } catch (error) {
+    throw new Error('Error hashing password');
+  }
+};
+
+// Compare plain password with hashed password
+const comparePassword = async (plainPassword, hashedPassword) => {
+  try {
+    const isValid = await bcrypt.compare(plainPassword, hashedPassword);
+    return isValid;
+  } catch (error) {
+    throw new Error('Error comparing passwords');
+  }
+};
+
 module.exports = {
   generateVerificationToken,
   generateTokenAndSetCookie,
   authenticateRole,
+  hashPassword,
+  comparePassword,
 };
