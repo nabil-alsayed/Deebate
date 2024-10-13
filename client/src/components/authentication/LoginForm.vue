@@ -27,14 +27,15 @@
             >Sign up</router-link
           >
         </p>
-        <p class="small fw-medium alert-message">{{ message }}</p>
+        <div v-if="alertShown" :class="['alert-box', message.type]">
+          {{ message.text }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
 import { Api } from '@/api/v1/Api.js'
 
 export default {
@@ -45,37 +46,44 @@ export default {
         email: '',
         password: ''
       },
-      message: ''
+      message: {
+        type: '',
+        text: '',
+      },
+      alertShown: false
     }
   },
   methods: {
     async login() {
       try {
-        const response = await Api.post(
-          '/auth/login/',
-          {
-            emailAddress: this.user.email,
-            password: this.user.password
-          }
-        )
+        const response = await Api.post('/auth/login/', {
+          emailAddress: this.user.email,
+          password: this.user.password
+        });
 
-        // Handle the response, save the token if necessary
-        console.log('Login successful:', response.data)
-        this.message = response.data.message || 'Login successful!'
+        // Set success message and show alert
+        this.message = {type: 'success', text: response.data.message || 'Login successful!'};
+        this.showAlert();
 
         // Save the token in local storage
-        localStorage.setItem('token', response.data.token)
-        localStorage.setItem('user', JSON.stringify(response.data.user))
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         // Redirect the user to the home page
-        this.$router.push('/')
+        this.$router.push('/');
       } catch (error) {
-        // Handle errors and show an error message
-        this.message =
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : 'Login failed, please try again.'
-        console.error('Login failed:', this.message)
+        // Set error message and show alert
+        const errorMsg = error.response?.data?.message || 'Login failed, please try again.';
+        this.message = {type: 'error', text: errorMsg};
+        this.showAlert();
       }
+    },
+    showAlert() {
+      // Show the alert
+      this.alertShown = true;
+      // Hide the alert after 1.5 seconds
+      setTimeout(() => {
+        this.alertShown = false;
+      }, 1500);
     }
   }
 }
@@ -119,7 +127,27 @@ export default {
   background-color: #007769;
 }
 
-.alert-message {
-  color: red;
+.alert-box {
+  position: fixed;
+  top: 0;
+  margin-top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  transition: opacity 0.3s ease, top 0.3s ease;
 }
+
+.alert-box.success {
+  background-color: #d4edda;
+  color: #398549;
+}
+
+.alert-box.error {
+  background-color: #f8d7da;
+  color: #a53d45;
+}
+
 </style>

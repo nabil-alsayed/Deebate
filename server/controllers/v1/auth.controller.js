@@ -26,11 +26,10 @@ const signup = async (req, res) => {
     if(user){
         return res.status(400).json({ message: "A user with same email or username already exist."})
     }
-  
-    // Hash the password and salt round it to 10
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      const verificationToken = utils.generateVerificationToken();
+
+    // Hash the password using the utility function
+    const hashedPassword = await utils.hashPassword(password);
+    const verificationToken = utils.generateVerificationToken();
   
     // Create document in db for a new user with requested values
       const newUser = await User.create({
