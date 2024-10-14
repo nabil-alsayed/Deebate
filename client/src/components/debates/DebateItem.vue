@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-flex flex-column row-gap-sm-3">
     <!-- Header -->
     <div class="d-flex flex-row justify-content-between" style="font-family: 'Inter', sans-serif">
       <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1">
