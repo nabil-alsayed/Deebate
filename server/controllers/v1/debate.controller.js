@@ -8,11 +8,10 @@ const voteDebate = async (req, res) => {
   const { debateId } = req.params;
   const { userId, voteType } = req.body;
 
-  const allowedVotes = ['with', 'against'];
+  const allowedVotes = ['with', 'against', 'remove'];
 
   try {
-    // Find the debate and ensure the owner is populated
-    const debate = await Debate.findById(debateId).populate('owner');
+    const debate = await Debate.findById(debateId);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -20,19 +19,31 @@ const voteDebate = async (req, res) => {
     const userAlreadyVotedWith = debate.votesWith.includes(userId);
     const userAlreadyVotedAgainst = debate.votesAgainst.includes(userId);
 
-    // Prevent users from voting more than once or changing their vote
-    if (userAlreadyVotedWith || userAlreadyVotedAgainst) {
-      const voteList = userAlreadyVotedWith ? debate.votesWith : debate.votesAgainst;
-      const voteIndex = voteList.indexOf(userId);
-      voteList.splice(voteIndex, 1);
-
+    // If voteType is 'remove', the user wants to cancel their vote
+    if (voteType === 'remove') {
+      if (userAlreadyVotedWith) {
+        debate.votesWith = debate.votesWith.filter(id => id.toString() !== userId);
+      } else if (userAlreadyVotedAgainst) {
+        debate.votesAgainst = debate.votesAgainst.filter(id => id.toString() !== userId);
+      }
       await debate.save();
-      return res.status(200).json({ message: 'User vote removed successfully' });
+      return res.status(200).json({
+        message: 'Vote removed successfully',
+        debate: {
+          votesWith: debate.votesWith,
+          votesAgainst: debate.votesAgainst,
+        },
+      });
     }
 
     // Validate the vote type
     if (!allowedVotes.includes(voteType)) {
       return res.status(400).json({ message: 'Invalid vote type. Must be "with" or "against"' });
+    }
+
+    // Prevent users from voting twice
+    if (userAlreadyVotedWith || userAlreadyVotedAgainst) {
+      return res.status(400).json({ message: 'User has already voted' });
     }
 
     // Add user to the correct vote list
@@ -42,16 +53,13 @@ const voteDebate = async (req, res) => {
       debate.votesAgainst.push(userId);
     }
 
-    // Ensure the owner is retained and save the updated debate
     await debate.save();
 
     res.status(200).json({
       message: 'Vote cast successfully',
       debate: {
-        topic: debate.topic,
-        owner: debate.owner, // Include the owner
-        votesWith: debate.votesWith.length,
-        votesAgainst: debate.votesAgainst.length,
+        votesWith: debate.votesWith,
+        votesAgainst: debate.votesAgainst,
       },
     });
   } catch (error) {
@@ -147,6 +155,14 @@ const getDebates = async (req, res, next) => {
     // Execute the query and get the debates
     const debates = await query;
 
+    // Check and close expired debates before returning the results
+    for (const debate of debates) {
+      if (debate.endTime < new Date() && debate.status === 'open') {
+        debate.status = 'closed';
+        await debate.save();
+      }
+    }
+
     // Send the debates along with HATEOAS links
     res.status(200).json({
       debates: debates.map(debate => ({
@@ -213,6 +229,13 @@ const getDebateByID = async (req, res, next) => {
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
+
+    // Check if the debate has expired and close it
+    if (new Date(debate.endTime).getTime() < new Date().getTime() && debate.status === 'open') {
+      debate.status = 'closed';
+      await debate.save();
+    }
+
     res.status(200).json({ debate });
   } catch (err) {
     return next(err);
@@ -251,43 +274,6 @@ const updateDebate = async (req, res, next) => {
     return next(err);
   }
 };
-
-
-const joinDebate = async (req, res, next) => {
-  const { debateId } = req.params;
-  const { userId } = req.body;
-
-  console.log("debate id: ", debateId + " user id: ", userId);
-
-  try {
-    const debate = await Debate.findById(debateId);
-    const user = await User.findById(userId);
-
-    if (!debate) {
-      return res.status(404).json({ message: 'Debate not found' });
-    }
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (debate.participants.length >= debate.maxParticipants) {
-      return res.status(400).json({ message: 'Debate is full' });
-    }
-
-    if (debate.participants.includes(userId)) {
-      return res.status(400).json({ message: 'User already joined the debate' });
-    }
-
-    debate.participants.push(user._id);
-
-    await debate.save();
-
-    res.status(200).json({ message: 'User joined the debate successfully' });
-  } catch (error) {
-    return next(error);
-  }
-}
 
 const deleteAllUserDebates = async (req, res, next) => {
   const { userId } = req.params;
@@ -347,6 +333,5 @@ module.exports = {
   deleteAllUserDebates,
   deleteSpecificUserDebate,
   getDebateByID,
-  updateDebate,
-  joinDebate
+  updateDebate
 };

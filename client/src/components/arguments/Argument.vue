@@ -2,13 +2,17 @@
   <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm" style="font-family: Inter,serif">
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
-        <img :src="owner.profileImg || '../../../assets/avatars/avatar.png'"
+        <img :src="owner.profileImg || avatar"
              :alt="owner.username"
              class="rounded-circle"
              style="width: 48px;">
         <h5 class="fw-bold mb-0">{{ owner.username }}</h5>
+        <div class="d-inline-block px-3 rounded text-black fw-bold"
+             :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: side.backgroundColor }">
+          <p class="m-0" style="color: white">{{ side.text }}</p>
+        </div>
       </div>
-      <button v-if="isOwner" @click="deleteArgument" class="btn btn-outline-primary">Delete</button>
+      <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 20px; color: #a83737; cursor: pointer" />
     </div>
     <p class="p-2 fs-5">{{ content }}</p>
     <div style="cursor: pointer" class="d-flex align-items-center gap-2" @click="showCommentsPopup = true">
@@ -28,7 +32,7 @@
           <ul class="list-unstyled">
             <li v-for="comment in commentsWithUserDetails" :key="comment._id" class="mb-3 p-2">
               <div class="d-flex gap-2 w-100">
-                <img :src="comment.userDetails?.profileImg || '../../../assets/avatars/avatar.png'"
+                <img :src="comment.userDetails?.profileImg || avatar"
                      :alt="comment.userDetails?.username"
                      class="rounded-5"
                      style="width: 40px; height: 40px;">
@@ -54,6 +58,7 @@
 <script>
 import { Api } from '@/api/v1/Api.js'
 import { getLoggedInUser } from '@/api/v1/usersApi.js'
+import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
 export default {
   name: 'Argument',
@@ -68,7 +73,12 @@ export default {
       commentsWithUserDetails: [],
       newComment: '',
       isOwner: false,
-      showCommentsPopup: false
+      showCommentsPopup: false,
+      side: {
+        text: '',
+        backgroundColor: '',
+      },
+      avatar: defaultAvatar
     }
   },
   async created() {
@@ -76,6 +86,7 @@ export default {
     await this.fetchOwner()
     await this.checkIfOwner()
     await this.fetchCommentUserDetails()
+    await this.fetchUserSide()
   },
   methods: {
     async checkIfOwner() {
@@ -135,6 +146,29 @@ export default {
           }
         })
       )
+    },
+    async fetchUserSide() {
+      try {
+        const response = await Api.get(`/debates/${this.debate}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+
+
+        // Check if the user is in votesWith or votesAgainst
+        const isWith = response.data.debate.votesWith.includes(this.owner._id);
+
+        // Set the side based on where the user is found
+        if (isWith) {
+          this.side.text = 'With';
+          this.side.backgroundColor = '#007769';
+        } else {
+          this.side.text = 'Against';
+          this.side.backgroundColor = '#a83737';
+        }
+
+      } catch (error) {
+        console.error('Failed to fetch user side:', error);
+      }
     },
     async submitComment() {
       if (!this.newComment.trim()) {
