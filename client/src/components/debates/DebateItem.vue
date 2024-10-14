@@ -39,7 +39,7 @@
 
       <!-- Add New Argument -->
       <div v-if="status !== 'closed'" class="d-flex flex-column row-gap-2">
-        <b-form @submit="addArgument" class="d-flex flex-column row-gap-2">
+        <b-form @submit.prevent="addArgument" class="d-flex flex-column row-gap-2">
           <b-form-textarea
             v-model="newArgument"
             placeholder="Enter your argument here"
