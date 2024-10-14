@@ -1,11 +1,18 @@
 <template>
-  <div>
+  <div class="d-flex flex-column row-gap-sm-3">
     <!-- Header -->
-    <div class="d-flex flex-row justify-content-between">
-      <div v-if="status !== 'closed'">
-        <h3 class="fw-bold" style="font-size: small;">{{ endTime }}</h3>
+    <div class="d-flex flex-row justify-content-between" style="font-family: 'Inter', sans-serif">
+      <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1">
+        <!-- Show the formatted end time if the debate is not closed -->
+        <h3 class="fw-medium" style="font-size: small;">Ends at</h3>
+        <h3 class="fw-bold" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
       </div>
-      <i class="bi bi-three-dots-vertical"></i>
+      <!-- Category Tag -->
+      <div v-else class="d-inline-block bg-black px-2 rounded text-white fw-bold"
+           style="font-size: 14px; max-width: fit-content; height: fit-content">
+        <p class="m-0">{{ status }} <i class="bi bi-door-closed"></i> </p>
+      </div>
+      <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 20px; color: #a83737; cursor: pointer" />
     </div>
 
     <div class="d-flex flex-column text-start row-gap-3">
@@ -13,7 +20,7 @@
       <h1 class="m-0" style="font-size: 25px; font-weight: 650">{{ topic }}</h1>
 
       <!-- Category Tag -->
-      <div class="d-inline-block bg-success px-3 rounded text-white fw-bold"
+      <div class="d-inline-block bg-success px-2 rounded text-white fw-bold"
            style="font-size: 14px; max-width: fit-content">
         <p class="m-0">{{ category }}</p>
       </div>
@@ -22,7 +29,7 @@
       <arguments-list
         :arguments="argumentsList.slice(0, argumentsLimit)"
         :debate="id"
-        :user="userId"
+        :user="user"
       />
 
       <!-- Load More Arguments Button -->
@@ -31,40 +38,57 @@
       </button>
 
       <!-- Add New Argument -->
-      <div class="mt-4">
-        <b-form @submit="addArgument">
+      <div v-if="status !== 'closed'" class="d-flex flex-column row-gap-2">
+        <b-form @submit.prevent="addArgument" class="d-flex flex-column row-gap-2">
           <b-form-textarea
             v-model="newArgument"
             placeholder="Enter your argument here"
             rows="3"
             required
           ></b-form-textarea>
-          <button class="btn btn-primary mt-2 w-100" type="submit">Submit Argument</button>
+
+          <div>
+            <!-- Disable if user hasn't voted or isn't a participant -->
+            <button :disabled="!hasVoted && !isParticipant" class="btn btn-primary w-100" type="submit">
+              Kick Your Argument
+            </button>
+          </div>
+
+          <!-- Voting Buttons -->
+          <div v-if="!hasVoted && !isParticipant" class="d-flex fw-bold rounded text-white justify-content-center align-items-center">
+            <div
+              @click="voteWith"
+              class="vote-button w-50 d-flex justify-content-center align-items-center"
+              :style="withButtonStyle"
+            >
+              <p class="m-0">Vote With</p>
+              <i class="bi bi-arrow-up fs-5 ms-2"></i>
+            </div>
+            <div
+              @click="voteAgainst"
+              class="vote-button w-50 d-flex justify-content-center align-items-center"
+              :style="againstButtonStyle"
+            >
+              <p class="m-0">Vote Against</p>
+              <i class="bi bi-arrow-down fs-5 ms-2"></i>
+            </div>
+          </div>
+
+          <!-- Withdraw vote button -->
+          <div v-if="hasVoted && !isParticipant">
+            <button @click="cancelVote" class="btn cancel-button w-100" type="button">Withdraw your vote</button>
+          </div>
         </b-form>
       </div>
     </div>
 
-    <!-- Voting Buttons -->
-    <div class="d-flex fw-bold rounded text-white justify-content-center align-items-center mt-3">
-      <div
-        @click="voteWith"
-        class="vote-button w-50 d-flex justify-content-center align-items-center"
-        :style="withButtonStyle"
-      >
-        <p class="m-0">Vote With</p>
-        <i class="bi bi-arrow-up fs-5 ms-2"></i>
-      </div>
-      <div
-        @click="voteAgainst"
-        class="vote-button w-50 d-flex justify-content-center align-items-center"
-        :style="againstButtonStyle"
-      >
-        <p class="m-0">Vote Against</p>
-        <i class="bi bi-arrow-down fs-5 ms-2"></i>
-      </div>
+    <!-- Alert for success/error messages -->
+    <div v-if="alertShown" :class="['alert-box', message.type]">
+      {{ message.text }}
     </div>
   </div>
 </template>
+
 
 <script>
 import {ref, computed, watch} from 'vue';
@@ -95,33 +119,67 @@ export default {
     };
   }
   ,setup(props) {
-    let userId = ref(null);
+    const user = ref(null);
     const newArgument = ref('');
     const token = localStorage.getItem("token");
-    const voteType = ref('');
+    const hasVoted = ref(false);
+    const userSide = ref('');
+    const message = ref({type: '', text: ''});
+    const alertShown = ref(false);
+    const isParticipant = ref(false);
+    const isOwner = ref(false);
 
-
-    let numberOfWithVotes = ref(0);
-    let numberOfAgainstVotes = ref(0);
+    const numberOfWithVotes = computed(() => props.debateObj.votesWith.length);
+    const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length);
     let argumentsLimit = ref(5);
 
     const withButtonStyle = computed(() => ({
-      backgroundColor: voteType.value === 'with' ? 'green' : '',
-      color: voteType.value === 'with' ? 'white' : 'green',
+      backgroundColor: userSide.value === 'with' ? '#16B771' : '',
+      color: userSide.value === 'with' ? 'white' : '#16B771',
       height: '48px',
+      cursor: hasVoted.value ? 'default' : 'pointer',
     }));
 
     const againstButtonStyle = computed(() => ({
-      backgroundColor: voteType.value === 'against' ? 'red' : '',
-      color: voteType.value === 'against' ? 'white' : 'red',
+      backgroundColor: userSide.value === 'against' ? 'red' : '',
+      color: userSide.value === 'against' ? 'white' : 'red',
       height: '48px',
+      cursor: hasVoted.value ? 'default' : 'pointer',
     }));
 
+    // Check if the debate has ended
+    const isDebateClosed = computed(() => {
+      return new Date(props.debateObj.endTime) < new Date();
+    });
+
+    // Format the end time as date and time
+    const formattedEndTime = computed(() => {
+      const endDate = new Date(props.debateObj.endTime);
+      return endDate.toDateString();
+    });
+
+    // Update the vote counts
     const updateVoteCounts = () => {
       numberOfWithVotes.value = props.debateObj.votesWith.length;
       numberOfAgainstVotes.value = props.debateObj.votesAgainst.length;
     };
 
+    // Show alert message
+    const showAlert = () => {
+      // Show the alert
+      alertShown.value = true;
+      // Hide alert after 1.5 seconds
+      setTimeout(() => {
+        alertShown.value = false;
+        // Reload the page after successful update
+        if (message.value.type === 'success') {
+          window.location.reload();
+        }
+      }, 1000);
+    };
+
+
+    // Watch for changes in the debate object
     watch(
       () => props.debateObj,
       () => {
@@ -130,60 +188,33 @@ export default {
       {immediate: true}
     );
 
+
+    // Fetch the logged-in user ID
     const fetchLoggedInUserId = async () => {
       try {
         const user = await getLoggedInUser();
-        userId.value = user ? user.id : null;
+        user.value = user ? user.id : null;
       } catch (error) {
         console.error("Failed to fetch logged-in user ID:", error);
       }
     };
 
+
+    // Vote for a debate
     const vote = async (voteTypeSelected) => {
       if (!token) {
         alert("Please log in to vote.");
         return;
       }
 
+      const isCancellingVote = userSide.value === voteTypeSelected;
+
       try {
         const response = await Api.patch(
           `/debates/${props.debateObj._id}/vote`,
-          {voteType: voteTypeSelected},
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // Update the debate with actual values from the server
-        props.debateObj.votesWith = response.data.debate.votesWith;
-        props.debateObj.votesAgainst = response.data.debate.votesAgainst;
-        updateVoteCounts();
-        voteType.value = voteTypeSelected;
-      } catch (error) {
-        console.error(`Failed to vote ${voteTypeSelected}:`, error);
-        voteType.value = '';
-      }
-    };
-
-    const addArgument = async () => {
-      if (!newArgument.value.trim()) {
-        alert("Argument cannot be empty.");
-        return;
-      }
-
-      try {
-        // Ensure userId is available before submitting
-        if (!userId) {
-          await fetchLoggedInUserId();
-        }
-
-        const response = await Api.post(
-          `/debates/${props.debateObj._id}/arguments`,
-          {
-            content: newArgument.value,
-            userId: userId.value,
+            voteType: isCancellingVote ? 'remove' : voteTypeSelected,
+            userId: user.value._id,
           },
           {
             headers: {
@@ -192,22 +223,160 @@ export default {
           }
         );
 
-        // Add the new argument to the debate's argument list
-        this.debateObj.arguments.push(response.data);
-        newArgument.value = '';
+        props.debateObj.votesWith = response.data.debate.votesWith;
+        props.debateObj.votesAgainst = response.data.debate.votesAgainst;
+
+        if (isCancellingVote) {
+          userSide.value = null;
+          hasVoted.value = false;
+          localStorage.removeItem(`vote_${props.debateObj._id}`);
+        } else {
+          userSide.value = voteTypeSelected;
+          hasVoted.value = true;
+          localStorage.setItem(`vote_${props.debateObj._id}`, voteTypeSelected);
+        }
       } catch (error) {
-        console.error("Failed to add argument:", error);
+        console.error(`Failed to vote ${voteTypeSelected}:`, error);
+        userSide.value = '';
       }
+    };
+
+    const cancelVote = () => {
+      vote(userSide.value);
+    };
+
+    const getUserSide = () => {
+      const userId = user.value._id;
+
+      // Check if user is in the votesWith array
+      if (props.debateObj.votesWith.includes(userId)) {
+        userSide.value = 'with';
+        hasVoted.value = true;
+        return 'with';
+      }
+
+      // Check if user is in the votesAgainst array
+      if (props.debateObj.votesAgainst.includes(userId)) {
+        userSide.value = 'against';
+        hasVoted.value = true;
+        return 'against';
+      }
+
+      // If user has not voted yet (should not happen since user is a participant)
+      userSide.value = '';
+      return '';
+    };
+
+    const addArgument = async () => {
+      if (!newArgument.value.trim()) {
+        alert("Argument cannot be empty.");
+        return;
+      }
+
+      if (!hasVoted.value && !isParticipant.value) {
+        alert("You need to vote before submitting an argument.");
+        return;
+      }
+
+      const side = getUserSide();
+
+      try {
+        if (!user.value) {
+          await fetchLoggedInUserId();
+        }
+
+        const response = await Api.post(
+          `/debates/${props.debateObj._id}/arguments`,
+          {
+            content: newArgument.value,
+            userId: user.value._id,
+            side: side,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        props.debateObj.arguments.push(response.data);
+        newArgument.value = '';
+        message.value = {type: 'success', text: 'Argument added successfully!'};
+        showAlert();
+      } catch (error) {
+        const errorMsg = error.response?.data?.message || 'Failed to add argument.';
+        message.value = {type: 'error', text: errorMsg};
+        showAlert();
+      }
+    };
+
+    const checkIfUserIsParticipant = () => {
+      if (user.value) {
+        const participants = props.debateObj.participants;
+        isParticipant.value = participants.some((participant) => participant === user.value._id);
+      }
+    };
+
+    const checkIfUserIsOwner = () => {
+      if (user.value) {
+        const owner = props.debateObj.owner;
+        isOwner.value = owner._id === user.value._id;
+      }
+    };
+
+
+    const isNewArgumentsAccepted = () => {
+      if (props.debateObj.participants.length >= props.debateObj.maxParticipants) {
+        return false;
+      }
+
+      if (props.debateObj.status === 'closed') {
+        return false;
+      }
+
+      if (props.debateObj.endTime < new Date()) {
+        return false;
+      }
+
+      return true;
     };
 
     const loadMoreArguments = () => {
       argumentsLimit.value += 5;
     };
 
+    const storeVoteType = () => {
+      const vote = localStorage.getItem(`vote_${props.debateObj._id}`);
+      getUserSide();
+      if (!vote) {
+        localStorage.setItem(`vote_${props.debateObj._id}`, userSide.value);
+      }
+    };
+
+    const deleteDebate = async () => {
+      try {
+        await Api.delete(`/debates/${props.debateObj._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        message.value = {type: 'success', text: 'Debate deleted successfully!'};
+        showAlert();
+      } catch (error) {
+        const errorMsg = error.response?.data?.message || 'Failed to delete debate.';
+        message.value = {type: 'error', text: errorMsg};
+        showAlert();
+      }
+    };
+
     return {
-      userId,
+      user,
+      hasVoted,
+      userSide,
       newArgument,
-      voteType,
+      isParticipant,
+      isOwner,
+      isDebateClosed,
       numberOfWithVotes,
       numberOfAgainstVotes,
       argumentsLimit,
@@ -215,13 +384,21 @@ export default {
       againstButtonStyle,
       voteWith: debounce(() => vote("with"), 300),
       voteAgainst: debounce(() => vote("against"), 300),
+      checkIfUserIsParticipant,
+      checkIfUserIsOwner,
+      cancelVote,
       addArgument,
       loadMoreArguments,
+      getUserSide,
+      storeVoteType,
+      deleteDebate,
+      formattedEndTime,
+      message,
+      alertShown,
     };
   },
   async created() {
     this.id = this.debateObj._id;
-    console.log("Debate ID:", this.id);
     this.topic = this.debateObj.topic;
     this.category = this.debateObj.category;
     this.argumentsList = this.debateObj.arguments;
@@ -229,8 +406,14 @@ export default {
     this.votesWith = this.debateObj.votesWith;
     this.votesAgainst = this.debateObj.votesAgainst;
     this.status = this.debateObj.status;
-    this.userId = await getLoggedInUser();
-  }
+    this.user = await getLoggedInUser();
+    this.userSide = this.getUserSide();
+
+    // Check if the user is an owner or/and participant
+    this.checkIfUserIsOwner();
+    this.checkIfUserIsParticipant();
+  },
+
 };
 </script>
 
@@ -244,4 +427,41 @@ export default {
 .vote-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+.btn {
+  color: white;
+  font-weight: 650;
+  border: none;
+}
+
+.btn-primary {
+  background: #017769;
+}
+
+.cancel-button {
+  background: #b54c4c;
+}
+
+.alert-box {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  transition: opacity 0.3s ease, top 0.3s ease;
+}
+
+.alert-box.success {
+  background-color: #d4edda;
+  color: #398549;
+}
+
+.alert-box.error {
+  background-color: #f8d7da;
+  color: #a53d45;
+}
+
 </style>
