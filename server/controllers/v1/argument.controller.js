@@ -8,50 +8,109 @@ const User = require('../../models/user');
 
 
 // Create a new argument
-const createArgument =  async (req, res, next) => {
+// const createArgument =  async (req, res, next) => {
+//
+//   const { debateId } = req.params;
+//   const { content, userId } = req.body;
+//
+//   try {
+//     const debate = await Debate.findById(debateId);
+//     console.log('here is the debate' + debate);
+//     if (!debate) {
+//       return res.status(404).json({ message: 'Debate not found' });
+//     }
+//
+//     if ( debate.participants.length >= debate.maxParticipants) {
+//       return res.status(403).json({ message: 'The debate already reached capacity!' });
+//     }
+//
+//     if(debate.status !== 'open'){
+//       return res.status(403).json({ message: 'Debate is closed' });
+//     }
+//
+//     const user = await User.findById(userId);
+//     console.log('here is the user' + user);
+//
+//     if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//     }
+//
+//     // Create a new argument
+//     const argument = new Argument({
+//       content,
+//       owner: user,
+//       debate: debateId,
+//     });
+//     await argument.save();
+//
+//     // Add the argument to the debate's arguments array
+//     debate.arguments.push(argument);
+//     await debate.save();
+//
+//     res.status(201).json(argument);
+//   } catch (err) {
+//     return next(err);
+//   }
+// };
 
+const createArgument = async (req, res, next) => {
   const { debateId } = req.params;
-  const { content, userId } = req.body;
+  const { content, userId, side } = req.body; // Ensure `side` is passed
 
   try {
     const debate = await Debate.findById(debateId);
-    console.log('here is the debate' + debate);
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
 
-    if ( debate.participants.length >= debate.maxParticipants) {
-      return res.status(403).json({ message: 'The debate already reached capacity!' });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    if(debate.status !== 'open'){
+    // Ensure debate is open
+    if (debate.status !== 'open') {
       return res.status(403).json({ message: 'Debate is closed' });
     }
 
-    const user = await User.findById(userId);
-    console.log('here is the user' + user);
+    // Convert userId to ObjectId for comparison
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+    // Check if debate is full but the user is not already a participant
+    const isParticipant = debate.participants.some(participantId => participantId.equals(userObjectId));
+
+    if (debate.participants.length >= debate.maxParticipants && !isParticipant) {
+      return res.status(400).json({ message: 'Debate is full' });
     }
 
-    // Create a new argument
+    // Create the argument with the side information
     const argument = new Argument({
       content,
-      owner: user,
+      owner: user._id,
       debate: debateId,
+      side, // Record which side the user voted for
     });
+
     await argument.save();
 
-    // Add the argument to the debate's arguments array
+    // Add the argument to the debate
     debate.arguments.push(argument);
+
+    // Check if the user is not already a participant, then add them
+    if (!isParticipant) {
+      debate.participants.push(user._id);
+    }
+
     await debate.save();
 
     res.status(201).json(argument);
   } catch (err) {
+    console.error(err);
     return next(err);
   }
 };
+
+
 
 // Get all arguments
 const getAllArguments = async (req, res) => {

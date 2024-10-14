@@ -24,6 +24,11 @@ const ArgumentModel = new Schema(
       ref: 'Debate',
       required: true,
     },
+    side: {
+      type: String,
+      enum: ['with', 'against'],
+      required: true,
+    },
   },
   { timestamps: true }
 );
