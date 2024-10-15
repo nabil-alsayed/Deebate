@@ -41,7 +41,7 @@
                   <small class="text-muted">@{{ comment.userDetails?.username }}</small>
                 </div>
               </div>
-              <p class="mb-0 mt-2">{{ comment.content }}</p>
+              <p class="mb-0 mt-2 comment-content">{{ comment.content }}</p>
               <button v-if="isCommentOwner(comment)" @click="startUpdateComment(comment)" class="btn btn-sm btn-primary mt-2">
                 Edit comment <i class="fa-regular fa-pen-to-square"></i>
               </button>
@@ -180,13 +180,16 @@ export default {
       }
     },
     async submitComment() {
-      if (!this.newComment.trim()) {
-        alert('Please enter a comment')
-        return
+      // Trim all spaces from the newComment
+      const trimmedComment = this.newComment.replace(/[\r\n]+/g, '');
+
+      if (!trimmedComment) {
+        alert('Please enter a valid comment');
+        return;
       }
       try {
         const { data } = await Api.post(`/debates/${this.debate}/arguments/${this.argument}/comments`,
-          { content: this.newComment },
+          { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
         const currentUser = await getLoggedInUser()
@@ -214,13 +217,15 @@ export default {
     },
 
     async submitCommentUpdate() {
-      if (!this.updatedCommentContent.trim()) {
+      const trimmedComment = this.updatedCommentContent.replace(/[\r\n]+/g, '');
+      
+      if (!trimmedComment) {
         alert('Please enter a comment')
         return
       }
       try {
         const { data } = await Api.put(`/debates/${this.debate}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
-          { content: this.updatedCommentContent },
+          { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
         
@@ -305,5 +310,11 @@ textarea {
 .custom-button:focus {
   outline: none;
   box-shadow: #01675b;
+}
+
+.comment-content {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 </style>
