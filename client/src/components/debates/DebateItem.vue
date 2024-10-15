@@ -8,8 +8,9 @@
         <h3 class="fw-bold m-0" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
       </div>
       <!-- Category Tag -->
-      <div v-else class="d-inline-block bg-black px-2 rounded text-white fw-bold"
+      <div v-else class="d-flex flex-row column-gap-1 bg-black px-2 rounded text-white fw-bold"
            style="font-size: 14px; max-width: fit-content; height: fit-content">
+        {{status}}
         <p class="m-0">
           <i class="bi bi-door-closed"></i>
         </p>
