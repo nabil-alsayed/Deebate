@@ -47,7 +47,7 @@ export default {
     EditProfile,
   },
   setup() {
-    const debates = ref([]); // Holds all debates fetched from API
+    const debates = ref([]);
     const selectedCategory = ref(localStorage.getItem('selectedCategory') || ''); // Initially, fetch from localStorage if exists
 
     // Fetch debates from API

@@ -5,10 +5,14 @@
     <div class="d-flex flex-column row-gap-4">
       <!-- User's First Name and Username -->
       <div class="d-flex flex-row column-gap-2 justify-content-start align-items-center">
-        <img :src="this.profileImage"
-             alt="profile image"
-             style="height: 70px; width: 70px; border-radius: 15px;"
-        />
+        <div class="profile-image-container">
+          <img :src="profileImagePreview || this.profileImage || defaultAvatar"
+               alt="profile image"
+               style="height: 70px; width: 70px; border-radius: 15px;"
+          />
+          <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
+          <button @click="triggerFileInput" class="change-photo-btn">Change Photo</button>
+        </div>
         <div>
           <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
           <p class="username">@{{ user.username }}</p>
@@ -16,7 +20,7 @@
       </div>
 
       <!-- Form to edit profile -->
-      <form class="d-flex flex-column row-gap-2" @submit="toggleEditMode">
+      <form class="d-flex flex-column row-gap-2" @submit.prevent="saveProfile">
         <div class="field">
           <label>First Name</label>
           <input type="text" v-model="editedUser.firstName" :disabled="!editMode" required />
@@ -45,18 +49,16 @@
         <div class="button-group">
           <button
             v-if="editMode"
-            type="button"
-            @click="toggleEditMode"
-            :disabled="!hasChanges || !isFormValid"
+            type="submit"
+            :disabled="!hasChanges || !isFormValid || isSaving"
             class="save-button d-flex flex-grow-1 justify-content-center"
           >
-            Save
+            {{ isSaving ? 'Saving...' : 'Save' }}
           </button>
           <button
             v-else
             type="button"
             @click="toggleEditMode"
-            :disabled="isSaving"
             class="save-button d-flex flex-grow-1 justify-content-center"
           >
             Edit
@@ -87,47 +89,47 @@ import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 export default {
   data() {
     return {
-      user: { // This holds the current user's values
+      user: {
         emailAddress: '',
         username: '',
         password: '',
         firstName: '',
         lastName: '',
-        profileImage: defaultAvatar,
+        profileImage: '',
       },
-      editedUser: {}, // This holds the edited user's values
-      isSaving: false, // State to disable the button while saving
-      token: localStorage.getItem('token'), // Authentication token
+      editedUser: {},
+      isSaving: false,
+      token: localStorage.getItem('token'),
       message: {
-        type: '', // success or error
-        text: '', // Message text
+        type: '',
+        text: '',
       },
-      editMode: false, // State to track if the user is in edit mode
-      alertShown: false, // State to track if the alert is displayed
-      passwordPlaceholder: '********', // Placeholder for password field
+      editMode: false,
+      alertShown: false,
+      passwordPlaceholder: '********',
+      profileImageFile: null,
+      profileImagePreview: null,
+      defaultAvatar,
     };
   },
   created() {
-    // Load user data from localStorage when the component is mounted
     this.loadUser();
   },
   computed: {
-    // To check if there are changes between the current user data and the edited user data
     hasChanges() {
       return (
         this.user.firstName !== this.editedUser.firstName ||
         this.user.lastName !== this.editedUser.lastName ||
         this.user.username !== this.editedUser.username ||
         this.user.emailAddress !== this.editedUser.emailAddress ||
-        (this.editedUser.password && this.editedUser.password !== '')
+        (this.editedUser.password && this.editedUser.password !== '') ||
+        this.profileImageFile !== null
       );
     },
-    // Email format validation
     isEmailValid() {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailPattern.test(this.editedUser.emailAddress);
     },
-    // Check if all required fields are filled
     isFormValid() {
       return (
         this.editedUser.firstName &&
@@ -138,96 +140,86 @@ export default {
     },
   },
   methods: {
-    // Load the user from localStorage
     loadUser() {
       const localUser = JSON.parse(localStorage.getItem('user'));
       if (localUser) {
-        this.user.emailAddress = localUser.emailAddress;
-        this.user.username = localUser.username;
-        this.user.firstName = localUser.firstName;
-        this.user.lastName = localUser.lastName;
-        this.profileImage = localUser.profileImg || defaultAvatar; // Ensure the profile image is loaded
-        this.editedUser = { ...this.user, password: '' }; // Initialize with empty password
+        this.user = { ...localUser };
+        this.editedUser = { ...this.user, password: '' };
       }
     },
-    // Toggle between edit and save mode
     toggleEditMode() {
-      if (this.editMode) {
-        // If we're in edit mode, save the profile
-        this.saveProfile();
-      } else {
-        // Enable the inputs and switch to edit mode
-        this.editMode = true;
+      this.editMode = !this.editMode;
+      if (!this.editMode) {
+        this.cancelEdit();
       }
     },
     showAlert() {
-      // Show the alert
       this.alertShown = true;
-      // Hide alert after 1.5 seconds
       setTimeout(() => {
         this.alertShown = false;
-        // Reload the page after successful update
         if(this.message.type === 'success'){
           window.location.reload();
         }
-      } , 1500);
+      }, 1500);
     },
-    // Cancel editing and restore the original user data
     cancelEdit() {
-      this.editedUser = { ...this.user }; // Restore original data
-      this.editMode = false; // Exit edit mode
-      this.message.text = ''; // Clear any message
+      this.editedUser = { ...this.user };
+      this.editMode = false;
+      this.message.text = '';
+      this.profileImageFile = null;
+      this.profileImagePreview = null;
+    },
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.profileImageFile = file;
+        this.profileImagePreview = URL.createObjectURL(file);
+      }
     },
     async saveProfile() {
       this.isSaving = true;
-      this.message.text = ''; // Clear previous messages
+      this.message.text = '';
 
       try {
         const localUser = JSON.parse(localStorage.getItem('user'));
+        const formData = new FormData();
+
+        Object.keys(this.editedUser).forEach(key => {
+          if (this.editedUser[key] !== '' && this.editedUser[key] !== this.user[key]) {
+            formData.append(key, this.editedUser[key]);
+          }
+        });
+
+        if (this.profileImageFile) {
+          formData.append('profileImg', this.profileImageFile);
+        }
+
         const config = {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'multipart/form-data',
           },
         };
 
-        // create a shallow copy of editedUser to modify it before sending
-        const updatedUser = { ...this.editedUser };
+        const response = await Api.patch(`/users/${localUser._id}`, formData, config);
 
-        // Remove fields that shouldn't be sent to the backend
-        delete updatedUser.profileImage;
-        if (!updatedUser.password) {
-          // Remove password if it's empty
-          delete updatedUser.password;
-        }
-
-        // API request to update the user profile
-        const response = await Api.patch(`/users/${localUser._id}`, updatedUser, config);
-
-        // Update localStorage with the updated user data
         localStorage.setItem('user', JSON.stringify(response.data));
-
-        // Sync the user data after successful update
-        this.user = { ...response.data }; // Correctly update `user`
-        this.editedUser = { ...this.user }; // Keep the editedUser up-to-date
-
-        // Exit edit mode
+        this.user = { ...response.data };
+        this.editedUser = { ...this.user, password: '' };
         this.editMode = false;
-
-        // Show success message
         this.message = { type: 'success', text: 'Profile updated successfully!' };
-
         this.showAlert();
       } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to update profile.';
-
-        // Set the alert's message to type error and the error message
         this.message = { type: 'error', text: errorMsg };
         this.showAlert();
       } finally {
-        // Enable the button again
         this.isSaving = false;
       }
-    },
+    }
   },
 };
 </script>
@@ -336,5 +328,23 @@ input:disabled {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
+}
+
+.profile-image-container {
+  position: relative;
+}
+
+.change-photo-btn {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #007769;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
 }
 </style>
