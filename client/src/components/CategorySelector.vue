@@ -23,12 +23,12 @@ export default {
   data() {
     return {
       categories: [
-        { name: 'Health', icon: 'fas fa-flask' },
-        { name: 'Education', icon: 'fas fa-brain' },
-        { name: 'Technology', icon: 'fas fa-chart-line' },
+        { name: 'Health', icon: 'fas fa-heart-pulse' },
+        { name: 'Education', icon: 'fas fa-book' },
+        { name: 'Technology', icon: 'fas fa-microchip' },
         { name: 'Sports', icon: 'fas fa-football-ball' },
         { name: 'Politics', icon: 'fas fa-landmark' },
-        { name: 'Social Issues', icon: 'fas fa-leaf' },
+        { name: 'Social Issues', icon: 'fas fa-people-group' },
       ],
       activeCategory: ''
     };

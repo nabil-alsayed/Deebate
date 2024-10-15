@@ -8,10 +8,11 @@
       <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center"
            style="font-size: 20px"
       >
-        <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center">
+        <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center"
+             @click="toggleSort" style="cursor: pointer;">
           <h2 style="font-weight: 550; font-size: 17px">End Time</h2>
-          <i class="bi bi-sort-up inactive"></i>
-          <i class="bi bi-sort-down"></i>
+          <i :class="['bi', sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-up inactive']"></i>
+          <i :class="['bi', sortOrder === 'desc' ? 'bi-sort-down' : 'bi-sort-down inactive']"></i>
         </div>
       </div>
     </div>
@@ -45,6 +46,7 @@ export default {
     return {
       debates: [],
       error: null,
+      sortOrder: 'desc', // sorting: newest first
     };
   },
   watch: {
@@ -56,10 +58,11 @@ export default {
     this.getDebates();
   },
   methods: {
-    // Fetch debates, either for a specific user or general
+
     getDebates() {
-      const userQuery = this.user ? `?user=${this.user}` : '';
-      Api.get(`/debates${userQuery}`)
+      const userQuery = this.user ? `user=${this.user}&` : '';
+      const sortQuery = `sort=${this.sortOrder}`;
+      Api.get(`/debates?${userQuery}${sortQuery}`)
         .then((response) => {
           console.log(response.data.debates);
           this.debates = response.data.debates;
@@ -68,6 +71,11 @@ export default {
           console.error(error);
           this.error = 'An error occurred while fetching debates. Please try again later.';
         });
+    },
+
+    toggleSort() {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      this.getDebates();
     },
   },
 };
