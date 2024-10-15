@@ -190,13 +190,18 @@ export default {
           },
         };
 
-        // Remove password from payload if it's empty
-        if (!this.editedUser.password) {
-          delete this.editedUser.password;
+        // create a shallow copy of editedUser to modify it before sending
+        const updatedUser = { ...this.editedUser };
+
+        // Remove fields that shouldn't be sent to the backend
+        delete updatedUser.profileImage;
+        if (!updatedUser.password) {
+          // Remove password if it's empty
+          delete updatedUser.password;
         }
 
         // API request to update the user profile
-        const response = await Api.patch(`/users/${localUser._id}`, this.editedUser, config);
+        const response = await Api.patch(`/users/${localUser._id}`, updatedUser, config);
 
         // Update localStorage with the updated user data
         localStorage.setItem('user', JSON.stringify(response.data));
@@ -212,7 +217,6 @@ export default {
         this.message = { type: 'success', text: 'Profile updated successfully!' };
 
         this.showAlert();
-        // window.location.reload();
       } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to update profile.';
 
