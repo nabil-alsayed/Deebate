@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import Argument from "@/components/arguments/Argument.vue";
-import JoinDebate from "@/components/arguments/JoinDebate.vue";
+import Argument from '@/components/arguments/Argument.vue'
+import JoinDebate from '@/components/arguments/JoinDebate.vue'
 export default {
-  name: "ArgumentsList",
+  name: 'ArgumentsList',
   computed: {
     argument() {
       return argument
@@ -31,29 +31,29 @@ export default {
   components: { JoinDebate, Argument },
   data() {
     return {
-      argumentsList: this.arguments,
-    };
+      argumentsList: this.arguments
+    }
   },
   props: {
     arguments: {
       type: Array,
-      required: true,
+      required: true
     },
     debate: {
       type: String,
-      required: true,
+      required: true
     },
     user: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   methods: {
     handleArgumentDeleted(index) {
       // Remove the argument at the given index
-      this.$emit('update-arguments', this.arguments.filter((_, i) => i !== index));
-    },
-  },
+      this.$emit('update-arguments', this.arguments.filter((_, i) => i !== index))
+    }
+  }
 }
 
 </script>
