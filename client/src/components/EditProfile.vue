@@ -6,7 +6,7 @@
       <!-- User's First Name and Username -->
       <div class="d-flex flex-row column-gap-2 justify-content-start align-items-center">
         <div class="profile-image-container">
-          <img :src="profileImagePreview || this.profileImage || defaultAvatar"
+          <img :src="profileImagePreview || this.profileImage"
                alt="profile image"
                style="height: 70px; width: 70px; border-radius: 15px;"
           />
@@ -145,6 +145,7 @@ export default {
       if (localUser) {
         this.user = { ...localUser };
         this.editedUser = { ...this.user, password: '' };
+        this.profileImagePreview = this.user.profileImg ? `${this.user.profileImg}` : this.defaultAvatar;
       }
     },
     toggleEditMode() {
