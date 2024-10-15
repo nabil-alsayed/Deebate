@@ -3,15 +3,15 @@
     <div style="border-radius: 15px;">
       <img :src="profileImgSrc"
            alt="Profile Image"
-           class="rounded-circle"
-           width="130"
-           height="130"
-           style="object-fit: cover;"
+           class="rounded-5"
+           width="110"
+           height="110"
+           style="object-fit: cover; border: 5px solid #007769"
       />
     </div>
     <div>
       <div class="d-flex flex-row column-gap-2 align-items-center">
-        <h2 class="m-0">{{ firstname }} {{ lastname }}</h2>
+        <h2 class="m-0 fw-bold">{{ firstname }} {{ lastname }}</h2>
         <div v-if="isSameUser" class="edit-button" @click="editProfile">
           <i class="bi bi-pencil-fill" style="font-size: 15px"/>
         </div>
@@ -39,10 +39,7 @@ export default {
     const route = useRoute();
     const isSameUser = ref(false);
     const userId = route.params.userId;
-
-    const profileImgSrc = computed(() => {
-      return user.value?.profileImg || defaultAvatar;
-    });
+    const profileImgSrc = ref(null)
 
     const getUser = async () => {
       try {
@@ -53,13 +50,18 @@ export default {
         });
 
         // Set the user data
-        user.value = response.data;
+        user.value = response.data.user;
 
         // Set user information
         if (user.value) {
           username.value = user.value.username;
           firstname.value = user.value.firstName;
           lastname.value = user.value.lastName;
+          if (user.value.profileImg) {
+            profileImgSrc.value = user.value.profileImg;
+          } else {
+            profileImgSrc.value = defaultAvatar;
+          }
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -89,11 +91,6 @@ export default {
       }
     });
 
-    onMounted(() => {
-      getUser();
-      checkProfileOwner();
-    });
-
     return {
       user,
       getUser,
@@ -105,6 +102,10 @@ export default {
       isSameUser,
       checkProfileOwner
     };
+  },
+  created() {
+    this.getUser();
+    this.checkProfileOwner();
   },
 };
 </script>

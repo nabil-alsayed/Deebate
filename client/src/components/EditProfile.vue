@@ -4,14 +4,15 @@
 
     <div class="d-flex flex-column row-gap-4">
       <!-- User's First Name and Username -->
-      <div class="d-flex flex-row column-gap-2 justify-content-start align-items-center">
+      <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
         <div class="profile-image-container">
           <img :src="profileImagePreview || this.profileImage"
                alt="profile image"
-               style="height: 70px; width: 70px; border-radius: 15px;"
+               style="height: 75px; width: 75px; border-radius: 15px; border: 3px solid #007769"
           />
-          <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
-          <button @click="triggerFileInput" class="change-photo-btn">Change Photo</button>
+          <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*"
+                 style="display: none;" />
+          <i @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
         </div>
         <div>
           <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
@@ -338,14 +339,18 @@ input:disabled {
 .change-photo-btn {
   position: absolute;
   bottom: -10px;
-  left: 50%;
+  left: 100%;
   transform: translateX(-50%);
-  background-color: #007769;
-  color: white;
+  background-color: #017769;
+  color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 2px 5px;
   font-size: 12px;
   cursor: pointer;
+}
+
+.change-photo-btn:hover {
+  background-color: #a89200;
 }
 </style>
