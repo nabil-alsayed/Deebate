@@ -25,7 +25,7 @@
         @click="visitProfile(user._id)"
       >
         <img
-          :src="defaultAvatar"
+          :src="user.profileImg ? user.profileImg : defaultAvatar"
           :alt="user.username"
           class="rounded-5"
           style="width: 40px; height: 40px;"
@@ -62,7 +62,6 @@ export default {
     const searchQuery = ref('');
     const filteredUsers = ref([]);
     const loading = ref(false);
-    const router = useRouter();
 
     // Function to fetch users based on search query
     const fetchUsers = async () => {
