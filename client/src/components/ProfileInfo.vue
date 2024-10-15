@@ -3,7 +3,7 @@
     <div style="border-radius: 15px;">
       <img :src="profileImgSrc"
            alt="Profile Image"
-           class="rounded-5"
+           class="rounded-circle"
            width="110"
            height="110"
            style="object-fit: cover; border: 5px solid #007769"

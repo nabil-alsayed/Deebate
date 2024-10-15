@@ -7,6 +7,7 @@
       <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
         <div class="profile-image-container">
           <img :src="profileImagePreview || this.profileImage"
+               class="rounded-circle"
                alt="profile image"
                style="height: 75px;
                width: 75px;
