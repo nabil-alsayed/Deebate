@@ -12,7 +12,7 @@
           <p class="m-0" style="color: white">{{ side.text }}</p>
         </div>
       </div>
-      <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 20px; color: #a83737; cursor: pointer" />
+      <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
     <p class="p-2 fs-5">{{ content }}</p>
     <div style="cursor: pointer" class="d-flex align-items-center gap-2" @click="showCommentsPopup = true">

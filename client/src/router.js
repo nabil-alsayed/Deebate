@@ -24,7 +24,12 @@ const routes = [
     name: 'profile',
     component: () => import('./views/Profile.vue'),
     meta: { requireAuth: true }
-    }
+  },
+  {
+    path: '/users/:userId',  // This is the dynamic route for user profiles
+    name: 'UserProfile',
+    component: () => import('./views/UserProfile.vue'),  // The ProfileInfo component
+  }
 ]
 
 const router = createRouter({

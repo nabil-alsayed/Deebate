@@ -1,21 +1,24 @@
 <template>
-  <div class="d-flex flex-column row-gap-sm-3">
+  <div class="d-flex flex-column row-gap-2">
     <!-- Header -->
-    <div class="d-flex flex-row justify-content-between" style="font-family: 'Inter', sans-serif">
-      <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1">
+    <div class="d-flex flex-row justify-content-between align-items-center" style="height: fit-content;font-family: 'Inter', sans-serif">
+      <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1 justify-content-center">
         <!-- Show the formatted end time if the debate is not closed -->
-        <h3 class="fw-medium" style="font-size: small;">Ends at</h3>
-        <h3 class="fw-bold" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
+        <h3 class="fw-medium m-0" style="font-size: small;">Ends at</h3>
+        <h3 class="fw-bold m-0" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
       </div>
       <!-- Category Tag -->
-      <div v-else class="d-inline-block bg-black px-2 rounded text-white fw-bold"
+      <div v-else class="d-flex flex-row column-gap-1 bg-black px-2 rounded text-white fw-bold"
            style="font-size: 14px; max-width: fit-content; height: fit-content">
-        <p class="m-0">{{ status }} <i class="bi bi-door-closed"></i> </p>
+        {{status}}
+        <p class="m-0">
+          <i class="bi bi-door-closed"></i>
+        </p>
       </div>
-      <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 20px; color: #a83737; cursor: pointer" />
+      <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
-    <div class="d-flex flex-column text-start row-gap-3">
+    <div class="d-flex flex-column text-start row-gap-2">
       <!-- Title -->
       <h1 class="m-0" style="font-size: 25px; font-weight: 650">{{ topic }}</h1>
 
