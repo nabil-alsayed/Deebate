@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 position-relative rounded-4 border border-opacity-10" style="background-color: #dfdfdf" >
+  <div class="w-100 z-1 position-relative rounded-4 border border-opacity-10" style="background-color: #dfdfdf" >
     <div class="search-input d-flex flex-row align-items-center w-100"
          style="padding-left: 30px;"
     >
@@ -53,7 +53,6 @@
 <script>
 import { ref, watch } from 'vue';
 import { Api } from '@/api/v1/Api.js';
-import { useRouter } from "vue-router";
 import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
 export default {

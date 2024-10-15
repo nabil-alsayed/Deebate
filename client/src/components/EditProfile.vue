@@ -8,7 +8,10 @@
         <div class="profile-image-container">
           <img :src="profileImagePreview || this.profileImage"
                alt="profile image"
-               style="height: 75px; width: 75px; border-radius: 15px; border: 3px solid #007769"
+               style="height: 75px;
+               width: 75px;
+               border-radius: 15px;
+               border: 3px solid #007769"
           />
           <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*"
                  style="display: none;" />
