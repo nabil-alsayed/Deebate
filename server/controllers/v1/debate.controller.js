@@ -117,7 +117,7 @@ const postDebate = async (req, res, next) => {
 
 const getDebates = async (req, res, next) => {
   try {
-    const { category, status, sort } = req.query;
+    const { user, category, status, sort } = req.query;
     const allowedCategories = Debate.schema.path('category').enumValues;
     const allowedStatus = Debate.schema.path('status').enumValues;
     const allowedSortOrders = ['asc', 'desc'];
@@ -125,25 +125,34 @@ const getDebates = async (req, res, next) => {
 
     let filter = {};
 
-    // If category specified, add it to the filter
+    // If user ID is specified, add it to the filter
+    if (user) {
+      if (!mongoose.Types.ObjectId.isValid(user)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      filter.owner = user;  // Filter debates by the owner (user)
+    }
+
+    // If category is specified, add it to the filter
     if (category) {
       if (!allowedCategories.includes(category)) {
         return res.status(400).json({ message: 'Invalid category' });
       }
-      filter.category = category;
+      filter.category = category;  // Filter debates by category
     }
 
-    // If status specified, add it to the filter
+    // If status is specified, add it to the filter
     if (status) {
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: 'Invalid status' });
       }
-      filter.status = status;
+      filter.status = status;  // Filter debates by status (open/closed)
     }
 
+    // Initialize the query with the constructed filter
     let query = Debate.find(filter).populate('owner', 'username');
 
-    // If sort is provided, apply sorting by the debate end time
+    // Apply sorting if provided (by debate end time)
     if (sort) {
       if (!allowedSortOrders.includes(sort)) {
         return res.status(400).json({ message: 'Invalid sort order' });
@@ -155,7 +164,7 @@ const getDebates = async (req, res, next) => {
     // Execute the query and get the debates
     const debates = await query;
 
-    // Check and close expired debates before returning the results
+    // Automatically close expired debates before returning the results
     for (const debate of debates) {
       if (debate.endTime < new Date() && debate.status === 'open') {
         debate.status = 'closed';
@@ -179,6 +188,7 @@ const getDebates = async (req, res, next) => {
     return next(err);
   }
 };
+
 
 
 const deleteAllDebates = async (req, res, next) => {
