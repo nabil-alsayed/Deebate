@@ -25,18 +25,18 @@
         @click="visitProfile(user._id)"
       >
         <img
-          src="../../../public/logo/deebate-logo-dark.png"
+          :src="defaultAvatar"
           :alt="user.username"
           class="rounded-5"
           style="width: 40px; height: 40px;"
         />
         <div class="d-flex flex-column align-items-start">
           <div>
-            <h1 class="m-0" style="font-size: 17px; color: black; font-weight: 800">{{ user.firstName }} {{ user.lastName }}</h1>
+            <h1 class="m-0" style="font-size: 17px; color: black; font-weight: 600">{{ user.firstName }} {{ user.lastName }}</h1>
 
           </div>
           <div>
-            <h1 class="fw-bold m-0" style="font-size: 15px; color: #9e9e9e">@{{ user.username }}</h1>
+            <h1 class="fw-normal m-0" style="font-size: 15px; color: #9e9e9e">@{{ user.username }}</h1>
           </div>
         </div>
       </div>
@@ -45,32 +45,29 @@
          class="d-flex p-3 flex-column w-100 mt-1 align-items-center
          border rounded-4 shadow-md position-absolute bg-white"
     >
-      <h1 class="fs-6 fw-bold m-0">No Results Found.</h1>
+      <h1 class="fs-6 fw-semibold m-0">No Results Found.</h1>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, watch } from 'vue'
-import { Api }  from '@/api/v1/Api.js'
+import { ref, watch } from 'vue';
+import { Api } from '@/api/v1/Api.js';
 import { useRouter } from "vue-router";
+import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
 export default {
   name: 'SearchBar',
   setup() {
-    const searchQuery = ref('')
-    const filteredUsers = ref([])
-    const loading = ref(false)
+    const searchQuery = ref('');
+    const filteredUsers = ref([]);
+    const loading = ref(false);
     const router = useRouter();
 
-
-    // TODO: Move to API file
     // Function to fetch users based on search query
     const fetchUsers = async () => {
-      // Fetch the token from local storage
       const token = localStorage.getItem('token');
 
-      // Check if search qeury is not empty and that token is present
       if (searchQuery.value.trim().length > 0 && token) {
         loading.value = true;
         try {
@@ -89,7 +86,7 @@ export default {
       } else {
         filteredUsers.value = [];
       }
-    }
+    };
 
     // Debounce function to avoid making API calls for every keystroke
     let timeout;
@@ -98,25 +95,26 @@ export default {
       timeout = setTimeout(() => {
         fetchUsers();
       }, 200);
-    }
+    };
 
     // Watch the searchQuery value and trigger search with debounce
     watch(searchQuery, debounceSearch);
 
     // Function to navigate to the user's profile
     const visitProfile = (userId) => {
-      router.push({ path: `/users/${userId}` });
+      window.location.replace(`/users/${userId}`);
     };
-
 
     return {
       searchQuery,
       filteredUsers,
       loading,
-      visitProfile
-    }
+      visitProfile,
+      defaultAvatar // Return it directly for template use
+    };
   }
-}
+};
+
 </script>
 
 <style scoped>

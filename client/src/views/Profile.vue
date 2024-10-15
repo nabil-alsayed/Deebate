@@ -11,7 +11,7 @@
         <!-- DEBATE LIST -->
         <div class="d-flex flex-column row-gap-3 w-100 h-100">
           <DebateForm />
-          <DebateList page="profile"/>
+          <DebateList :user="userId" page="profile"/>
         </div>
         <!-- WIDGETS -->
         <div class="right-bar" style="min-width: 250px">
@@ -28,19 +28,34 @@ import SearchBar from "@/components/top-bar/SearchBar.vue";
 import EditProfile from '@/components/EditProfile.vue'
 import MenuBar from "@/components/MenuBar.vue";
 import DebateForm from "@/components/debates/DebateForm.vue";
+import {ref, onMounted} from "vue";
+import router from "@/router.js";
 
 export default{
   name: 'Profile',
   components: {DebateForm, MenuBar, EditProfile, SearchBar, DebateList},
-  data(){
-    return{
-      userDebates: [],
-      userId: ''
-    }
+  setup() {
+    const userId = ref('');
+
+    const checkUserSession = async () => {
+      const userData = localStorage.getItem('user');
+
+      if (userData) {
+        userId.value = JSON.parse(userData)._id;
+      } else {
+        // If no user data in localStorage, redirect to login page
+        await router.replace('/login');
+      }
+    };
+
+    return {
+      userId,
+      checkUserSession
+    };
   },
-  mounted() {
-    this.userId = localStorage.getItem('userId')
-  },
+  created() {
+    this.checkUserSession();
+  }
 }
 </script>
 

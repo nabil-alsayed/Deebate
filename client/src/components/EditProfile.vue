@@ -1,12 +1,18 @@
 <template>
-  <div class="edit-profile">
+  <div class="edit-profile d-flex flex-column row-gap-4">
     <h2 class="profile-title">Edit Profile</h2>
 
-    <div class="d-flex flex-column row-gap-1">
+    <div class="d-flex flex-column row-gap-4">
       <!-- User's First Name and Username -->
-      <div>
-        <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
-        <p class="username">@{{ user.username }}</p>
+      <div class="d-flex flex-row column-gap-2 justify-content-start align-items-center">
+        <img :src="this.profileImage"
+             alt="profile image"
+             style="height: 70px; width: 70px; border-radius: 15px;"
+        />
+        <div>
+          <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
+          <p class="username">@{{ user.username }}</p>
+        </div>
       </div>
 
       <!-- Form to edit profile -->
@@ -76,6 +82,7 @@
 
 <script>
 import { Api } from '@/api/v1/Api.js';
+import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
 export default {
   data() {
@@ -86,6 +93,7 @@ export default {
         password: '',
         firstName: '',
         lastName: '',
+        profileImage: defaultAvatar,
       },
       editedUser: {}, // This holds the edited user's values
       isSaving: false, // State to disable the button while saving
@@ -138,6 +146,7 @@ export default {
         this.user.username = localUser.username;
         this.user.firstName = localUser.firstName;
         this.user.lastName = localUser.lastName;
+        this.profileImage = localUser.profileImg || defaultAvatar; // Ensure the profile image is loaded
         this.editedUser = { ...this.user, password: '' }; // Initialize with empty password
       }
     },
@@ -181,13 +190,18 @@ export default {
           },
         };
 
-        // Remove password from payload if it's empty
-        if (!this.editedUser.password) {
-          delete this.editedUser.password;
+        // create a shallow copy of editedUser to modify it before sending
+        const updatedUser = { ...this.editedUser };
+
+        // Remove fields that shouldn't be sent to the backend
+        delete updatedUser.profileImage;
+        if (!updatedUser.password) {
+          // Remove password if it's empty
+          delete updatedUser.password;
         }
 
         // API request to update the user profile
-        const response = await Api.patch(`/users/${localUser._id}`, this.editedUser, config);
+        const response = await Api.patch(`/users/${localUser._id}`, updatedUser, config);
 
         // Update localStorage with the updated user data
         localStorage.setItem('user', JSON.stringify(response.data));
@@ -203,7 +217,6 @@ export default {
         this.message = { type: 'success', text: 'Profile updated successfully!' };
 
         this.showAlert();
-        // window.location.reload();
       } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to update profile.';
 
@@ -265,13 +278,13 @@ export default {
 
 .username {
   font-weight: bold;
-  color: #a5a4a4;
+  color: #808080;
   margin: 0;
 }
 
 label {
   display: block;
-  color: #a5a4a4;
+  color: #808080;
   font-weight: bold;
   text-align: left;
 }
@@ -317,5 +330,11 @@ input:disabled {
   border: none;
   cursor: pointer;
   font-weight: bold;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
 }
 </style>

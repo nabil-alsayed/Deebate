@@ -31,8 +31,7 @@ const UserModel = new Schema({
     required: true
   },
   profileImg: {
-    data: Buffer,
-    type: String 
+    type: String
   },
   role: {
     type: String,
