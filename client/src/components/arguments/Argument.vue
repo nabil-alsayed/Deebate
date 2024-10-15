@@ -41,9 +41,18 @@
                   <small class="text-muted">@{{ comment.userDetails?.username }}</small>
                 </div>
               </div>
-              <p class="mb-0 mt-2">{{ comment.content }}</p>
+              <p class="mb-0 mt-2 comment-content">{{ comment.content }}</p>
+              <button v-if="isCommentOwner(comment)" @click="startUpdateComment(comment)" class="btn btn-sm btn-primary mt-2">
+                Edit comment <i class="fa-regular fa-pen-to-square"></i>
+              </button>
             </li>
           </ul>
+        </div>
+
+        <div v-if="updatingComment">
+          <textarea v-model="updatedCommentContent" class="form-control mb-2 rounded-4"></textarea>
+          <button @click="submitCommentUpdate" class="btn btn-primary me-2">Save</button>
+          <button @click="cancelCommentUpdate" class="btn btn-secondary">Cancel</button>
         </div>
 
         <div>
@@ -78,7 +87,9 @@ export default {
         text: '',
         backgroundColor: ''
       },
-      avatar: defaultAvatar
+      avatar: defaultAvatar,
+      updatingComment: null,
+      updatedCommentContent: ''
     }
   },
   async created() {
@@ -169,13 +180,16 @@ export default {
       }
     },
     async submitComment() {
-      if (!this.newComment.trim()) {
-        alert('Please enter a comment')
-        return
+      // Trim all spaces from the newComment
+      const trimmedComment = this.newComment.replace(/[\r\n]+/g, '');
+
+      if (!trimmedComment) {
+        alert('Please enter a valid comment');
+        return;
       }
       try {
         const { data } = await Api.post(`/debates/${this.debate}/arguments/${this.argument}/comments`,
-          { content: this.newComment },
+          { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
         const currentUser = await getLoggedInUser()
@@ -184,9 +198,52 @@ export default {
       } catch (error) {
         console.error('Error submitting comment:', error)
       }
+    },
+
+
+    async isCommentOwner(comment) {
+      const currentUser = await getLoggedInUser()
+      return currentUser && currentUser._id === comment.owner
+    },
+
+    startUpdateComment(comment) {
+      this.updatingComment = comment
+      this.updatedCommentContent = comment.content
+    },
+
+    cancelCommentUpdate() {
+      this.updatingComment = null
+      this.updatedCommentContent = ''
+    },
+
+    async submitCommentUpdate() {
+      const trimmedComment = this.updatedCommentContent.replace(/[\r\n]+/g, '');
+      
+      if (!trimmedComment) {
+        alert('Please enter a comment')
+        return
+      }
+      try {
+        const { data } = await Api.put(`/debates/${this.debate}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
+          { content: trimmedComment },
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        )
+        
+        // Update the comment in the local state
+        const index = this.commentsWithUserDetails.findIndex(c => c._id === this.updatingComment._id)
+        if (index !== -1) {
+          this.commentsWithUserDetails[index].content = data.updatedComment.content
+        }
+        
+        this.cancelCommentUpdate()
+      } catch (error) {
+        console.error('Error updating comment:', error)
+        alert('Failed to update comment. Please try again.')
+      }
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -253,5 +310,11 @@ textarea {
 .custom-button:focus {
   outline: none;
   box-shadow: #01675b;
+}
+
+.comment-content {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 </style>
