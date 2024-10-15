@@ -58,7 +58,7 @@
 <script>
 import { Api } from '@/api/v1/Api.js'
 import { getLoggedInUser } from '@/api/v1/usersApi.js'
-import defaultAvatar from '@/assets/avatars/user-avatar.svg';
+import defaultAvatar from '@/assets/avatars/user-avatar.svg'
 
 export default {
   name: 'Argument',
@@ -76,7 +76,7 @@ export default {
       showCommentsPopup: false,
       side: {
         text: '',
-        backgroundColor: '',
+        backgroundColor: ''
       },
       avatar: defaultAvatar
     }
@@ -151,23 +151,21 @@ export default {
       try {
         const response = await Api.get(`/debates/${this.debate}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-
+        })
 
         // Check if the user is in votesWith or votesAgainst
-        const isWith = response.data.debate.votesWith.includes(this.owner._id);
+        const isWith = response.data.debate.votesWith.includes(this.owner._id)
 
         // Set the side based on where the user is found
         if (isWith) {
-          this.side.text = 'With';
-          this.side.backgroundColor = '#007769';
+          this.side.text = 'With'
+          this.side.backgroundColor = '#007769'
         } else {
-          this.side.text = 'Against';
-          this.side.backgroundColor = '#a83737';
+          this.side.text = 'Against'
+          this.side.backgroundColor = '#a83737'
         }
-
       } catch (error) {
-        console.error('Failed to fetch user side:', error);
+        console.error('Failed to fetch user side:', error)
       }
     },
     async submitComment() {
@@ -230,30 +228,30 @@ textarea {
 }
 
 .btn-primary:hover {
-  background-color: #01675b; /* Darker green on hover */
-  border-color: #01675b; /* Match border color on hover */
+  background-color: #01675b;
+  border-color: #01675b;
 }
 
 .custom-button {
-  background-color: #007769; /* Primary color */
-  color: white; /* Text color */
-  padding: 8px 12px; /* Padding */
-  border: none; /* No border */
-  border-radius: 5px; /* Rounded corners */
-  font-size: 14px; /* Font size */
-  text-align: center; /* Centered text */
-  transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  cursor: pointer; /* Pointer cursor on hover */
+  background-color: #007769;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .custom-button:hover {
-  background-color: #01675b; /* Darker blue on hover */
-  transform: translateY(-2px); /* Lift effect on hover */
+  background-color: #01675b;
+  transform: translateY(-2px);
 }
 
 .custom-button:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: #01675b; /* Custom focus outline */
+  outline: none;
+  box-shadow: #01675b;
 }
 </style>

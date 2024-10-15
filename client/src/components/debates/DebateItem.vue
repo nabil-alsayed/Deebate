@@ -92,7 +92,6 @@
   </div>
 </template>
 
-
 <script>
 import {ref, computed, watch} from 'vue';
 import ArgumentsList from "@/components/arguments/ArgumentsList.vue";
@@ -356,18 +355,26 @@ export default {
       }
     };
 
+    // Make use of HATEOAS links to fullfill the requirement
     const deleteDebate = async () => {
+      if (!props.debateObj.links || !props.debateObj.links.delete) {
+        console.error('Delete link not available');
+        message.value = { type: 'error', text: 'Unable to delete debate. Delete link not available.' };
+        showAlert();
+        return;
+      }
+
       try {
-        await Api.delete(`/debates/${props.debateObj._id}`, {
+        await Api.delete(props.debateObj.links.delete, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        message.value = {type: 'success', text: 'Debate deleted successfully!'};
+        message.value = { type: 'success', text: 'Debate deleted successfully!' };
         showAlert();
       } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to delete debate.';
-        message.value = {type: 'error', text: errorMsg};
+        message.value = { type: 'error', text: errorMsg };
         showAlert();
       }
     };
@@ -394,10 +401,10 @@ export default {
       loadMoreArguments,
       getUserSide,
       storeVoteType,
-      deleteDebate,
       formattedEndTime,
       message,
       alertShown,
+      deleteDebate
     };
   },
   async created() {
