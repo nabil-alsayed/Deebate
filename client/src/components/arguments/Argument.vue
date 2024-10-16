@@ -5,7 +5,7 @@
         <img :src="owner.profileImg || avatar"
              :alt="owner.username"
              class="rounded-circle"
-             style="width: 48px;">
+             style="width: 48px; height: 48px; border: 3px solid #007769">
         <h5 class="fw-bold mb-0">{{ owner.username }}</h5>
         <div class="d-inline-block px-3 rounded text-black fw-bold"
              :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: side.backgroundColor }">
@@ -34,8 +34,8 @@
               <div class="d-flex gap-2 w-100">
                 <img :src="comment.userDetails?.profileImg || avatar"
                      :alt="comment.userDetails?.username"
-                     class="rounded-5"
-                     style="width: 40px; height: 40px;">
+                     class="rounded-circle"
+                     style="width: 40px; height: 40px; border: 2px solid #007769">
                 <div>
                   <h6 class="m-0 fw-bold">{{ comment.userDetails?.firstName }} {{ comment.userDetails?.lastName }}</h6>
                   <small class="text-muted">@{{ comment.userDetails?.username }}</small>
@@ -218,7 +218,7 @@ export default {
 
     async submitCommentUpdate() {
       const trimmedComment = this.updatedCommentContent.replace(/[\r\n]+/g, '');
-      
+
       if (!trimmedComment) {
         alert('Please enter a comment')
         return
@@ -228,13 +228,13 @@ export default {
           { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
-        
+
         // Update the comment in the local state
         const index = this.commentsWithUserDetails.findIndex(c => c._id === this.updatingComment._id)
         if (index !== -1) {
           this.commentsWithUserDetails[index].content = data.updatedComment.content
         }
-        
+
         this.cancelCommentUpdate()
       } catch (error) {
         console.error('Error updating comment:', error)

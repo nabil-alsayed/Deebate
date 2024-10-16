@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 position-relative rounded-4 border border-opacity-10" style="background-color: #dfdfdf" >
+  <div class="w-100 z-1 position-relative rounded-4 border border-opacity-10" style="background-color: #dfdfdf" >
     <div class="search-input d-flex flex-row align-items-center w-100"
          style="padding-left: 30px;"
     >
@@ -25,7 +25,7 @@
         @click="visitProfile(user._id)"
       >
         <img
-          :src="defaultAvatar"
+          :src="user.profileImg ? user.profileImg : defaultAvatar"
           :alt="user.username"
           class="rounded-5"
           style="width: 40px; height: 40px;"
@@ -53,7 +53,6 @@
 <script>
 import { ref, watch } from 'vue';
 import { Api } from '@/api/v1/Api.js';
-import { useRouter } from "vue-router";
 import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
 export default {
@@ -62,7 +61,6 @@ export default {
     const searchQuery = ref('');
     const filteredUsers = ref([]);
     const loading = ref(false);
-    const router = useRouter();
 
     // Function to fetch users based on search query
     const fetchUsers = async () => {
