@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import avatar from './../../../assets/avatars/avatar.png'; // Default avatar path
+import avatar from '../../assets/avatars/user-avatar.svg';
 
 export default {
   name: 'UserMenu',

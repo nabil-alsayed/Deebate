@@ -77,6 +77,9 @@ const getUser = async (req, res) => {
           .status(404)
           .json({ message: `User with ID: ${userId} cannot be found.` });
     }
+    if (user.profileImg && !user.profileImg.startsWith('http')) {
+      user.profileImg = `${req.protocol}://${req.get('host')}/${user.profileImg}`;
+    }
 
     // Return a 200 response with the user data
     return res
@@ -89,23 +92,18 @@ const getUser = async (req, res) => {
   }
 };
 
-// Modify one user's info
-
 const editUser = async (req, res) => {
-  const updates = req.body;  // Get the updates from request body
+  const updates = req.body;
   const { userId } = req.params;
 
-  // Ensure we only update fields that are allowed
-  const allowedAttributes = ['emailAddress', 'username', 'password', 'firstName', 'lastName', 'profileImg'];
+  const allowedAttributes = ['emailAddress', 'username', 'password', 'firstName', 'lastName'];
 
-  // Check if the update request contains only allowed attributes
   const isValidRequest = Object.keys(updates).every((key) => allowedAttributes.includes(key));
 
   if (!isValidRequest) {
     return res.status(400).json({ message: 'Invalid update request. Some attributes are not allowed.' });
   }
 
-  // Hash the password if provided
   if (updates.password) {
     updates.password = await hashPassword(updates.password);
   }
@@ -117,9 +115,8 @@ const editUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // Check if another user with the same email or username exists (excluding current user)
     const existingUser = await User.findOne({
-      _id: { $ne: userId },  // Exclude current user from search
+      _id: { $ne: userId },
       $or: [{ emailAddress: updates.emailAddress }, { username: updates.username }],
     });
 
@@ -127,10 +124,14 @@ const editUser = async (req, res) => {
       return res.status(400).json({ message: 'Email or username already in use' });
     }
 
-    // Perform the update
+    // Handle profile image upload
+    if (req.file) {
+      // Store the full URL of the image
+      updates.profileImg = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true }).lean();
 
-    // Don't return the password in the response
     delete updatedUser.password;
 
     res.status(200).json(updatedUser);

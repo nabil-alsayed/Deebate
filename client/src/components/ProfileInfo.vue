@@ -1,15 +1,17 @@
 <template>
   <div class="profile-info d-flex flex-row column-gap-3 align-items-center">
     <div style="border-radius: 15px;">
-      <img :src="profileImg"
+      <img :src="profileImgSrc"
            alt="Profile Image"
            class="rounded-circle"
-           width="130"
+           width="110"
+           height="110"
+           style="object-fit: cover; border: 5px solid #007769"
       />
     </div>
     <div>
       <div class="d-flex flex-row column-gap-2 align-items-center">
-        <h2 class="m-0">{{ firstname }} {{ lastname }}</h2>
+        <h2 class="m-0 fw-bold">{{ firstname }} {{ lastname }}</h2>
         <div v-if="isSameUser" class="edit-button" @click="editProfile">
           <i class="bi bi-pencil-fill" style="font-size: 15px"/>
         </div>
@@ -20,9 +22,9 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { Api } from "@/api/v1/Api.js";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 import defaultAvatar from "@/assets/avatars/user-avatar.svg";
 import router from "@/router.js";
 
@@ -33,12 +35,11 @@ export default {
     const username = ref("");
     const firstname = ref("");
     const lastname = ref("");
-    const profileImg = ref("");
     const token = localStorage.getItem("token");
     const route = useRoute();
     const isSameUser = ref(false);
     const userId = route.params.userId;
-
+    const profileImgSrc = ref(null)
 
     const getUser = async () => {
       try {
@@ -51,14 +52,16 @@ export default {
         // Set the user data
         user.value = response.data.user;
 
-        // If no profile image, use default avatar
-        profileImg.value = user.value.profileImg || defaultAvatar;
-
         // Set user information
         if (user.value) {
           username.value = user.value.username;
           firstname.value = user.value.firstName;
           lastname.value = user.value.lastName;
+          if (user.value.profileImg) {
+            profileImgSrc.value = user.value.profileImg;
+          } else {
+            profileImgSrc.value = defaultAvatar;
+          }
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -75,13 +78,26 @@ export default {
       isSameUser.value = loggedInUser._id === userId;
     }
 
+    // Watch for changes in localStorage
+    watch(() => localStorage.getItem("user"), (newValue) => {
+      if (newValue) {
+        const updatedUser = JSON.parse(newValue);
+        if (updatedUser._id === userId) {
+          user.value = updatedUser;
+          username.value = updatedUser.username;
+          firstname.value = updatedUser.firstName;
+          lastname.value = updatedUser.lastName;
+        }
+      }
+    });
+
     return {
       user,
       getUser,
       username,
       firstname,
       lastname,
-      profileImg,
+      profileImgSrc,
       editProfile,
       isSameUser,
       checkProfileOwner
@@ -94,7 +110,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .edit-button {
   display: flex;
   font-size: 15px;
