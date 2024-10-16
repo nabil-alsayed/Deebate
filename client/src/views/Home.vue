@@ -17,10 +17,9 @@
           <DebateList :filteredDebates="filteredDebates" />
         </div>
 
-        <!-- Right side Widgets (CategorySelector and ChatGptWidget) -->
-        <div class="right-bar d-flex flex-column row-gap-3" style="min-width: 250px">
+        <!-- Right side Widgets (CategorySelector or EditProfile) -->
+        <div class="right-bar" style="min-width: 250px">
           <CategorySelector @category-selected="filterDebatesByCategory" />
-          <ChatGptWidget />
         </div>
       </div>
     </div>
@@ -35,8 +34,7 @@ import DebateForm from '@/components/debates/DebateForm.vue';
 import DebateList from '@/components/debates/DebateList.vue';
 import CategorySelector from '@/components/CategorySelector.vue';
 import EditProfile from '@/components/EditProfile.vue';
-import SearchBar from '@/components/top-bar/SearchBar.vue';
-import ChatGptWidget from '@/components/ChatGptWidget.vue';
+import SearchBar from '@/components/top-bar/SearchBar.vue'
 
 export default {
   name: 'Home',
@@ -47,7 +45,6 @@ export default {
     DebateList,
     CategorySelector,
     EditProfile,
-    ChatGptWidget,
   },
   setup() {
     const debates = ref([]);
@@ -109,25 +106,6 @@ export default {
 
 #debates-sections {
   width: 100%;
-}
-
-/* Responsive */
-
-@media (max-width: 768px) {
-  .right-bar {
-    display: none;
-  }
-}
-
-@media (max-width: 576px) {
-  .menu-bar {
-    display: none;
-  }
-}
-
-.right-bar {
-  display: flex;
-  flex-direction: column;
 }
 
 /* Responsive */
