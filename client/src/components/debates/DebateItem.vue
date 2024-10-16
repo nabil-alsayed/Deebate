@@ -15,6 +15,15 @@
           <i class="bi bi-door-closed"></i>
         </p>
       </div>
+      <div v-if="isDebateClosed" class="mt-3">
+        <button @click="analyzeDebate" class="btn btn-secondary">
+          Analyze Debate with ChatGPT
+        </button>
+      </div>
+      <b-modal v-model="showAnalysisModal" title="ChatGPT Analysis" hide-footer>
+        <p>{{ chatgptResponse }}</p>
+      </b-modal>
+      
       <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
@@ -98,6 +107,7 @@ import ArgumentsList from "@/components/arguments/ArgumentsList.vue";
 import {Api} from "@/api/v1/Api.js";
 import {getLoggedInUser} from "@/api/v1/usersApi.js";
 import debounce from 'lodash.debounce';
+//import { BModal } from 'bootstrap-vue';
 
 export default {
   name: "DebateItem",
@@ -130,6 +140,8 @@ export default {
     const alertShown = ref(false);
     const isParticipant = ref(false);
     const isOwner = ref(false);
+    const chatgptResponse = ref('');
+    const showAnalysisModal = ref(false);
 
     const numberOfWithVotes = computed(() => props.debateObj.votesWith.length);
     const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length);
@@ -379,6 +391,26 @@ export default {
       }
     };
 
+    const analyzeDebate = async () => {
+      try {
+        const debateData = {
+          topic: props.debateObj.topic,
+          arguments: props.debateObj.arguments.map(arg => arg.content).join('\n')
+        };
+        
+        const response = await Api.post('/chatgpt/generate', {
+          prompt: `Analyze the following debate:\nTopic: ${debateData.topic}\nArguments:\n${debateData.arguments}`
+        });
+
+        chatgptResponse.value = response.data.response;
+        showAnalysisModal.value = true;
+      } catch (error) {
+        console.error('Error analyzing debate:', error);
+        chatgptResponse.value = 'An error occurred while generating the analysis.';
+        showAnalysisModal.value = true;
+      }
+    };
+
     return {
       user,
       hasVoted,
@@ -404,7 +436,10 @@ export default {
       formattedEndTime,
       message,
       alertShown,
-      deleteDebate
+      deleteDebate,
+      chatgptResponse,
+      showAnalysisModal,
+      analyzeDebate
     };
   },
   async created() {
