@@ -374,30 +374,36 @@ export default {
 
     const analyzeDebate = async () => {
       try {
-        const debateData = {
-          topic: props.debateObj.topic,
-          arguments: props.debateObj.arguments.map(arg => arg.content).join('\n')
+        if (!user.value) {
+          await fetchLoggedInUserId();
         }
 
-        const response = await Api.post('/chatgpt/generate', {
-          prompt: `Analyze the following debate:\nTopic: ${debateData.topic}\nArguments:\n${debateData.arguments}
-          \nFollow these rules:
-          1) Respectful Language: check if they use offensive, derogatory, or discriminatory language.
-          2) Fact-Checking: do participants provide reliable sources to support their claims?
-          3) Relevance: does the discussion stay on topic and avoid tangents?
-          4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence.
-          5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors.
-          At the end of the response, justify who made a better argument and why and identify a potential winner, considering all rules.`
-        })
+        const response = await Api.get(
+          `/debates/${props.debateObj._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
-        chatgptResponse.value = response.data.response
-        showAnalysisModal.value = true
+        // Access the analysis from the nested debate object
+        if (response.data.debate && response.data.debate.analysis) {
+          chatgptResponse.value = response.data.debate.analysis;
+          message.value = { type: 'success', text: 'Analysis fetched successfully!' };
+        } else {
+          chatgptResponse.value = 'No analysis available for this debate.';
+          message.value = { type: 'warning', text: 'No analysis available.' };
+        }
+
+        // Show the modal with the analysis
+        showAnalysisModal.value = true;
       } catch (error) {
-        console.error('Error analyzing debate:', error)
-        chatgptResponse.value = 'An error occurred while generating the analysis.'
-        showAnalysisModal.value = true
+        const errorMsg = error.response?.data?.message || 'Failed to fetch analysis.';
+        message.value = { type: 'error', text: errorMsg };
+        showAlert();
       }
-    }
+    };
 
     // const analyzeDebate = async () => {
     //   try {

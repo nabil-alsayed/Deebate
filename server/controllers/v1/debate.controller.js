@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const User = require('../../models/user');
+const { generateResponse } = require('../../services/chatgpt.service');
 // const {generateResponse} = require("../../services/chatgpt.service");
 // const {generatePrompt} = require("../../utils/utils");
 
@@ -310,6 +311,29 @@ const deleteDebateByID = async (req, res, next) => {
   }
 };
 
+const generateAndSaveAnalysis = async (debate) => {
+  if (debate.status !== 'closed' || debate.analysis) {
+    return;
+  }
+
+  try {
+    const prompt = `Analyze the following debate:\nTopic: ${debate.topic}\nArguments:\n${debate.arguments.map(arg => arg.content).join('\n')}
+    \nFollow these rules:
+    1) Respectful Language: check if they use offensive, derogatory, or discriminatory language.
+    2) Fact-Checking: do participants provide reliable sources to support their claims?
+    3) Relevance: does the discussion stay on topic and avoid tangents?
+    4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence.
+    5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors.
+    At the end of the response, justify who made a better argument and why and identify a potential winner, considering all rules.`;
+
+    const analysis = await generateResponse(prompt);
+    debate.analysis = analysis;
+    await debate.save();
+  } catch (error) {
+    console.error('Error in generateAndSaveAnalysis:', error);
+  }
+};
+
 const getDebateByID = async (req, res, next) => {
   const { debateId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(debateId)) {
@@ -317,7 +341,7 @@ const getDebateByID = async (req, res, next) => {
   }
 
   try {
-    const debate = await Debate.findById(debateId);
+    const debate = await Debate.findById(debateId).populate('arguments');
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -326,6 +350,13 @@ const getDebateByID = async (req, res, next) => {
     if (new Date(debate.endTime).getTime() < new Date().getTime() && debate.status === 'open') {
       debate.status = 'closed';
       await debate.save();
+    }
+
+    // If the debate is closed and doesn't have an analysis, generate one
+    if (debate.status === 'closed' && !debate.analysis) {
+      await generateAndSaveAnalysis(debate);
+      // Refresh the debate object to include the new analysis
+      await debate.populate('arguments');
     }
 
     res.status(200).json({ debate });
