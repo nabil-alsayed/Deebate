@@ -42,6 +42,10 @@ const debateSchema = new Schema({
     min: 2,
     required: true,
   },
+  analysis: {
+    type: String,
+    default: '',
+  },
   arguments: [
     {
       type: Schema.Types.ObjectId,

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="min-width: 210px">
+  <div class="main-container-menu d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="min-width: 210px">
     <!-- Logo Section -->
     <div class="text-center mb-4">
       <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid mb-2"/>
@@ -53,6 +53,12 @@ export default {
 
 
 <style scoped>
+
+.main-container-menu {
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 .primary-color {
   background-color: #007769;
 }
@@ -112,4 +118,3 @@ nav ul {
   background-color: #a13c3c;
 }
 </style>
-

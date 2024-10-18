@@ -141,6 +141,8 @@ export default {
     const isOwner = ref(false)
     const chatgptResponse = ref('')
     const showAnalysisModal = ref(false)
+    const debateAnalysis = ref('')
+    const showAnalysisButton = ref(false)
 
     const numberOfWithVotes = computed(() => props.debateObj.votesWith.length)
     const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length)
@@ -334,22 +336,6 @@ export default {
       }
     }
 
-    const isNewArgumentsAccepted = () => {
-      if (props.debateObj.participants.length >= props.debateObj.maxParticipants) {
-        return false
-      }
-
-      if (props.debateObj.status === 'closed') {
-        return false
-      }
-
-      if (props.debateObj.endTime < new Date()) {
-        return false
-      }
-
-      return true
-    }
-
     const loadMoreArguments = () => {
       argumentsLimit.value += 5
     }
@@ -395,12 +381,12 @@ export default {
 
         const response = await Api.post('/chatgpt/generate', {
           prompt: `Analyze the following debate:\nTopic: ${debateData.topic}\nArguments:\n${debateData.arguments}
-          \nFollow these rules: 
-          1) Respectful Language: check if they use offensive, derogatory, or discriminatory language. 
-          2) Fact-Checking: do participants provide reliable sources to support their claims? 
-          3) Relevance: does the discussion stay on topic and avoid tangents? 
-          4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence. 
-          5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors. 
+          \nFollow these rules:
+          1) Respectful Language: check if they use offensive, derogatory, or discriminatory language.
+          2) Fact-Checking: do participants provide reliable sources to support their claims?
+          3) Relevance: does the discussion stay on topic and avoid tangents?
+          4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence.
+          5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors.
           At the end of the response, justify who made a better argument and why and identify a potential winner, considering all rules.`
         })
 
@@ -412,6 +398,38 @@ export default {
         showAnalysisModal.value = true
       }
     }
+
+    // const analyzeDebate = async () => {
+    //   try {
+    //     const response = await Api.post('/chatgpt/generate', {
+    //       debateId: props.debateObj._id
+    //     },{
+    //       headers: {
+    //         Authorization: `Bearer ${token}`
+    //       }
+    //     })
+    //
+    //     if(reponse){
+    //       chatgptResponse.value = response.data.response
+    //     }
+    //   } catch (error) {
+    //     console.error('Error analyzing debate:', error)
+    //     chatgptResponse.value = 'An error occurred while generating the analysis.'
+    //   } finally {
+    //     showAnalysisModal.value = true
+    //   }
+    // }
+
+    // const checkIfAnalysisIsAvailable = () => {
+    //   if(!getAnalysis().isEmpty()){
+    //     debateAnalysis.value = props.debateObj.analysis
+    //     showAnalysisButton.value = true;
+    //   }
+    // }
+    //
+    // const getAnalysis = () => {
+    //   return props.debateObj.analysis
+    // }
 
     return {
       user,
@@ -442,6 +460,8 @@ export default {
       chatgptResponse,
       showAnalysisModal,
       analyzeDebate
+      // getAnalysis,
+      // checkIfAnalysisIsAvailable
     }
   },
   async created() {
@@ -459,6 +479,7 @@ export default {
     // Check if the user is an owner or/and participant
     this.checkIfUserIsOwner()
     this.checkIfUserIsParticipant()
+    // this.checkIfAnalysisIsAvailable()
   }
 
 }

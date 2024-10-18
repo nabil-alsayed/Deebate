@@ -26,3 +26,16 @@ router.get('/test', async (req, res) => {
 });
 
 module.exports = router;
+//
+// const express = require('express');
+// const router = express.Router();
+// const chatgptController = require('../../controllers/v1/chatgpt.controller');
+// const { authenticateRole } = require("../../utils/utils");
+//
+// console.log('ChatGPT routes file loaded');
+//
+// router.post('/generate', authenticateRole("user"), chatgptController.generate);
+//
+// router.get('/test', authenticateRole("user"), chatgptController.test);
+//
+// module.exports = router;

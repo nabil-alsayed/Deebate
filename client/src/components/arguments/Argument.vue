@@ -6,7 +6,7 @@
              :alt="owner.username"
              class="rounded-circle"
              style="width: 48px; height: 48px; border: 3px solid #007769">
-        <h5 class="fw-bold mb-0">{{ owner.username }}</h5>
+        <h5 class="argument-owner-username fw-bold mb-0">{{ owner.username }}</h5>
         <div class="d-inline-block px-3 rounded text-black fw-bold"
              :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: side.backgroundColor }">
           <p class="m-0" style="color: white">{{ side.text }}</p>
@@ -14,7 +14,7 @@
       </div>
       <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
-    <p class="p-2 fs-5">{{ content }}</p>
+    <p class="argument-content-text p-2">{{ content }}</p>
     <div style="cursor: pointer" class="d-flex align-items-center gap-2" @click="showCommentsPopup = true">
       <i class="bi bi-chat-fill text-muted"></i>
       <span class="fw-bold" style="font-size: 14px">{{ commentsWithUserDetails.length }}</span>
@@ -247,6 +247,11 @@ export default {
 </script>
 
 <style scoped>
+
+.argument-content-text {
+  font-size: 17px;
+}
+
 .comments-popup {
   position: fixed;
   inset: 0;
@@ -289,32 +294,19 @@ textarea {
   border-color: #01675b;
 }
 
-.custom-button {
-  background-color: #007769;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  text-align: center;
-  transition: background-color 0.3s, transform 0.3s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-}
-
-.custom-button:hover {
-  background-color: #01675b;
-  transform: translateY(-2px);
-}
-
-.custom-button:focus {
-  outline: none;
-  box-shadow: #01675b;
-}
-
 .comment-content {
   word-wrap: break-word;
   white-space: pre-wrap;
   overflow-wrap: break-word;
+}
+
+@media (max-width: 576px) {
+  .argument-owner-username {
+    font-size: 16px;
+  }
+
+  .argument-content-text {
+    font-size: 14px;
+  }
 }
 </style>

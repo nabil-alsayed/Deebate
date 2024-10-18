@@ -1,7 +1,7 @@
 <template>
   <div class="profile-info d-flex flex-row column-gap-3 align-items-center">
     <div style="border-radius: 15px;">
-      <img :src="profileImgSrc"
+      <img :src="profileImgSrc || defaultAvatar"
            alt="Profile Image"
            class="rounded-circle"
            width="110"

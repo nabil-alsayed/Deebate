@@ -7,14 +7,18 @@
       <!-- SEARCH -->
       <SearchBar />
       <!-- DEBATE LIST AND WIDGETS -->
-      <div class="d-flex flex-row column-gap-3 ">
+      <div class="main-body-profile">
         <!-- DEBATE LIST -->
         <div class="d-flex flex-column row-gap-3 w-100 h-100">
-          <DebateForm />
+          <div class="d-flex flex-column row-gap-1">
+            <h2 class="title">Post a Debate</h2>
+            <DebateForm />
+          </div>
           <DebateList :user="userId" page="profile"/>
         </div>
         <!-- WIDGETS -->
         <div class="right-bar" style="min-width: 250px">
+          <h2 class="title">Edit Profile</h2>
           <EditProfile />
         </div>
       </div>
@@ -66,10 +70,31 @@ export default{
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-  .right-bar {
-    display: none;
+.main-body-profile {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+  font-weight: 550;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 848px) {
+  .main-body-profile {
+    flex-direction: column;
+    row-gap: 15px;
   }
+
+  .right-bar {
+    order: -1;
+  }
+
 }
 
 @media (max-width: 576px) {

@@ -1,15 +1,13 @@
 <template>
-  <div id="main-container">
-
-    <h2 style="color: grey; font-size: 20px; font-weight: 550;">Post a Debate</h2>
+  <div id="main-container" class="bg-white">
     <form @submit.prevent="createDebate"
-          class="d-flex flex-column row-gap-1 w-100 p-1 bg-white rounded-3"
+          class="d-flex flex-column row-gap-1 w-100 p-1 rounded-3"
           style="min-width: 200px"
     >
       <!-- Topic input -->
       <div class="subject">
         <span>Topic</span>
-        <b-input type="text" id="topic" name="topic" v-model="topic" class="w-100" required placeholder="Debate Topic"/>
+        <b-input type="text" id="topic" name="topic" v-model="topic" class="input w-100" required placeholder="Debate Topic"/>
       </div>
 
       <!-- Category Selector with Placeholder -->
@@ -18,6 +16,7 @@
         <b-form-select
           v-model="selectedCategory"
           :options="categoryOptions"
+          class="input"
           required
         >
           <option disabled value="">Select Category</option>
@@ -30,7 +29,7 @@
           <span>Max Participants</span>
           <b-form-spinbutton
             type="number"
-            id="maxParticipants"
+            class="input"
             name="maxParticipants"
             v-model="maxParticipants"
             :min="2"
@@ -50,17 +49,17 @@
             required
             placeholder="End in days"
             label="End in Days"
+            class="input"
           />
         </div>
       </div>
       <b-button type="submit">Create Debate</b-button>
-
-      <!-- Success or error message -->
-      <div class="d-flex w-100 justify-content-center" id="alert-box">
-        <h1 v-if="message.type === 'success'" id="successful-message">{{ message.text }}</h1>
-        <h1 v-if="message.type === 'error'" id="alert-message">{{ message.text }}</h1>
-      </div>
     </form>
+
+    <!-- Success or error message -->
+    <div v-if="alertShown" :class="['alert-box', message.type]">
+      {{ message.text }}
+    </div>
   </div>
 </template>
 
@@ -89,6 +88,7 @@ export default {
         type: "",
         text: "",
       },
+      alertShown: false,
     };
   },
   methods: {
@@ -121,38 +121,31 @@ export default {
           this.message.text = response.data.message || "An error occurred while creating the debate!";
         }
 
-        // Clear the message after 3 seconds
-        setTimeout(() => {
-          this.message.type = "";
-          this.message.text = "";
-        }, 2000);
-        window.location.reload();
+        this.showAlert();
 
       } catch (error) {
-        console.error("Error creating debate: ", error);
-        this.message.type = "error";
-        this.message.text = error.response?.data?.message || "An error occurred while creating the debate!";
-
-        // Clear the message after 3 seconds
-        setTimeout(() => {
-          this.message.type = "";
-          this.message.text = "";
-        }, 2000);
+        this.message = { type: "error", text: error.response?.data?.message || "An error occurred while creating the debate!" };
+        this.showAlert();
       }
+    },
+    showAlert() {
+      this.alertShown = true;
+      setTimeout(() => {
+        this.alertShown = false;
+      }, 1500);
+      window.location.reload();
     }
   }
 }
 </script>
 
 <style scoped>
-
 #main-container {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  border-width: 1px;
-  border-style: solid;
-  border-color:  #cdcdcd;
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
   padding: 20px;
 }
@@ -169,25 +162,6 @@ export default {
   font-weight: 750;
 }
 
-#successful-message {
-  color: green;
-  font-size: 14px;
-  font-weight: 550;
-  position: absolute;
-}
-
-#alert-box {
-  position: relative;
-  height: 7px;
-}
-
-#alert-message {
-  color: red;
-  font-size: 14px;
-  font-weight: 550;
-  position: absolute;
-}
-
 button {
   background-color: #007769;
   width: 100%;
@@ -197,5 +171,40 @@ button {
 
 button:hover {
   background-color: #01675b;
+}
+
+input::placeholder {
+  color: grey;
+}
+
+.input {
+  font-weight: bold;
+  color: #0a3622;
+}
+
+.alert-box {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  transition: opacity 0.3s ease, top 0.3s ease;
+}
+
+.alert-box.success {
+  background-color: #d4edda;
+  color: #398549;
+}
+
+.alert-box.error {
+  background-color: #f8d7da;
+  color: #a53d45;
+}
+
+#maxParticipants {
+  font-weight: bolder;
 }
 </style>
