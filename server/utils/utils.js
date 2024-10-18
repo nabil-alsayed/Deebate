@@ -100,41 +100,6 @@ const comparePassword = async (plainPassword, hashedPassword) => {
   }
 };
 
-const generatePrompt = async (debate) => {
-  let prompt = '';
-  const ask = "Analyze the following debate: ";
-  const topic = `Topic: ${debate.topic}\n`;
-  const rules = `Follow these rules: 
-    1) Respectful Language: check if they use offensive, derogatory, or discriminatory language. 
-    2) Fact-Checking: do participants provide reliable sources to support their claims? 
-    3) Relevance: does the discussion stay on topic and avoid tangents? 
-    4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence. 
-    5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors. 
-    6) Logical Fallacies: Identify and point out logical fallacies in arguments.
-    7) Keep the analysis objective and unbiased.
-    8) Keep the analysis concise and to the point.
-    9) Keep it short and sweet. Don't write an essay.
-    `;
-
-  let argumentsString = '';
-
-  // Fetch the participants for better readability
-  const participantsArr = debate.participants;
-
-  // Iterate through arguments to build the prompt
-  debate.arguments.forEach((argument, index) => {
-    const participant = getParticipantName(participantsArr, argument.owner._id || argument.owner);
-    const participantDetails = `Debator: ${participant.firstName} ${participant.lastName} (${participant.username})`;
-    argumentsString += `Debator: ${participantDetails} | Argument ${index + 1} | Side: ${argument.side}\nContent: ${argument.content}\n\n`;
-  });
-
-  // Combine the parts of the prompt
-  prompt = ask + topic + rules + argumentsString;
-  console.log(prompt);
-
-  return prompt;
-};
-
 // Helper function to get participant details
 const getParticipantName = (participantsArr, participantId) => {
   const participantObj = {
@@ -162,5 +127,4 @@ module.exports = {
   authenticateRole,
   hashPassword,
   comparePassword,
-  generatePrompt,
 };

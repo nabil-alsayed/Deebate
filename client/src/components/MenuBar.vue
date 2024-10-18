@@ -139,7 +139,7 @@ nav ul {
   padding: 10px 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 848px) {
   .main-container-menu {
     display: flex;
     flex-direction: row;

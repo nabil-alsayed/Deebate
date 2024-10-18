@@ -53,7 +53,7 @@ export default {
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 848px) {
   .right-bar {
     display: none;
   }

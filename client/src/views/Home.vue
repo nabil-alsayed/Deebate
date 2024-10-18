@@ -136,7 +136,7 @@ export default {
 
 /* Responsive */
 
-@media (max-width: 768px) {
+@media (max-width: 848px) {
   .main-container-home {
     flex-direction: column;
     row-gap: 15px;
