@@ -55,39 +55,46 @@ export default {
 
 <style scoped>
 
+/* Styling for the main container */
 .main-container-menu {
   display: flex;
   flex-direction: column;
   min-width: 200px;
-  height: 100%;
+  min-height: 100%;
 }
 
+/* Styling for the primary color */
 .primary-color {
   background-color: #007769;
 }
 
+/* Styling for the logo */
 .logo {
   max-width: 100px;
   height: auto;
 }
 
+/* Styling for the title */
 h1 {
   margin-top: 10px;
   font-size: 1.5em;
   font-weight: 800;
 }
 
+/* Styling for the paragraph */
 p {
   font-size: 0.9em;
   margin: 0;
 }
 
+/* Styling for the navigation bar */
 nav ul {
   list-style-type: none;
   padding: 0;
   font-weight: 600;
 }
 
+/* Styling for the navigation links */
 .nav-link {
   color: white;
   text-decoration: none;
@@ -107,6 +114,7 @@ nav ul {
   background-color: rgba(22, 183, 113, 0.17);
 }
 
+/* Styling for the logout button */
 .logout {
   background-color: #bb4545;
   color: white;
@@ -118,20 +126,24 @@ nav ul {
   margin-top: auto;
 }
 
+/* Hover styling for the logout button */
 .logout:hover {
   background-color: #a13c3c;
 }
 
+/* Styling for the button list */
 .button-list {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
 }
 
+/* Styling for the removable text */
 .removable-icon {
   display: none;
 }
 
+/* Styling for the logo holder */
 .navigation-section {
   display: flex;
   flex-direction: column;
@@ -139,6 +151,8 @@ nav ul {
   padding: 10px 0;
 }
 
+
+/* Responsive Styling */
 @media (max-width: 848px) {
   .main-container-menu {
     position: sticky;
