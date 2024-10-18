@@ -141,6 +141,8 @@ nav ul {
 
 @media (max-width: 848px) {
   .main-container-menu {
+    position: sticky;
+    top: 0;
     display: flex;
     flex-direction: row;
     max-height: fit-content;

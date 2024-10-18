@@ -63,5 +63,4 @@ export default {
     row-gap: 15px;
   }
 }
-
 </style>
