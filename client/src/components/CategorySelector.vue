@@ -125,12 +125,18 @@ export default {
 @media (max-width: 576px) {
 
   .category-grid {
+    display: grid;
     grid-template-columns: repeat(6, 120px);
-    grid-template-rows: repeat(1, 120px);
+    grid-template-rows: repeat(1, fit-content());
     overflow: hidden;
-    overflow-x: scroll;
+    overflow-x: auto;
     scrollbar-width: none;
   }
+
+  .category-grid::-webkit-scrollbar {
+    display: none;
+  }
+
 }
 
 </style>

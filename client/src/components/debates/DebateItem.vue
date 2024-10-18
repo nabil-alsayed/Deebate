@@ -15,9 +15,9 @@
           <i class="bi bi-door-closed"></i>
         </p>
       </div>
-      <div v-if="isDebateClosed" class="mt-3">
+      <div v-if="isDebateClosed">
         <button @click="analyzeDebate" class="btn btn-secondary">
-          Analyze Debate with ChatGPT
+          Analyze
         </button>
       </div>
       <b-modal v-model="showAnalysisModal" title="ChatGPT Analysis" hide-footer>

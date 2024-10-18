@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
+  <div class="main-container-home w-100 vh-100 column-gap-3 p-3">
     <!--    MENU -->
     <div class="menu-bar">
       <MenuBar />
@@ -127,9 +127,24 @@ export default {
   column-gap: 15px;
 }
 
+.main-container-home {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  row-gap: 15px;
+}
+
 /* Responsive */
 
-@media (max-width: 850px) {
+@media (max-width: 768px) {
+  .main-container-home {
+    flex-direction: column;
+    row-gap: 15px;
+  }
+
+  .menu-bar {
+    max-height: fit-content;
+  }
 
   .main-body {
     flex-direction: column;
@@ -142,10 +157,6 @@ export default {
 }
 
 @media (max-width: 576px) {
-  .menu-bar {
-    display: none;
-  }
-
   .main-body {
     flex-direction: column;
   }

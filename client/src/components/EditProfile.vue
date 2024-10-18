@@ -29,7 +29,7 @@
         </div>
 
         <!-- Form to edit profile -->
-        <form v-if="isOpen" class="d-flex flex-column row-gap-2" @submit.prevent="saveProfile">
+        <form v-if="isOpen" class="d-flex flex-column row-gap-3" @submit.prevent="saveProfile">
           <div class="field">
             <label>First Name</label>
             <input type="text" v-model="editedUser.firstName" :disabled="!editMode" required />
@@ -265,7 +265,7 @@ export default {
   border-radius: 15px;
   width: 100%;
   height: fit-content;
-  padding: 20px;
+  padding: 15px;
   border: 0.5px solid #dad9d9;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

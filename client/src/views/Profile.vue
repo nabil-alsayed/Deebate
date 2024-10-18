@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
+  <div class="main-body-profile w-100 vh-100 column-gap-3 p-3">
     <div class="menu-bar">
       <MenuBar />
     </div>
@@ -91,6 +91,10 @@ export default{
     row-gap: 15px;
   }
 
+  .menu-bar {
+    max-height: fit-content;
+  }
+
   .right-bar {
     order: -1;
   }
@@ -98,8 +102,6 @@ export default{
 }
 
 @media (max-width: 576px) {
-  .menu-bar {
-    display: none;
-  }
+
 }
 </style>
