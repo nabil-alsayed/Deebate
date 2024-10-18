@@ -1,31 +1,32 @@
 <template>
-  <div class="d-flex flex-column primary-color text-white h-100 p-3 rounded-4" style="min-width: 210px">
+  <div class="main-container-menu primary-color text-white p-3 rounded-4"
+       style="min-width: 210px;">
     <!-- Logo Section -->
-    <div class="text-center mb-4">
-      <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid mb-2"/>
-      <h1>Deebate</h1>
-      <p>Stand for your belief!</p>
+    <div class="text-center logo-holder">
+      <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid"/>
+      <h1 class="removable-text">Deebate</h1>
+      <p class="removable-text">Stand for your belief!</p>
     </div>
 
     <!-- Navigation Section -->
-    <nav class="flex-grow-1 flex-column py-5 justify-content-center">
-      <ul class="nav flex-column text-start">
-        <li class="nav-item mb-2">
+    <nav class="navigation-section flex-column justify-content-center">
+      <ul class="text-start button-list">
+        <li class="nav-item">
           <router-link to="/" class="nav-link text-white px-4" active-class="active">
-            <i class="bi bi-house-fill"></i> <span>Home</span>
+            <i class="bi bi-house-fill"></i> <span class="removable-text">Home</span>
           </router-link>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item">
           <router-link to="/profile" class="nav-link text-white px-4" active-class="active">
-            <i class="bi-person-fill"></i> Profile
+            <i class="bi-person-fill"></i> <span class="removable-text">Profile</span>
           </router-link>
         </li>
       </ul>
     </nav>
 
     <!-- Logout Button -->
-    <button class="logout-btn mt-auto" style="font-weight: 800" @click="logout">
-      Log out
+    <button class="btn logout px-4" style="font-weight: 800" @click="logout">
+      <i class="bi bi-door-open-fill removable-icon text-white"></i><span class="removable-text">Log out</span>
     </button>
   </div>
 </template>
@@ -53,6 +54,14 @@ export default {
 
 
 <style scoped>
+
+.main-container-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  height: 100%;
+}
+
 .primary-color {
   background-color: #007769;
 }
@@ -98,7 +107,7 @@ nav ul {
   background-color: rgba(22, 183, 113, 0.17);
 }
 
-.logout-btn {
+.logout {
   background-color: #bb4545;
   color: white;
   border: none;
@@ -106,10 +115,82 @@ nav ul {
   border-radius: 15px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: auto;
 }
 
-.logout-btn:hover {
+.logout:hover {
   background-color: #a13c3c;
 }
+
+.button-list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.removable-icon {
+  display: none;
+}
+
+.navigation-section {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding: 10px 0;
+}
+
+@media (max-width: 848px) {
+  .main-container-menu {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    max-height: fit-content;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .removable-text {
+    display: none;
+  }
+
+  .button-list {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    height: fit-content;
+    margin-bottom: 0;
+  }
+
+  .logo {
+    max-width: 40px;
+  }
+
+  .logo-holder {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    height: fit-content;
+  }
+
+  .navigation-section {
+    flex-direction: row;
+    column-gap: 10px;
+    padding: 0;
+  }
+
+  .logout {
+    margin: 0;
+    height: fit-content;
+    padding: 10px
+  }
+
+  .removable-icon {
+    display: block;
+  }
+
+}
+
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
+  <div class="main-container-userprofile w-100 vh-100 column-gap-3 p-3">
     <div class="menu-bar">
       <MenuBar />
     </div>
@@ -40,21 +40,27 @@ export default {
 </script>
 
 <style scoped>
+
+.main-container-userprofile {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 848px) {
   .right-bar {
     display: none;
   }
-}
 
-@media (max-width: 576px) {
-  .menu-bar {
-    display: none;
+  .main-container-userprofile {
+    flex-direction: column;
+    row-gap: 15px;
   }
 }
 </style>

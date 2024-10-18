@@ -45,7 +45,7 @@
          class="d-flex p-3 flex-column w-100 mt-1 align-items-center
          border rounded-4 shadow-md position-absolute bg-white"
     >
-      <h1 class="fs-6 fw-semibold m-0">No Results Found.</h1>
+      <h1 style="color: grey" class="fs-6 fw-semibold m-0">No Results Found.</h1>
     </div>
   </div>
 </template>

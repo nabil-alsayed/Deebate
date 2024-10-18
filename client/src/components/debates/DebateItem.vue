@@ -15,6 +15,15 @@
           <i class="bi bi-door-closed"></i>
         </p>
       </div>
+      <div v-if="isDebateClosed">
+        <button @click="analyzeDebate" class="btn btn-secondary">
+          Analyze
+        </button>
+      </div>
+      <b-modal v-model="showAnalysisModal" title="ChatGPT Analysis" hide-footer>
+        <p>{{ chatgptResponse }}</p>
+      </b-modal>
+
       <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
@@ -93,20 +102,20 @@
 </template>
 
 <script>
-import {ref, computed, watch} from 'vue';
-import ArgumentsList from "@/components/arguments/ArgumentsList.vue";
-import {Api} from "@/api/v1/Api.js";
-import {getLoggedInUser} from "@/api/v1/usersApi.js";
-import debounce from 'lodash.debounce';
+import { ref, computed, watch } from 'vue'
+import ArgumentsList from '@/components/arguments/ArgumentsList.vue'
+import { Api } from '@/api/v1/Api.js'
+import { getLoggedInUser } from '@/api/v1/usersApi.js'
+import debounce from 'lodash.debounce'
 
 export default {
-  name: "DebateItem",
-  components: {ArgumentsList},
+  name: 'DebateItem',
+  components: { ArgumentsList },
   props: {
     debateObj: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
@@ -117,174 +126,175 @@ export default {
       argumentsList: [],
       votesWith: [],
       votesAgainst: [],
-      status: '',
-    };
-  }
-  ,setup(props) {
-    const user = ref(null);
-    const newArgument = ref('');
-    const token = localStorage.getItem("token");
-    const hasVoted = ref(false);
-    const userSide = ref('');
-    const message = ref({type: '', text: ''});
-    const alertShown = ref(false);
-    const isParticipant = ref(false);
-    const isOwner = ref(false);
+      status: ''
+    }
+  },
+  setup(props) {
+    const user = ref(null)
+    const newArgument = ref('')
+    const token = localStorage.getItem('token')
+    const hasVoted = ref(false)
+    const userSide = ref('')
+    const message = ref({ type: '', text: '' })
+    const alertShown = ref(false)
+    const isParticipant = ref(false)
+    const isOwner = ref(false)
+    const chatgptResponse = ref('')
+    const showAnalysisModal = ref(false)
+    const debateAnalysis = ref('')
+    const showAnalysisButton = ref(false)
 
-    const numberOfWithVotes = computed(() => props.debateObj.votesWith.length);
-    const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length);
-    let argumentsLimit = ref(5);
+    const numberOfWithVotes = computed(() => props.debateObj.votesWith.length)
+    const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length)
+    let argumentsLimit = ref(5)
 
     const withButtonStyle = computed(() => ({
       backgroundColor: userSide.value === 'with' ? '#16B771' : '',
       color: userSide.value === 'with' ? 'white' : '#16B771',
       height: '48px',
-      cursor: hasVoted.value ? 'default' : 'pointer',
-    }));
+      cursor: hasVoted.value ? 'default' : 'pointer'
+    }))
 
     const againstButtonStyle = computed(() => ({
       backgroundColor: userSide.value === 'against' ? 'red' : '',
       color: userSide.value === 'against' ? 'white' : 'red',
       height: '48px',
-      cursor: hasVoted.value ? 'default' : 'pointer',
-    }));
+      cursor: hasVoted.value ? 'default' : 'pointer'
+    }))
 
     // Check if the debate has ended
     const isDebateClosed = computed(() => {
-      return new Date(props.debateObj.endTime) < new Date();
-    });
+      return new Date(props.debateObj.endTime) < new Date()
+    })
 
     // Format the end time as date and time
     const formattedEndTime = computed(() => {
-      const endDate = new Date(props.debateObj.endTime);
-      return endDate.toDateString();
-    });
+      const endDate = new Date(props.debateObj.endTime)
+      return endDate.toDateString()
+    })
 
     // Update the vote counts
     const updateVoteCounts = () => {
-      numberOfWithVotes.value = props.debateObj.votesWith.length;
-      numberOfAgainstVotes.value = props.debateObj.votesAgainst.length;
-    };
+      numberOfWithVotes.value = props.debateObj.votesWith.length
+      numberOfAgainstVotes.value = props.debateObj.votesAgainst.length
+    }
 
     // Show alert message
     const showAlert = () => {
       // Show the alert
-      alertShown.value = true;
+      alertShown.value = true
       // Hide alert after 1.5 seconds
       setTimeout(() => {
-        alertShown.value = false;
+        alertShown.value = false
         // Reload the page after successful update
         if (message.value.type === 'success') {
-          window.location.reload();
+          window.location.reload()
         }
-      }, 1000);
-    };
-
+      }, 1000)
+    }
 
     // Watch for changes in the debate object
     watch(
       () => props.debateObj,
       () => {
-        updateVoteCounts();
+        updateVoteCounts()
       },
-      {immediate: true}
-    );
-
+      { immediate: true }
+    )
 
     // Fetch the logged-in user ID
     const fetchLoggedInUserId = async () => {
       try {
-        const user = await getLoggedInUser();
-        user.value = user ? user.id : null;
+        const user = await getLoggedInUser()
+        user.value = user ? user.id : null
       } catch (error) {
-        console.error("Failed to fetch logged-in user ID:", error);
+        console.error('Failed to fetch logged-in user ID:', error)
       }
-    };
-
+    }
 
     // Vote for a debate
     const vote = async (voteTypeSelected) => {
       if (!token) {
-        alert("Please log in to vote.");
-        return;
+        alert('Please log in to vote.')
+        return
       }
 
-      const isCancellingVote = userSide.value === voteTypeSelected;
+      const isCancellingVote = userSide.value === voteTypeSelected
 
       try {
         const response = await Api.patch(
           `/debates/${props.debateObj._id}/vote`,
           {
             voteType: isCancellingVote ? 'remove' : voteTypeSelected,
-            userId: user.value._id,
+            userId: user.value._id
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           }
-        );
+        )
 
-        props.debateObj.votesWith = response.data.debate.votesWith;
-        props.debateObj.votesAgainst = response.data.debate.votesAgainst;
+        props.debateObj.votesWith = response.data.debate.votesWith
+        props.debateObj.votesAgainst = response.data.debate.votesAgainst
 
         if (isCancellingVote) {
-          userSide.value = null;
-          hasVoted.value = false;
-          localStorage.removeItem(`vote_${props.debateObj._id}`);
+          userSide.value = null
+          hasVoted.value = false
+          localStorage.removeItem(`vote_${props.debateObj._id}`)
         } else {
-          userSide.value = voteTypeSelected;
-          hasVoted.value = true;
-          localStorage.setItem(`vote_${props.debateObj._id}`, voteTypeSelected);
+          userSide.value = voteTypeSelected
+          hasVoted.value = true
+          localStorage.setItem(`vote_${props.debateObj._id}`, voteTypeSelected)
         }
       } catch (error) {
-        console.error(`Failed to vote ${voteTypeSelected}:`, error);
-        userSide.value = '';
+        console.error(`Failed to vote ${voteTypeSelected}:`, error)
+        userSide.value = ''
       }
-    };
+    }
 
     const cancelVote = () => {
-      vote(userSide.value);
-    };
+      vote(userSide.value)
+    }
 
     const getUserSide = () => {
-      const userId = user.value._id;
+      const userId = user.value._id
 
       // Check if user is in the votesWith array
       if (props.debateObj.votesWith.includes(userId)) {
-        userSide.value = 'with';
-        hasVoted.value = true;
-        return 'with';
+        userSide.value = 'with'
+        hasVoted.value = true
+        return 'with'
       }
 
       // Check if user is in the votesAgainst array
       if (props.debateObj.votesAgainst.includes(userId)) {
-        userSide.value = 'against';
-        hasVoted.value = true;
-        return 'against';
+        userSide.value = 'against'
+        hasVoted.value = true
+        return 'against'
       }
 
       // If user has not voted yet (should not happen since user is a participant)
-      userSide.value = '';
-      return '';
-    };
+      userSide.value = ''
+      return ''
+    }
 
     const addArgument = async () => {
       if (!newArgument.value.trim()) {
-        alert("Argument cannot be empty.");
-        return;
+        alert('Argument cannot be empty.')
+        return
       }
 
       if (!hasVoted.value && !isParticipant.value) {
-        alert("You need to vote before submitting an argument.");
-        return;
+        alert('You need to vote before submitting an argument.')
+        return
       }
 
-      const side = getUserSide();
+      const side = getUserSide()
 
       try {
         if (!user.value) {
-          await fetchLoggedInUserId();
+          await fetchLoggedInUserId()
         }
 
         const response = await Api.post(
@@ -292,92 +302,134 @@ export default {
           {
             content: newArgument.value,
             userId: user.value._id,
-            side: side,
+            side: side
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           }
-        );
+        )
 
-        props.debateObj.arguments.push(response.data);
-        newArgument.value = '';
-        message.value = {type: 'success', text: 'Argument added successfully!'};
-        showAlert();
+        props.debateObj.arguments.push(response.data)
+        newArgument.value = ''
+        message.value = { type: 'success', text: 'Argument added successfully!' }
+        showAlert()
       } catch (error) {
-        const errorMsg = error.response?.data?.message || 'Failed to add argument.';
-        message.value = {type: 'error', text: errorMsg};
-        showAlert();
+        const errorMsg = error.response?.data?.message || 'Failed to add argument.'
+        message.value = { type: 'error', text: errorMsg }
+        showAlert()
       }
-    };
+    }
 
     const checkIfUserIsParticipant = () => {
       if (user.value) {
-        const participants = props.debateObj.participants;
-        isParticipant.value = participants.some((participant) => participant === user.value._id);
+        const participants = props.debateObj.participants
+        isParticipant.value = participants.some((participant) => participant === user.value._id)
       }
-    };
+    }
 
     const checkIfUserIsOwner = () => {
       if (user.value) {
-        const owner = props.debateObj.owner;
-        isOwner.value = owner._id === user.value._id;
+        const owner = props.debateObj.owner
+        isOwner.value = owner._id === user.value._id
       }
-    };
-
-
-    const isNewArgumentsAccepted = () => {
-      if (props.debateObj.participants.length >= props.debateObj.maxParticipants) {
-        return false;
-      }
-
-      if (props.debateObj.status === 'closed') {
-        return false;
-      }
-
-      if (props.debateObj.endTime < new Date()) {
-        return false;
-      }
-
-      return true;
-    };
+    }
 
     const loadMoreArguments = () => {
-      argumentsLimit.value += 5;
-    };
+      argumentsLimit.value += 5
+    }
 
     const storeVoteType = () => {
-      const vote = localStorage.getItem(`vote_${props.debateObj._id}`);
-      getUserSide();
+      const vote = localStorage.getItem(`vote_${props.debateObj._id}`)
+      getUserSide()
       if (!vote) {
-        localStorage.setItem(`vote_${props.debateObj._id}`, userSide.value);
+        localStorage.setItem(`vote_${props.debateObj._id}`, userSide.value)
       }
-    };
+    }
 
     // Make use of HATEOAS links to fullfill the requirement
     const deleteDebate = async () => {
       if (!props.debateObj.links || !props.debateObj.links.delete) {
-        console.error('Delete link not available');
-        message.value = { type: 'error', text: 'Unable to delete debate. Delete link not available.' };
-        showAlert();
-        return;
+        console.error('Delete link not available')
+        message.value = { type: 'error', text: 'Unable to delete debate. Delete link not available.' }
+        showAlert()
+        return
       }
 
       try {
         await Api.delete(props.debateObj.links.delete, {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        message.value = { type: 'success', text: 'Debate deleted successfully!' };
-        showAlert();
+            Authorization: `Bearer ${token}`
+          }
+        })
+        message.value = { type: 'success', text: 'Debate deleted successfully!' }
+        showAlert()
       } catch (error) {
-        const errorMsg = error.response?.data?.message || 'Failed to delete debate.';
-        message.value = { type: 'error', text: errorMsg };
-        showAlert();
+        const errorMsg = error.response?.data?.message || 'Failed to delete debate.'
+        message.value = { type: 'error', text: errorMsg }
+        showAlert()
       }
-    };
+    }
+
+    const analyzeDebate = async () => {
+      try {
+        const debateData = {
+          topic: props.debateObj.topic,
+          arguments: props.debateObj.arguments.map(arg => arg.content).join('\n')
+        }
+
+        const response = await Api.post('/chatgpt/generate', {
+          prompt: `Analyze the following debate:\nTopic: ${debateData.topic}\nArguments:\n${debateData.arguments}
+          \nFollow these rules:
+          1) Respectful Language: check if they use offensive, derogatory, or discriminatory language.
+          2) Fact-Checking: do participants provide reliable sources to support their claims?
+          3) Relevance: does the discussion stay on topic and avoid tangents?
+          4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence.
+          5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors.
+          At the end of the response, justify who made a better argument and why and identify a potential winner, considering all rules.`
+        })
+
+        chatgptResponse.value = response.data.response
+        showAnalysisModal.value = true
+      } catch (error) {
+        console.error('Error analyzing debate:', error)
+        chatgptResponse.value = 'An error occurred while generating the analysis.'
+        showAnalysisModal.value = true
+      }
+    }
+
+    // const analyzeDebate = async () => {
+    //   try {
+    //     const response = await Api.post('/chatgpt/generate', {
+    //       debateId: props.debateObj._id
+    //     },{
+    //       headers: {
+    //         Authorization: `Bearer ${token}`
+    //       }
+    //     })
+    //
+    //     if(reponse){
+    //       chatgptResponse.value = response.data.response
+    //     }
+    //   } catch (error) {
+    //     console.error('Error analyzing debate:', error)
+    //     chatgptResponse.value = 'An error occurred while generating the analysis.'
+    //   } finally {
+    //     showAnalysisModal.value = true
+    //   }
+    // }
+
+    // const checkIfAnalysisIsAvailable = () => {
+    //   if(!getAnalysis().isEmpty()){
+    //     debateAnalysis.value = props.debateObj.analysis
+    //     showAnalysisButton.value = true;
+    //   }
+    // }
+    //
+    // const getAnalysis = () => {
+    //   return props.debateObj.analysis
+    // }
 
     return {
       user,
@@ -392,8 +444,8 @@ export default {
       argumentsLimit,
       withButtonStyle,
       againstButtonStyle,
-      voteWith: debounce(() => vote("with"), 300),
-      voteAgainst: debounce(() => vote("against"), 300),
+      voteWith: debounce(() => vote('with'), 300),
+      voteAgainst: debounce(() => vote('against'), 300),
       checkIfUserIsParticipant,
       checkIfUserIsOwner,
       cancelVote,
@@ -404,27 +456,33 @@ export default {
       formattedEndTime,
       message,
       alertShown,
-      deleteDebate
-    };
+      deleteDebate,
+      chatgptResponse,
+      showAnalysisModal,
+      analyzeDebate
+      // getAnalysis,
+      // checkIfAnalysisIsAvailable
+    }
   },
   async created() {
-    this.id = this.debateObj._id;
-    this.topic = this.debateObj.topic;
-    this.category = this.debateObj.category;
-    this.argumentsList = this.debateObj.arguments;
-    this.endTime = this.debateObj.endTime;
-    this.votesWith = this.debateObj.votesWith;
-    this.votesAgainst = this.debateObj.votesAgainst;
-    this.status = this.debateObj.status;
-    this.user = await getLoggedInUser();
-    this.userSide = this.getUserSide();
+    this.id = this.debateObj._id
+    this.topic = this.debateObj.topic
+    this.category = this.debateObj.category
+    this.argumentsList = this.debateObj.arguments
+    this.endTime = this.debateObj.endTime
+    this.votesWith = this.debateObj.votesWith
+    this.votesAgainst = this.debateObj.votesAgainst
+    this.status = this.debateObj.status
+    this.user = await getLoggedInUser()
+    this.userSide = this.getUserSide()
 
     // Check if the user is an owner or/and participant
-    this.checkIfUserIsOwner();
-    this.checkIfUserIsParticipant();
-  },
+    this.checkIfUserIsOwner()
+    this.checkIfUserIsParticipant()
+    // this.checkIfAnalysisIsAvailable()
+  }
 
-};
+}
 </script>
 
 <style scoped>

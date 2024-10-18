@@ -1,6 +1,6 @@
 <template>
-  <div style="width: 100%">
-    <h2 style="color: grey; font-size: 20px; font-weight: 550;">Category</h2>
+  <div style="width: 100%; position: sticky; top: 0">
+    <h2 class="title">Category</h2>
     <div class="category-grid">
       <div
         v-for="category in categories"
@@ -70,12 +70,16 @@ export default {
   cursor: pointer;
   padding: 15px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  font-weight: 800;
+  color: #017769;
 }
 
 .category-card:hover {
-  background-color: #f0f0f0;
+  background-color: #017769;
+  color: white;
 }
 
 .icon-container {
@@ -85,17 +89,54 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background-color: #f0f0f0;
   margin-bottom: 5px;
 }
 
 .icon-container.active {
-  background-color: #4CAF50;
+  background-color: #16B671;
   color: white;
 }
 
+.icon-container {
+  background-color: #f6f6f6;
+  color: #16B671;
+}
+
 .category-name {
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
 }
+
+.title {
+  color: grey;
+  font-size: 18px;
+  font-weight: 550;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 850px) {
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 120px);
+    grid-template-rows: repeat(1, fit-content());
+    overflow: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .category-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+}
+
 </style>

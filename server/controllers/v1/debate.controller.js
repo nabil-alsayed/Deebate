@@ -3,6 +3,8 @@
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const User = require('../../models/user');
+// const {generateResponse} = require("../../services/chatgpt.service");
+// const {generatePrompt} = require("../../utils/utils");
 
 const voteDebate = async (req, res) => {
   const { debateId } = req.params;
@@ -189,7 +191,87 @@ const getDebates = async (req, res, next) => {
   }
 };
 
-
+// const getDebates = async (req, res, next) => {
+//   try {
+//     const { user, category, status, sort } = req.query;
+//     const allowedCategories = Debate.schema.path('category').enumValues;
+//     const allowedStatus = Debate.schema.path('status').enumValues;
+//     const allowedSortOrders = ['asc', 'desc'];
+//     const asc = allowedSortOrders[0];
+//
+//     let filter = {};
+//
+//     // If user ID is specified, add it to the filter
+//     if (user) {
+//       if (!mongoose.Types.ObjectId.isValid(user)) {
+//         return res.status(400).json({ message: 'Invalid user ID' });
+//       }
+//       filter.owner = user;  // Filter debates by the owner (user)
+//     }
+//
+//     // If category is specified, add it to the filter
+//     if (category) {
+//       if (!allowedCategories.includes(category)) {
+//         return res.status(400).json({ message: 'Invalid category' });
+//       }
+//       filter.category = category;  // Filter debates by category
+//     }
+//
+//     // If status is specified, add it to the filter
+//     if (status) {
+//       if (!allowedStatus.includes(status)) {
+//         return res.status(400).json({ message: 'Invalid status' });
+//       }
+//       filter.status = status;  // Filter debates by status (open/closed)
+//     }
+//
+//     // Initialize the query with the constructed filter, populate arguments and participants
+//     let query = Debate.find(filter)
+//         .populate('owner', 'username')
+//         .populate('arguments.owner', 'firstName lastName username')
+//         .populate('participants', 'firstName lastName username');
+//
+//     // Apply sorting if provided (by debate end time)
+//     if (sort) {
+//       if (!allowedSortOrders.includes(sort)) {
+//         return res.status(400).json({ message: 'Invalid sort order' });
+//       }
+//       const sortOption = sort === asc ? 1 : -1;
+//       query = query.sort({ endTime: sortOption });
+//     }
+//
+//     // Execute the query and get the debates
+//     const debates = await query;
+//
+//     // Automatically close expired debates before returning the results
+//     for (const debate of debates) {
+//       if (debate.endTime < new Date() && debate.status === 'open') {
+//         debate.status = 'closed';
+//         //
+//         // // Generate the prompt for OpenAI and save the response
+//         // const prompt = await generatePrompt(debate);
+//         // debate.analysis = await generateResponse(prompt);
+//
+//         await debate.save();
+//       }
+//     }
+//
+//     // Send the debates along with HATEOAS links
+//     res.status(200).json({
+//       debates: debates.map(debate => ({
+//         ...debate.toObject(),
+//         links: {
+//           self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+//           arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
+//           update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
+//           delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
+//         }
+//       })),
+//     });
+//   } catch (err) {
+//     return next(err);
+//   }
+// };
 
 const deleteAllDebates = async (req, res, next) => {
 

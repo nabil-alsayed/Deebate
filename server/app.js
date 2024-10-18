@@ -9,6 +9,7 @@ var history = require('connect-history-api-fallback');
 var { connectDb } = require('./db/db');
 var routes = require('./routes');
 const upload = require('./multer-config'); // Import Multer configuration
+const chatgptRoutes = require('./routes/v1/chatgpt.route');
 
 var port = process.env.PORT || 3000;
 
@@ -31,6 +32,9 @@ app.use(
 app.use('/', routes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+console.log('Registering ChatGPT routes');
+app.use('/api', routes);
 
 // Configuration for serving frontend in production mode
 // Support Vuejs HTML 5 history mode
