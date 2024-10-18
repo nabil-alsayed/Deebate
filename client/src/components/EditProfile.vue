@@ -1,85 +1,91 @@
 <template>
-  <div class="edit-profile d-flex flex-column row-gap-4">
-    <h2 class="profile-title">Edit Profile</h2>
+  <div class="edit-profile bg-white ">
+    <transition>
+      <div class="d-flex flex-column row-gap-4">
+        <!-- User's First Name and Username -->
+        <div class="d-flex flex-row justify-content-between align-items-center">
+          <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
+            <div class="profile-image-container">
+              <img :src="profileImagePreview || this.user.profileImage"
+                   class="rounded-circle"
+                   alt="profile image"
+                   style="height: 75px; width: 75px; border-radius: 15px; border: 3px solid #007769"
+              />
+              <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
+              <!-- Pen icon for changing profile image -->
+              <i v-if="isOpen && editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
+            </div>
+            <div>
+              <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
+              <p class="username">@{{ user.username }}</p>
+            </div>
+          </div>
+          <div v-if="!isWide"
+               @click="toggleAccordion"
+               class="chevron-container"
+               style="width: 40px; height: 40px">
+            <i :class="isOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'" class="chevron"></i>
+          </div>
+        </div>
 
-    <div class="d-flex flex-column row-gap-4">
-      <!-- User's First Name and Username -->
-      <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
-        <div class="profile-image-container">
-          <img :src="profileImagePreview || this.profileImage"
-               class="rounded-circle"
-               alt="profile image"
-               style="height: 75px;
-               width: 75px;
-               border-radius: 15px;
-               border: 3px solid #007769"
-          />
-          <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*"
-                 style="display: none;" />
-          <i @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
-        </div>
-        <div>
-          <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
-          <p class="username">@{{ user.username }}</p>
-        </div>
+        <!-- Form to edit profile -->
+        <form v-if="isOpen" class="d-flex flex-column row-gap-3" @submit.prevent="saveProfile">
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" v-model="editedUser.firstName" :disabled="!editMode" required />
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" v-model="editedUser.lastName" :disabled="!editMode" required />
+          </div>
+          <div class="field">
+            <label>Username</label>
+            <input type="text" v-model="editedUser.username" :disabled="!editMode" required />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" v-model="editedUser.emailAddress" :disabled="!editMode" required />
+          </div>
+          <div class="field password-field">
+            <label>Password</label>
+            <input
+              type="password"
+              v-model="editedUser.password"
+              :disabled="!editMode"
+              :placeholder="passwordPlaceholder"
+            />
+          </div>
+          <div class="button-group">
+            <button
+              v-if="editMode"
+              type="submit"
+              :disabled="!hasChanges || !isFormValid || isSaving"
+              class="save-button d-flex flex-grow-1 justify-content-center"
+            >
+              {{ isSaving ? 'Saving...' : 'Save' }}
+            </button>
+            <button
+              v-else
+              type="button"
+              @click="toggleEditMode"
+              class="save-button d-flex flex-grow-1 justify-content-center"
+            >
+              Edit
+            </button>
+            <button
+              v-if="editMode"
+              type="button"
+              @click="cancelEdit"
+              class="cancel-button"
+              :disabled="isSaving"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
+    </transition>
 
-      <!-- Form to edit profile -->
-      <form class="d-flex flex-column row-gap-2" @submit.prevent="saveProfile">
-        <div class="field">
-          <label>First Name</label>
-          <input type="text" v-model="editedUser.firstName" :disabled="!editMode" required />
-        </div>
-        <div class="field">
-          <label>Last Name</label>
-          <input type="text" v-model="editedUser.lastName" :disabled="!editMode" required />
-        </div>
-        <div class="field">
-          <label>Username</label>
-          <input type="text" v-model="editedUser.username" :disabled="!editMode" required />
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" v-model="editedUser.emailAddress" :disabled="!editMode" required />
-        </div>
-        <div class="field password-field">
-          <label>Password</label>
-          <input
-            type="password"
-            v-model="editedUser.password"
-            :disabled="!editMode"
-            :placeholder="passwordPlaceholder"
-          />
-        </div>
-        <div class="button-group">
-          <button
-            v-if="editMode"
-            type="submit"
-            :disabled="!hasChanges || !isFormValid || isSaving"
-            class="save-button d-flex flex-grow-1 justify-content-center"
-          >
-            {{ isSaving ? 'Saving...' : 'Save' }}
-          </button>
-          <button
-            v-else
-            type="button"
-            @click="toggleEditMode"
-            class="save-button d-flex flex-grow-1 justify-content-center"
-          >
-            Edit
-          </button>
-          <button
-            v-if="editMode"
-            type="button"
-            @click="cancelEdit"
-            class="cancel-button"
-            :disabled="isSaving"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
     <!-- Alert for success/error messages -->
     <div v-if="alertShown" :class="['alert-box', message.type]">
       {{ message.text }}
@@ -94,6 +100,8 @@ import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 export default {
   data() {
     return {
+      isOpen: false,
+      isWide: true,
       user: {
         emailAddress: '',
         username: '',
@@ -119,8 +127,14 @@ export default {
   },
   created() {
     this.loadUser();
+    this.checkScreenSize();
   },
-  computed: {
+  mounted() {
+    window.addEventListener('resize', this.checkScreenSize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.checkScreenSize);
+  },computed: {
     hasChanges() {
       return (
         this.user.firstName !== this.editedUser.firstName ||
@@ -145,6 +159,17 @@ export default {
     },
   },
   methods: {
+    // Check screen size and update `isOpen` based on width
+    checkScreenSize() {
+      this.isOpen = window.innerWidth >= 849;
+      this.isWide = window.innerWidth >= 849;
+    },
+    toggleAccordion() {
+      // Only allow toggling for smaller screens
+      if (window.innerWidth <= 849) {
+        this.isOpen = !this.isOpen;
+      }
+    },
     loadUser() {
       const localUser = JSON.parse(localStorage.getItem('user'));
       if (localUser) {
@@ -173,7 +198,7 @@ export default {
       this.editMode = false;
       this.message.text = '';
       this.profileImageFile = null;
-      this.profileImagePreview = null;
+      this.profileImagePreview = this.user.profileImg ? `${this.user.profileImg}` : this.defaultAvatar;
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
@@ -235,16 +260,14 @@ export default {
   display: flex;
   flex-direction: column;
   row-gap: 5px;
-  border-radius: 10px;
+  position: sticky;
+  top: 0;
+  border-radius: 15px;
   width: 100%;
-  height: 100%;
-  padding: 20px;
-}
-
-.profile-title {
-  color: grey;
-  font-size: 20px;
-  font-weight: 550;
+  height: fit-content;
+  padding: 15px;
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .alert-box {
@@ -297,7 +320,7 @@ input {
 }
 
 input:disabled {
-  background-color: #d7d7d7;
+  background-color: #dfdfdf;
 }
 
 .button-group {
@@ -356,5 +379,19 @@ input:disabled {
 
 .change-photo-btn:hover {
   background-color: #a89200;
+}
+
+.chevron-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e6e6e6;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.chevron-container:hover {
+  background-color: #056149;
+  color: white;
 }
 </style>

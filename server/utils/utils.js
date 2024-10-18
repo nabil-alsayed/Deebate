@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
+const Debate = require("../models/debate");
 
 // This can be used to generate a verification token for email verification
 
@@ -98,6 +99,27 @@ const comparePassword = async (plainPassword, hashedPassword) => {
     throw new Error('Error comparing passwords');
   }
 };
+
+// Helper function to get participant details
+const getParticipantName = (participantsArr, participantId) => {
+  const participantObj = {
+    firstName: '',
+    lastName: '',
+    username: '',
+  };
+
+  participantsArr.forEach(participant => {
+    // Compare the participant ID with the argument owner ID
+    if (participant._id.equals(participantId)) {
+      participantObj.firstName = participant.firstName;
+      participantObj.lastName = participant.lastName;
+      participantObj.username = participant.username;
+    }
+  });
+
+  return participantObj;
+};
+
 
 module.exports = {
   generateVerificationToken,

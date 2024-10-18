@@ -1,16 +1,16 @@
 <template>
-  <div class="d-flex flex-column full-width row-gap-3" style="width: 100%">
+  <div class="d-flex flex-column full-width row-gap-1" style="width: 100%">
     <div
       class="d-flex flex-row justify-content-between align-items-center"
       style="color: grey"
     >
-      <h2 style="font-weight: 550; font-size: 17px">{{ debates.length }} Debates</h2>
+      <h2 class="title">{{ debates.length }} Debates</h2>
       <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center"
            style="font-size: 20px"
       >
         <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center"
              @click="toggleSort" style="cursor: pointer;">
-          <h2 style="font-weight: 550; font-size: 17px">End Time</h2>
+          <h2 class="title">End Time</h2>
           <i :class="['bi', sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-up inactive']"></i>
           <i :class="['bi', sortOrder === 'desc' ? 'bi-sort-down' : 'bi-sort-down inactive']"></i>
         </div>
@@ -21,13 +21,17 @@
         <debate-item :debateObj="debate" :key="debate._id" />
       </li>
     </ul>
-    <p v-else>No such debates.</p>
+    <div v-else class="empty-list">
+      <img :src="EmptyListIllustration" alt="empty" style="width: 300px; height: 300px" />
+      <p>Wooopsy. No debates yet!</p>
+    </div>
   </div>
 </template>
 
 <script>
 import { Api } from '@/api/v1/Api.js';
 import DebateItem from '@/components/debates/DebateItem.vue';
+import EmptyListIllustration from '@/assets/illustrations/debate-list-empty.svg';
 
 export default {
   name: 'DebateList',
@@ -46,7 +50,8 @@ export default {
     return {
       debates: [],
       error: null,
-      sortOrder: 'desc', // sorting: newest first
+      sortOrder: 'desc',
+      EmptyListIllustration,
     };
   },
   watch: {
@@ -54,7 +59,9 @@ export default {
       this.debates = newResults;
     },
   },
-  created() {
+  mounted() {
+    localStorage.removeItem('selectedCategory');
+    this.selectedCategory = null;
     this.getDebates();
   },
   methods: {
@@ -93,12 +100,33 @@ li {
   width: 100%;
 }
 
+.empty-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-weight: 650;
+  font-size: 25px;
+  color: grey;
+}
+
 .debate-item {
   background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
   padding: 15px;
   margin-bottom: 15px;
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+  font-weight: 550;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .inactive {

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex w-100 vh-100 column-gap-3 p-3">
+  <div class="main-container-home w-100 vh-100 column-gap-3 p-3">
     <!--    MENU -->
     <div class="menu-bar">
       <MenuBar />
@@ -10,10 +10,14 @@
       <!-- SEARCH AND USER INFO -->
       <SearchBar />
       <!-- DEBATE LIST AND WIDGETS -->
-      <div class="d-flex flex-row column-gap-3">
+      <div class="main-body">
         <!-- DEBATE LIST -->
+
         <div class="d-flex flex-column row-gap-3" id="debates-sections">
-          <DebateForm />
+          <div class="d-flex flex-column row-gap-1">
+            <h2 class="title">Post a Debate</h2>
+            <DebateForm />
+          </div>
           <DebateList :filteredDebates="filteredDebates" />
         </div>
 
@@ -104,21 +108,58 @@ export default {
   overflow-y: auto;
 }
 
+.title {
+  color: grey;
+  font-size: 18px;
+  font-weight: 550;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 #debates-sections {
   width: 100%;
 }
 
+.main-body {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+}
+
+.main-container-home {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  row-gap: 15px;
+}
+
 /* Responsive */
 
-@media (max-width: 768px) {
+@media (max-width: 848px) {
+  .main-container-home {
+    flex-direction: column;
+    row-gap: 15px;
+  }
+
+  .menu-bar {
+    max-height: fit-content;
+  }
+
+  .main-body {
+    flex-direction: column;
+    row-gap: 15px;
+  }
+
   .right-bar {
-    display: none;
+    order: -1;
   }
 }
 
 @media (max-width: 576px) {
-  .menu-bar {
-    display: none;
+  .main-body {
+    flex-direction: column;
   }
+
 }
 </style>
