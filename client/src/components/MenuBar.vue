@@ -2,7 +2,7 @@
   <div class="main-container-menu primary-color text-white p-3 rounded-4"
        style="min-width: 210px;">
     <!-- Logo Section -->
-    <div class="text-center logo-holder">
+    <div class="text-center logo-holder mb-5">
       <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid"/>
       <h1 class="removable-text">Deebate</h1>
       <p class="removable-text">Stand for your belief!</p>
