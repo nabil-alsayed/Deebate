@@ -6,7 +6,7 @@
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
             <div class="profile-image-container">
-              <img :src="profileImagePreview || this.user.profileImage"
+              <img :src="profileImagePreview || this.user.profileImg"
                    class="rounded-circle"
                    alt="profile image"
                    style="height: 75px; width: 75px; border-radius: 15px; border: 3px solid #007769"
@@ -108,7 +108,7 @@ export default {
         password: '',
         firstName: '',
         lastName: '',
-        profileImage: '',
+        profileImg: '',
       },
       editedUser: {},
       isSaving: false,

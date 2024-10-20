@@ -2,10 +2,12 @@
   <div class="main-container-menu primary-color text-white p-3 rounded-4"
        style="min-width: 210px;">
     <!-- Logo Section -->
-    <div class="text-center logo-holder mb-3">
+    <div class="text-center logo-holder">
       <img :src="logoSrc" alt="Deebate Logo" class="logo img-fluid"/>
-      <h1 class="removable-text">Deebate</h1>
-      <p class="removable-text">Stand for your belief!</p>
+      <div>
+        <h1 class="removable-text mb-0">Deebate</h1>
+        <p class="removable-text">Stand for your belief!</p>
+      </div>
     </div>
 
     <!-- Navigation Section -->
@@ -70,13 +72,12 @@ export default {
 
 /* Styling for the logo */
 .logo {
-  max-width: 100px;
+  max-width: 70px;
   height: auto;
 }
 
 /* Styling for the title */
 h1 {
-  margin-top: 10px;
   font-size: 1.5em;
   font-weight: 800;
 }
@@ -129,6 +130,15 @@ nav ul {
 /* Hover styling for the logout button */
 .logout:hover {
   background-color: #a13c3c;
+}
+
+.logo-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 15px;
+  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 /* Styling for the button list */
@@ -186,6 +196,8 @@ nav ul {
     align-items: center;
     gap: 5px;
     height: fit-content;
+    margin-bottom: 0;
+    margin-top: 0;
   }
 
   .navigation-section {
