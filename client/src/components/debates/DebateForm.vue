@@ -19,7 +19,7 @@
           class="input"
           required
         >
-          <option disabled value="">Select Category</option>
+          <option disabled>Select Category</option>
         </b-form-select>
       </div>
 

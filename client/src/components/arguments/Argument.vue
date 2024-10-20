@@ -11,6 +11,10 @@
              :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: side.backgroundColor }">
           <p class="m-0" style="color: white">{{ side.text }}</p>
         </div>
+        <div class="d-flex flex-row row-gap-2">
+          <i v-if="isWinnerByAI" class="bi bi-trophy-fill" style="font-size: 15px; color: goldenrod" />
+          <i v-if="isWinnerByAudience" class="bi bi-people-fill" style="font-size: 15px; color: #007769" />
+        </div>
       </div>
       <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
@@ -72,8 +76,8 @@ import defaultAvatar from '@/assets/avatars/user-avatar.svg'
 export default {
   name: 'Argument',
   props: {
-    argument: { type: Object, required: true },
-    debate: { type: String, required: true }
+    argument: { type: String, required: true },
+    debate: { type: Object, required: true }
   },
   data() {
     return {
@@ -82,6 +86,8 @@ export default {
       commentsWithUserDetails: [],
       newComment: '',
       isOwner: false,
+      isWinnerByAI: false,
+      isWinnerByAudience: false,
       showCommentsPopup: false,
       side: {
         text: '',
@@ -98,6 +104,7 @@ export default {
     await this.checkIfOwner()
     await this.fetchCommentUserDetails()
     await this.fetchUserSide()
+    this.checkWinner();
   },
   methods: {
     async checkIfOwner() {
@@ -108,14 +115,32 @@ export default {
         console.error('Failed to check ownership:', error)
       }
     },
+    checkWinner() {
+      // Ensure the argument's side and winner's side are both lowercase for comparison
+      const argumentSide = this.side.text.toLowerCase();
+      const aiWinnerSide = this.debate.winnerByAI?.toLowerCase();
+      const audienceWinnerSide = this.debate.winnerByAudience?.toLowerCase();
+      // Set the winner flags based on the comparison
+      this.isWinnerByAI = aiWinnerSide === argumentSide;
+      this.isWinnerByAudience = audienceWinnerSide === argumentSide;
+    },
     async fetchArgument() {
       try {
-        const { data } = await Api.get(`/debates/${this.debate}/arguments/${this.argument}`, {
+        const { data } = await Api.get(`/debates/${this.debate._id}/arguments/${this.argument}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
         this.content = data.content
         this.owner._id = data.owner
         this.commentsWithUserDetails = data.comments
+        const isWith = data.side === 'with';
+        // Set the side based on where the user is found
+        if (isWith) {
+          this.side.text = 'With'
+          this.side.backgroundColor = '#007769'
+        } else {
+          this.side.text = 'Against'
+          this.side.backgroundColor = '#a83737'
+        }
       } catch (error) {
         console.error('Failed to fetch argument:', error)
       }
@@ -132,7 +157,7 @@ export default {
     },
     async deleteArgument() {
       try {
-        const response = await Api.delete(`/debates/${this.debate}/arguments/${this.argument}`, {
+        const response = await Api.delete(`/debates/${this.debate._id}/arguments/${this.argument}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
         if (response.status >= 200 && response.status < 300) {
@@ -160,7 +185,7 @@ export default {
     },
     async fetchUserSide() {
       try {
-        const response = await Api.get(`/debates/${this.debate}`, {
+        const response = await Api.get(`/debates/${this.debate._id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
 
@@ -188,7 +213,7 @@ export default {
         return;
       }
       try {
-        const { data } = await Api.post(`/debates/${this.debate}/arguments/${this.argument}/comments`,
+        const { data } = await Api.post(`/debates/${this.debate._id}/arguments/${this.argument}/comments`,
           { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
@@ -224,7 +249,7 @@ export default {
         return
       }
       try {
-        const { data } = await Api.put(`/debates/${this.debate}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
+        const { data } = await Api.put(`/debates/${this.debate._id}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
           { content: trimmedComment },
           { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
         )
@@ -254,8 +279,12 @@ export default {
 
 .comments-popup {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;

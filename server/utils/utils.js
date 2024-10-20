@@ -1,6 +1,5 @@
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-const Debate = require("../models/debate");
 
 // This can be used to generate a verification token for email verification
 
@@ -110,15 +109,83 @@ const getParticipantName = (participantsArr, participantId) => {
 
   participantsArr.forEach(participant => {
     // Compare the participant ID with the argument owner ID
-    if (participant._id.equals(participantId)) {
-      participantObj.firstName = participant.firstName;
-      participantObj.lastName = participant.lastName;
-      participantObj.username = participant.username;
+    if (participant._id.toString() === participantId) {
+      participantObj.firstName = participant.firstName || 'Unknown';
+      participantObj.lastName = participant.lastName || '';
+      participantObj.username = participant.username || 'Unknown';
     }
   });
-
   return participantObj;
 };
+
+
+const generatePrompt = async (type, debate) => {
+  try {
+    let prompt = '';
+    const ask = "Analyze the following debate: ";
+    const topic = `Topic: ${debate.topic}\n`;
+    const votesWith = `Number of people voted with: ${debate.votesWith.length}\n`;
+    const votesAgainst = `Number of people voted against: ${debate.votesAgainst.length}\n`;
+    const rules = `Follow these rules: 
+      1) Respectful Language: check if they use offensive, derogatory, or discriminatory language. 
+      2) Fact-Checking: do participants provide reliable sources to support their claims? 
+      3) Relevance: does the discussion stay on topic and avoid tangents? 
+      4) Reasonableness: Discourage arguments based on personal opinions or beliefs without evidence. 
+      5) Ethics: Promote ethical considerations to avoid discussions that promote harmful or unethical behaviors. 
+      6) Logical Fallacies: Identify and point out logical fallacies in arguments.
+      7) Structure: Check if the arguments are well-structured and easy to follow.
+      8) Engagement: Evaluate the level of engagement and interaction between participants.
+      9) Conclusion: Analyze the quality of the conclusion and the final statements.
+      10) Remember that your answer will be displayed in the form of a string, so make sure it is formatted correctly with spaces.\n
+      \n
+    `;
+
+    let request = '';
+
+    if (type === 'analysis') {
+      request = 'Analyze the debate and provide a summary of the arguments.';
+    } else if (type === 'winner') {
+      request = 'Based on the analysis and rules return a response with only one string no longer than the length of the side word string, which is the side of the participant/s who is/are according to your judgment won the debate. You have to return one and only one winning side, no more no less. Either "with" or "against".';
+    }
+
+    let argumentsString = '';
+
+    // Ensure participants and arguments are populated
+    await debate.populate('participants');
+    await debate.populate('arguments');
+
+    await debate.save();
+
+    const participantsArr = debate.participants;
+    const arguments = debate.arguments;
+
+    if (!participantsArr || participantsArr.length === 0) {
+      throw new Error('No participants found.');
+    }
+
+    if (!arguments || arguments.length === 0) {
+      throw new Error('No arguments found.');
+    }
+
+    // Iterate through arguments to build the prompt
+    arguments.forEach((argument, index) => {
+      const participant = getParticipantName(participantsArr, argument.owner.toString());
+      const participantDetails = `(Participant ID: ${argument.owner.toString()}) Name: ${participant.firstName} ${participant.lastName}`;
+      argumentsString += `Debator: ${participantDetails || 'Unknown'} | Argument ${index + 1} | Side: ${argument.side || 'Unknown'}\nContent: ${argument.content || 'No content provided'}\n\n`;
+    });
+
+    // Combine the parts of the prompt
+    prompt = ask + topic + votesWith + votesAgainst + rules + argumentsString + request;
+
+    return prompt;
+  } catch (error) {
+    console.error('Failed to generate prompt:', error);
+    throw new Error('Failed to generate prompt');
+  }
+};
+
+
+
 
 
 module.exports = {
@@ -127,4 +194,5 @@ module.exports = {
   authenticateRole,
   hashPassword,
   comparePassword,
+  generatePrompt
 };

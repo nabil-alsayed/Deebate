@@ -6,53 +6,6 @@ const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
 const User = require('../../models/user');
 
-
-// Create a new argument
-// const createArgument =  async (req, res, next) => {
-//
-//   const { debateId } = req.params;
-//   const { content, userId } = req.body;
-//
-//   try {
-//     const debate = await Debate.findById(debateId);
-//     console.log('here is the debate' + debate);
-//     if (!debate) {
-//       return res.status(404).json({ message: 'Debate not found' });
-//     }
-//
-//     if ( debate.participants.length >= debate.maxParticipants) {
-//       return res.status(403).json({ message: 'The debate already reached capacity!' });
-//     }
-//
-//     if(debate.status !== 'open'){
-//       return res.status(403).json({ message: 'Debate is closed' });
-//     }
-//
-//     const user = await User.findById(userId);
-//     console.log('here is the user' + user);
-//
-//     if (!user) {
-//         return res.status(404).json({ message: 'User not found' });
-//     }
-//
-//     // Create a new argument
-//     const argument = new Argument({
-//       content,
-//       owner: user,
-//       debate: debateId,
-//     });
-//     await argument.save();
-//
-//     // Add the argument to the debate's arguments array
-//     debate.arguments.push(argument);
-//     await debate.save();
-//
-//     res.status(201).json(argument);
-//   } catch (err) {
-//     return next(err);
-//   }
-// };
-
 const createArgument = async (req, res, next) => {
   const { debateId } = req.params;
   const { content, userId, side } = req.body; // Ensure `side` is passed
