@@ -184,7 +184,7 @@ const getDebates = async (req, res, next) => {
       }
 
       // Generate winner if there are at least two participants
-      if (hasSufficientParticipants && !debate.winnerByAI) {
+      if (isDebateExpired && hasSufficientParticipants && !debate.winnerByAI) {
         try {
           const winnerPrompt = await generatePrompt('winner', debate);
           debate.winnerByAI = await generateResponse(winnerPrompt);
@@ -257,7 +257,7 @@ const deleteDebateByID = async (req, res, next) => {
 };
 
 const generateAndSaveAnalysis = async (debate) => {
-  if (debate.status !== 'closed' || debate.analysis) {
+  if (debate.status !== 'closed' && !debate.analysis) {
     return;
   }
 
