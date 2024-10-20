@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
     next();
   }
 
-  if (to.meta.guardAuth && isAuth) {
+  if (to.meta.requireAuth && isAuth) {
     next('/'); // Redirect to home if authenticated
   }
 });

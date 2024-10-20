@@ -53,9 +53,21 @@ const debateSchema = new Schema({
     },
     { timestamps: true },
   ],
-    votesWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    votesAgainst: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-});
+  votesWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  votesAgainst: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  prompt: {
+    type: String,
+    default: '',
+  },
+  winnerByAI: {
+      type: String,
+      default: '',
+  },
+  winnerByAudience: {
+      type: String,
+      default: '',
+  },
+}, { timestamps: true });
 
 const Debate = mongoose.model('Debate', debateSchema);
 module.exports = Debate;

@@ -58,10 +58,11 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   const { userId } = req.params;
+  const isChatGPT = userId === 'chatgpt';
 
   try {
     // Check if the ID provided is a valid mongoose ObjectId
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId) && !isChatGPT) {
       console.log('Invalid ID format');
       return res
           .status(400)
@@ -69,7 +70,12 @@ const getUser = async (req, res) => {
     }
 
     // Find the user by ID
-    const user = await User.findById(userId);
+    let user;
+    if(isChatGPT) {
+      user = await User.findOne({ username: 'chatgpt' });
+    } else {
+      user = await User.findById(userId);
+    }
 
     // If the user is not found, return a 404 response
     if (!user) {

@@ -42,7 +42,7 @@ export default {
       default: () => [],
     },
     user: {
-      type: String,
+      type: [String, null],
       default: null,
     },
   },
@@ -71,7 +71,6 @@ export default {
       const sortQuery = `sort=${this.sortOrder}`;
       Api.get(`/debates?${userQuery}${sortQuery}`)
         .then((response) => {
-          console.log(response.data.debates);
           this.debates = response.data.debates;
         })
         .catch((error) => {

@@ -3,8 +3,9 @@
 const mongoose = require('mongoose');
 const Debate = require('../../models/debate');
 const User = require('../../models/user');
-// const {generateResponse} = require("../../services/chatgpt.service");
-// const {generatePrompt} = require("../../utils/utils");
+const Argument = require('../../models/argument');
+const { generateResponse } = require('../../services/chatgpt.service');
+const { generatePrompt } = require("../../utils/utils");
 
 const voteDebate = async (req, res) => {
   const { debateId } = req.params;
@@ -122,59 +123,84 @@ const getDebates = async (req, res, next) => {
     const { user, category, status, sort } = req.query;
     const allowedCategories = Debate.schema.path('category').enumValues;
     const allowedStatus = Debate.schema.path('status').enumValues;
-    const allowedSortOrders = ['asc', 'desc'];
-    const asc = allowedSortOrders[0];
 
     let filter = {};
 
-    // If user ID is specified, add it to the filter
+    // Filter by user if provided
     if (user) {
       if (!mongoose.Types.ObjectId.isValid(user)) {
         return res.status(400).json({ message: 'Invalid user ID' });
       }
-      filter.owner = user;  // Filter debates by the owner (user)
+      filter.owner = user;
     }
 
-    // If category is specified, add it to the filter
+    // Filter by category if provided
     if (category) {
       if (!allowedCategories.includes(category)) {
         return res.status(400).json({ message: 'Invalid category' });
       }
-      filter.category = category;  // Filter debates by category
+      filter.category = category;
     }
 
-    // If status is specified, add it to the filter
+    // Filter by status if provided
     if (status) {
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: 'Invalid status' });
       }
-      filter.status = status;  // Filter debates by status (open/closed)
+      filter.status = status;
     }
 
-    // Initialize the query with the constructed filter
+    // Prepare the query with filters and sorting
     let query = Debate.find(filter).populate('owner', 'username');
-
-    // Apply sorting if provided (by debate end time)
     if (sort) {
-      if (!allowedSortOrders.includes(sort)) {
-        return res.status(400).json({ message: 'Invalid sort order' });
-      }
-      const sortOption = sort === asc ? 1 : -1;
-      query = query.sort({ endTime: sortOption });
+      const sortOrder = sort === 'asc' ? 1 : -1;
+      query = query.sort({ endTime: sortOrder });
     }
 
-    // Execute the query and get the debates
+    // Fetch debates from the database
     const debates = await query;
 
-    // Automatically close expired debates before returning the results
-    for (const debate of debates) {
-      if (debate.endTime < new Date() && debate.status === 'open') {
+    // Iterate through the debates to check for expired ones and update them
+    for (let debate of debates) {
+      const isDebateExpired = debate.endTime < new Date();
+      const isDebateOpen = debate.status === 'open';
+      const debateTotalVotes = debate.votesWith.length + debate.votesAgainst.length;
+      const hasVotes = debateTotalVotes > 0;
+      const hasSufficientParticipants = debate.participants.length > 1;
+
+      // Close expired debates
+      if (isDebateExpired && isDebateOpen) {
         debate.status = 'closed';
-        await debate.save();
       }
+
+      // Generate analysis and winner if the debate is closed and doesn't have analysis already
+      if (isDebateExpired && !debate.analysis && hasSufficientParticipants) {
+        try {
+          const analysisPrompt = await generatePrompt('analysis', debate);
+          debate.analysis = await generateResponse(analysisPrompt);
+        } catch (error) {
+          console.error('Error generating analysis:', error);
+        }
+      }
+
+      // Generate winner if there are at least two participants
+      if (isDebateExpired && hasSufficientParticipants && !debate.winnerByAI) {
+        try {
+          const winnerPrompt = await generatePrompt('winner', debate);
+          debate.winnerByAI = await generateResponse(winnerPrompt);
+        } catch (error) {
+          console.error('Error generating winner:', error);
+        }
+      }
+
+      if (debate.status === 'closed' && hasVotes && !debate.winnerByAudience) {
+        debate.winnerByAudience = debate.votesWith.length > debate.votesAgainst.length ? 'with' : 'against';
+      }
+
+      await debate.save();
     }
 
-    // Send the debates along with HATEOAS links
+    // Send the debates with HATEOAS links
     res.status(200).json({
       debates: debates.map(debate => ({
         ...debate.toObject(),
@@ -186,92 +212,12 @@ const getDebates = async (req, res, next) => {
         }
       })),
     });
+
   } catch (err) {
     return next(err);
   }
 };
 
-// const getDebates = async (req, res, next) => {
-//   try {
-//     const { user, category, status, sort } = req.query;
-//     const allowedCategories = Debate.schema.path('category').enumValues;
-//     const allowedStatus = Debate.schema.path('status').enumValues;
-//     const allowedSortOrders = ['asc', 'desc'];
-//     const asc = allowedSortOrders[0];
-//
-//     let filter = {};
-//
-//     // If user ID is specified, add it to the filter
-//     if (user) {
-//       if (!mongoose.Types.ObjectId.isValid(user)) {
-//         return res.status(400).json({ message: 'Invalid user ID' });
-//       }
-//       filter.owner = user;  // Filter debates by the owner (user)
-//     }
-//
-//     // If category is specified, add it to the filter
-//     if (category) {
-//       if (!allowedCategories.includes(category)) {
-//         return res.status(400).json({ message: 'Invalid category' });
-//       }
-//       filter.category = category;  // Filter debates by category
-//     }
-//
-//     // If status is specified, add it to the filter
-//     if (status) {
-//       if (!allowedStatus.includes(status)) {
-//         return res.status(400).json({ message: 'Invalid status' });
-//       }
-//       filter.status = status;  // Filter debates by status (open/closed)
-//     }
-//
-//     // Initialize the query with the constructed filter, populate arguments and participants
-//     let query = Debate.find(filter)
-//         .populate('owner', 'username')
-//         .populate('arguments.owner', 'firstName lastName username')
-//         .populate('participants', 'firstName lastName username');
-//
-//     // Apply sorting if provided (by debate end time)
-//     if (sort) {
-//       if (!allowedSortOrders.includes(sort)) {
-//         return res.status(400).json({ message: 'Invalid sort order' });
-//       }
-//       const sortOption = sort === asc ? 1 : -1;
-//       query = query.sort({ endTime: sortOption });
-//     }
-//
-//     // Execute the query and get the debates
-//     const debates = await query;
-//
-//     // Automatically close expired debates before returning the results
-//     for (const debate of debates) {
-//       if (debate.endTime < new Date() && debate.status === 'open') {
-//         debate.status = 'closed';
-//         //
-//         // // Generate the prompt for OpenAI and save the response
-//         // const prompt = await generatePrompt(debate);
-//         // debate.analysis = await generateResponse(prompt);
-//
-//         await debate.save();
-//       }
-//     }
-//
-//     // Send the debates along with HATEOAS links
-//     res.status(200).json({
-//       debates: debates.map(debate => ({
-//         ...debate.toObject(),
-//         links: {
-//           self: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
-//           arguments: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}/arguments`,
-//           update: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`,
-//           delete: `${req.protocol}://${req.get('host')}${req.baseUrl}/${debate._id}`
-//         }
-//       })),
-//     });
-//   } catch (err) {
-//     return next(err);
-//   }
-// };
 
 const deleteAllDebates = async (req, res, next) => {
 
@@ -310,6 +256,39 @@ const deleteDebateByID = async (req, res, next) => {
   }
 };
 
+const generateAndSaveAnalysis = async (debate) => {
+  if (debate.status !== 'closed' && !debate.analysis) {
+    return;
+  }
+
+  try {
+    const analysisPrompt = await generatePrompt("analysis",debate);
+    const analysis = await generateResponse(analysisPrompt);
+
+    const winnerPrompt = await generatePrompt("winner",debate);
+    const winner = await generateResponse(winnerPrompt);
+
+    debate.analysis = analysis;
+    debate.winnerByAi = winner;
+
+    // Create ChatGPT's argument as if it's a participant
+    const chatgpt = await User.findOne({ username: 'chatgpt' });
+
+    const chatGPTArgument = new Argument({
+      content: analysis,
+      owner: chatgpt._id,
+      debate: debate._id,
+      side: winner,
+    });
+
+    await chatGPTArgument.save();
+
+    await debate.save();
+  } catch (error) {
+    console.error('Error in generateAndSaveAnalysis:', error);
+  }
+};
+
 const getDebateByID = async (req, res, next) => {
   const { debateId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(debateId)) {
@@ -317,7 +296,7 @@ const getDebateByID = async (req, res, next) => {
   }
 
   try {
-    const debate = await Debate.findById(debateId);
+    const debate = await Debate.findById(debateId).populate('arguments');
     if (!debate) {
       return res.status(404).json({ message: 'Debate not found' });
     }
@@ -327,6 +306,43 @@ const getDebateByID = async (req, res, next) => {
       debate.status = 'closed';
       await debate.save();
     }
+
+    const isDebateExpired = debate.endTime < new Date();
+    const isDebateOpen = debate.status === 'open';
+    const debateTotalVotes = debate.votesWith.length + debate.votesAgainst.length;
+    const hasVotes = debateTotalVotes > 0;
+    const hasSufficientParticipants = debate.participants.length > 1;
+
+    // Close expired debates
+    if (isDebateExpired && isDebateOpen) {
+      debate.status = 'closed';
+    }
+
+    // Generate analysis and winner if the debate is closed and doesn't have analysis already
+    if (isDebateExpired && !debate.analysis && hasSufficientParticipants) {
+      try {
+        const analysisPrompt = await generatePrompt('analysis', debate);
+        debate.analysis = await generateResponse(analysisPrompt);
+      } catch (error) {
+        console.error('Error generating analysis:', error);
+      }
+    }
+
+    // Generate winner if there are at least two participants
+    if (isDebateExpired && hasSufficientParticipants && !debate.winnerByAI) {
+      try {
+        const winnerPrompt = await generatePrompt('winner', debate);
+        debate.winnerByAI = await generateResponse(winnerPrompt);
+      } catch (error) {
+        console.error('Error generating winner:', error);
+      }
+    }
+
+    if (debate.status === 'closed' && hasVotes && !debate.winnerByAudience) {
+      debate.winnerByAudience = debate.votesWith.length > debate.votesAgainst.length ? 'with' : 'against';
+    }
+
+    await debate.save();
 
     res.status(200).json({ debate });
   } catch (err) {

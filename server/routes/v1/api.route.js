@@ -14,7 +14,6 @@ const chatgptRoutes = require('./chatgpt.route');
 router.use('/v1/auth', authRoutes);
 router.use('/v1/users', usersRoutes);
 router.use('/v1/debates', debatesRoutes);
-router.use('/v1/chatgpt', chatgptRoutes);
 
 // API Root Route
 router.get('/', apiController.getApiRoot);
