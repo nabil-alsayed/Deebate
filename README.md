@@ -109,14 +109,6 @@ The evaluation will be presented in form of a separate field below the final deb
 
 ## Teasers (MS3)
 
-![Teaser](./images/teaser.png){width=400px}
+![Teaser](./images/teaser.png){width=400px} ![Teaser 1](./images/teaser 1.png){width=400px} ![Teaser 2](./images/teaser 2.png){width=400px}
 
-![Teaser 1](./images/teaser 1.png){width=400px}
-
-![Teaser 2](./images/teaser 2.png){width=400px}
-
-![Teaser 3](./images/teaser 3.png){width=400px}
-
-![Teaser4](./images/teaser4.png){width=400px}
-
-![Teaser5](./images/teaser5.png){width=400px}
+![Teaser 3](./images/teaser 3.png){width=400px} ![Teaser4](./images/teaser 4.png){width=400px} ![Teaser5](./images/teaser 5.png){width=400px}
