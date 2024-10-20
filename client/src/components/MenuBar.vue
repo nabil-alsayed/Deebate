@@ -72,8 +72,8 @@ export default {
 
 /* Styling for the logo */
 .logo {
-  max-width: 70px;
-  height: auto;
+  width: 70px;
+  height: 70px;
 }
 
 /* Styling for the title */
@@ -187,7 +187,8 @@ nav ul {
   }
 
   .logo {
-    max-width: 40px;
+    width: 40px;
+    height: 40px;
   }
 
   .logo-holder {
