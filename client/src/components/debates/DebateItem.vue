@@ -15,15 +15,6 @@
           <i class="bi bi-door-closed"></i>
         </p>
       </div>
-      <div v-if="isDebateClosed">
-        <button @click="analyzeDebate" class="btn btn-secondary">
-          Analyze
-        </button>
-      </div>
-      <b-modal v-model="showAnalysisModal" title="ChatGPT Analysis" hide-footer>
-        <p>{{ chatgptResponse }}</p>
-      </b-modal>
-
       <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
@@ -40,12 +31,17 @@
       <!-- Arguments List -->
       <arguments-list
         :arguments="argumentsList.slice(0, argumentsLimit)"
-        :debate="id"
+        :debate="debateObj"
         :user="user"
       />
 
+      <analysis v-if="hasAnalysis" :debate="debateObj" />
+
       <!-- Load More Arguments Button -->
-      <button v-if="argumentsLimit < debateObj.arguments.length" @click="loadMoreArguments">
+      <button v-if="argumentsLimit < debateObj.arguments.length"
+              class="btn w-100"
+              style="color: #0f5132"
+              @click="loadMoreArguments">
         View more arguments
       </button>
 
@@ -107,10 +103,12 @@ import ArgumentsList from '@/components/arguments/ArgumentsList.vue'
 import { Api } from '@/api/v1/Api.js'
 import { getLoggedInUser } from '@/api/v1/usersApi.js'
 import debounce from 'lodash.debounce'
+import Argument from "@/components/arguments/Argument.vue";
+import Analysis from "@/components/arguments/Analysis.vue";
 
 export default {
   name: 'DebateItem',
-  components: { ArgumentsList },
+  components: { Analysis, Argument, ArgumentsList },
   props: {
     debateObj: {
       type: Object,
@@ -126,7 +124,11 @@ export default {
       argumentsList: [],
       votesWith: [],
       votesAgainst: [],
-      status: ''
+      status: '',
+      analysis: '',
+      winnerByAI: '',
+      winnerByAudience: '',
+      chatGptUser: null
     }
   },
   setup(props) {
@@ -140,13 +142,18 @@ export default {
     const isParticipant = ref(false)
     const isOwner = ref(false)
     const chatgptResponse = ref('')
-    const showAnalysisModal = ref(false)
     const debateAnalysis = ref('')
-    const showAnalysisButton = ref(false)
+    const showAnalysis = ref(false)
+
+    const hasAnalysis = computed(() => {
+      return props.debateObj && props.debateObj.analysis && props.debateObj.analysis.trim() !== ''
+    })
+
+
 
     const numberOfWithVotes = computed(() => props.debateObj.votesWith.length)
     const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length)
-    let argumentsLimit = ref(5)
+    let argumentsLimit = ref(2)
 
     const withButtonStyle = computed(() => ({
       backgroundColor: userSide.value === 'with' ? '#16B771' : '',
@@ -372,70 +379,15 @@ export default {
       }
     }
 
-    const analyzeDebate = async () => {
-      try {
-        if (!user.value) {
-          await fetchLoggedInUserId();
-        }
+    const getAnalysis = () => {
+      return props.debateObj.analysis
+    }
 
-        const response = await Api.get(
-          `/debates/${props.debateObj._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        // Access the analysis from the nested debate object
-        if (response.data.debate && response.data.debate.analysis) {
-          chatgptResponse.value = response.data.debate.analysis;
-          message.value = { type: 'success', text: 'Analysis fetched successfully!' };
-        } else {
-          chatgptResponse.value = 'No analysis available for this debate.';
-          message.value = { type: 'warning', text: 'No analysis available.' };
-        }
-
-        // Show the modal with the analysis
-        showAnalysisModal.value = true;
-      } catch (error) {
-        const errorMsg = error.response?.data?.message || 'Failed to fetch analysis.';
-        message.value = { type: 'error', text: errorMsg };
-        showAlert();
+    const checkIfAnalysisIsAvailable = () => {
+      if(!getAnalysis().isEmpty()){
+        debateAnalysis.value = props.debateObj.analysis
       }
-    };
-
-    // const analyzeDebate = async () => {
-    //   try {
-    //     const response = await Api.post('/chatgpt/generate', {
-    //       debateId: props.debateObj._id
-    //     },{
-    //       headers: {
-    //         Authorization: `Bearer ${token}`
-    //       }
-    //     })
-    //
-    //     if(reponse){
-    //       chatgptResponse.value = response.data.response
-    //     }
-    //   } catch (error) {
-    //     console.error('Error analyzing debate:', error)
-    //     chatgptResponse.value = 'An error occurred while generating the analysis.'
-    //   } finally {
-    //     showAnalysisModal.value = true
-    //   }
-    // }
-
-    // const checkIfAnalysisIsAvailable = () => {
-    //   if(!getAnalysis().isEmpty()){
-    //     debateAnalysis.value = props.debateObj.analysis
-    //     showAnalysisButton.value = true;
-    //   }
-    // }
-    //
-    // const getAnalysis = () => {
-    //   return props.debateObj.analysis
-    // }
+    }
 
     return {
       user,
@@ -464,10 +416,10 @@ export default {
       alertShown,
       deleteDebate,
       chatgptResponse,
-      showAnalysisModal,
-      analyzeDebate
-      // getAnalysis,
-      // checkIfAnalysisIsAvailable
+      showAnalysis,
+      checkIfAnalysisIsAvailable,
+      getAnalysis,
+      hasAnalysis,
     }
   },
   async created() {
@@ -487,7 +439,6 @@ export default {
     this.checkIfUserIsParticipant()
     // this.checkIfAnalysisIsAvailable()
   }
-
 }
 </script>
 
