@@ -307,6 +307,43 @@ const getDebateByID = async (req, res, next) => {
       await debate.save();
     }
 
+    const isDebateExpired = debate.endTime < new Date();
+    const isDebateOpen = debate.status === 'open';
+    const debateTotalVotes = debate.votesWith.length + debate.votesAgainst.length;
+    const hasVotes = debateTotalVotes > 0;
+    const hasSufficientParticipants = debate.participants.length > 1;
+
+    // Close expired debates
+    if (isDebateExpired && isDebateOpen) {
+      debate.status = 'closed';
+    }
+
+    // Generate analysis and winner if the debate is closed and doesn't have analysis already
+    if (isDebateExpired && !debate.analysis && hasSufficientParticipants) {
+      try {
+        const analysisPrompt = await generatePrompt('analysis', debate);
+        debate.analysis = await generateResponse(analysisPrompt);
+      } catch (error) {
+        console.error('Error generating analysis:', error);
+      }
+    }
+
+    // Generate winner if there are at least two participants
+    if (isDebateExpired && hasSufficientParticipants && !debate.winnerByAI) {
+      try {
+        const winnerPrompt = await generatePrompt('winner', debate);
+        debate.winnerByAI = await generateResponse(winnerPrompt);
+      } catch (error) {
+        console.error('Error generating winner:', error);
+      }
+    }
+
+    if (debate.status === 'closed' && hasVotes && !debate.winnerByAudience) {
+      debate.winnerByAudience = debate.votesWith.length > debate.votesAgainst.length ? 'with' : 'against';
+    }
+
+    await debate.save();
+
     res.status(200).json({ debate });
   } catch (err) {
     return next(err);
