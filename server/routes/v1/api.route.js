@@ -8,7 +8,6 @@ const apiController = require('../../controllers/v1/api.controller');
 const authRoutes = require('./auth.route');
 const usersRoutes = require('./users.route');
 const debatesRoutes = require('./debates.route');
-const chatgptRoutes = require('./chatgpt.route');
 
 // Use routes with base paths
 router.use('/v1/auth', authRoutes);
