@@ -111,18 +111,19 @@ The evaluation will be presented in form of a separate field below the final deb
 
 ### Figma Prototype
 
-![Teaser](./images/teaser.png){width=400px} 
+![Teaser](./images/teaser.png){width=800px} 
 
 ### Release
 
 #### Sign up/in view
 
-![signup+in](./images/signup+in.png){width=400px}
+![signup+in](./images/signup+in.png){width=800px}
 
 #### Home/Profile views
 
-![Teaser4](./images/teaser 4.png){width=400px} 
-![Teaser5](./images/teaser 5.png){width=400px}
+![Teaser4](./images/teaser 4.png){width=800px} 
+
+![Teaser5](./images/teaser 5.png){width=800px}
 
 #### Mobile view
 
