@@ -127,4 +127,4 @@ The evaluation will be presented in form of a separate field below the final deb
 
 #### Mobile view
 
-![mobile+view](./images/mobile+view.png){width=400px}
+![mobile+view](./images/mobile+view.png){width=800px}
