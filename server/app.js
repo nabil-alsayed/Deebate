@@ -8,8 +8,6 @@ var cors = require('cors');
 var history = require('connect-history-api-fallback');
 var { connectDb } = require('./db/db');
 var routes = require('./routes');
-const upload = require('./multer-config'); // Import Multer configuration
-const chatgptRoutes = require('./routes/v1/chatgpt.route');
 
 var port = process.env.PORT || 3000;
 

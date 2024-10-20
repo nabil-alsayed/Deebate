@@ -43,10 +43,6 @@ const UserModel = new Schema({
     type: String,
     default: "none"
   },
-  debates: [{
-    type: Schema.Types.ObjectId, 
-    ref: "Debate"
-  }],
   lastLogin: {
     type: Date,
     default: Date.now
