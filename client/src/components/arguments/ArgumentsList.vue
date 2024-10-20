@@ -35,10 +35,6 @@ export default {
       type: Object,
       required: true
     },
-    user: {
-      type: String,
-      required: true
-    }
   },
   methods: {
     handleArgumentDeleted(deletedArgumentId) {

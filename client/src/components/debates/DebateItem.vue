@@ -32,7 +32,6 @@
       <arguments-list
         :arguments="argumentsList.slice(0, argumentsLimit)"
         :debate="debateObj"
-        :user="user"
       />
 
       <analysis v-if="hasAnalysis" :debate="debateObj" />
