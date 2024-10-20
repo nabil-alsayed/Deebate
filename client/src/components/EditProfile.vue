@@ -265,6 +265,7 @@ export default {
   border-radius: 15px;
   width: 100%;
   height: fit-content;
+  z-index: 0;
   padding: 15px;
   border: 0.5px solid #dad9d9;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
