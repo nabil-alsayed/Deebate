@@ -107,24 +107,6 @@ The evaluation will be presented in form of a separate field below the final deb
 
 ![ER Diagram](./images/er_diagram.png)
 
-## Teasers (MS3)
+## Teaser (MS3)
 
-### Figma Prototype
-
-![Teaser](./images/teaser.png){width=800px} 
-
-### Release
-
-#### Sign up/in view
-
-![signup+in](./images/signup+in.png){width=800px}
-
-#### Home/Profile views
-
-![Teaser4](./images/teaser 4.png){width=800px} 
-
-![Teaser5](./images/teaser 5.png){width=800px}
-
-#### Mobile view
-
-![mobile+view](./images/mobile+view.png){width=800px}
+![Teaser](./images/teaser.png) 
