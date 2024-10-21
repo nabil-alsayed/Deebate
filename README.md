@@ -109,6 +109,22 @@ The evaluation will be presented in form of a separate field below the final deb
 
 ## Teasers (MS3)
 
-![Teaser](./images/teaser.png){width=400px} ![Teaser 1](./images/teaser 1.png){width=400px} ![Teaser 2](./images/teaser 2.png){width=400px}
+### Figma Prototype
 
-![Teaser 3](./images/teaser 3.png){width=400px} ![Teaser4](./images/teaser 4.png){width=400px} ![Teaser5](./images/teaser 5.png){width=400px}
+![Teaser](./images/teaser.png){width=800px} 
+
+### Release
+
+#### Sign up/in view
+
+![signup+in](./images/signup+in.png){width=800px}
+
+#### Home/Profile views
+
+![Teaser4](./images/teaser 4.png){width=800px} 
+
+![Teaser5](./images/teaser 5.png){width=800px}
+
+#### Mobile view
+
+![mobile+view](./images/mobile+view.png){width=800px}
