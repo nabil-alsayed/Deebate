@@ -4,7 +4,7 @@
       <div class="d-flex align-items-center gap-2">
         <img :src="chatgptAvatar" alt="ChatGPT" class="rounded-circle"
              style="width: 48px; height: 48px; border: 3px solid #007769">
-        <h5 class="argument-owner-username fw-bold mb-0">ChatGPT</h5>
+        <h5 class="title-text fw-bold mb-0">ChatGPT</h5>
         <div class="d-flex flex-row column gap-1 px-2 rounded text-black fw-bold align-items-center"
              :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: winner.backgroundColor }">
           <p class="m-0" style="color: white">{{ winner.text }}</p>
@@ -45,7 +45,18 @@ export default {
 </script>
 
 <style scoped>
-.argument-content-text {
-  font-size: 17px;
+.title-text {
+  font-size: 16px;
 }
+
+@media (max-width: 576px) {
+  .title-text {
+    font-size: 15px;
+  }
+
+  .argument-content-text {
+    font-size: 14px;
+  }
+}
+
 </style>

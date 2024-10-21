@@ -61,7 +61,6 @@ export default {
     const searchQuery = ref('');
     const filteredUsers = ref([]);
     const loading = ref(false);
-    const popupRef = ref([null]);
 
     // Function to fetch users based on search query
     const fetchUsers = async () => {
@@ -104,13 +103,6 @@ export default {
       window.location.replace(`/users/${userId}`);
     };
 
-    // Hide popup when clicking outside
-    const handleClickOutside = (event) => {
-      if (popupRef.value && !popupRef.value.includes(event.target)) {
-        searchQuery.value = '';
-        filteredUsers.value = [];
-      }
-    };
 
     // Hide popup when pressing "Esc"
     const handleEscPress = (event) => {
@@ -122,13 +114,11 @@ export default {
 
     // Add event listeners when component is mounted
     onMounted(() => {
-      document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscPress);
     });
 
     // Remove event listeners when component is destroyed
     onBeforeUnmount(() => {
-      document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscPress);
     });
 
@@ -137,7 +127,6 @@ export default {
       filteredUsers,
       loading,
       visitProfile,
-      popupRef,  // Make sure to return popupRef for template binding
       defaultAvatar
     };
   }
