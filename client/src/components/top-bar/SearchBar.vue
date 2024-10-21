@@ -144,8 +144,8 @@ export default {
 
 /* Style the placeholder */
 .search-input::placeholder {
-  color: #7c7b7b;
-  font-weight: 500;
+  color: #dddddd;
+  font-weight: 400;
 }
 
 .input-icon {
@@ -158,7 +158,7 @@ export default {
 }
 
 input::placeholder {
-  font-weight: 700;
+  font-weight: 400;
   color: #999;
 }
 </style>

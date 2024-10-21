@@ -110,6 +110,10 @@ const deleteArgument = async (req, res) => {
         return res.status(401).json({ error: 'Debate not found' });
     }
 
+    if(debate.status !== 'open') {
+        return res.status(403).json({ error: 'Debate is closed' });
+    }
+
     const argument = await Argument.findById(argumentId);
     if (!argument) {
       return res.status(401).json({ error: 'Argument not found' });

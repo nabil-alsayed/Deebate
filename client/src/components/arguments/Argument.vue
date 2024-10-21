@@ -3,18 +3,19 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
         <img :src="owner.profileImg || avatar"
-             :alt="owner.username"
+             :alt="owner.username || 'User Profile Image'"
              class="rounded-circle"
              style="width: 48px; height: 48px; border: 3px solid #007769">
-        <h5 class="argument-owner-username fw-bold mb-0">{{ owner.username }}</h5>
-        <div class="d-inline-block px-3 rounded text-black fw-bold"
-             :style="{ fontSize: '14px', maxWidth: 'fit-content', backgroundColor: side.backgroundColor }">
+        <div>
+          <h5 class="title-text fw-bold mb-0">{{ owner.firstName }} {{ owner.lastName }}</h5>
+          <h6 class="subtitle-text fw-light mb-0">@{{ owner.username }}</h6>
+        </div>
+        <div class="tag rounded text-black fw-bold"
+             :style="{ fontSize: '14px', backgroundColor: side.backgroundColor }">
           <p class="m-0" style="color: white">{{ side.text }}</p>
         </div>
-        <div class="d-flex flex-row row-gap-2">
-          <i v-if="isWinnerByAI" class="bi bi-trophy-fill" style="font-size: 15px; color: goldenrod" />
-          <i v-if="isWinnerByAudience" class="bi bi-people-fill" style="font-size: 15px; color: #007769" />
-        </div>
+        <i v-if="isWinnerByAI" class="bi bi-trophy-fill" style="font-size: 15px; color: goldenrod" />
+        <i v-if="isWinnerByAudience" class="bi bi-people-fill" style="font-size: 15px; color: #007769" />
       </div>
       <i v-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
@@ -277,6 +278,20 @@ export default {
   font-size: 17px;
 }
 
+.tag {
+  display: flex;
+  justify-content: center;
+  width: 70px;
+}
+
+.title-text {
+  font-size: 17px;
+}
+
+.subtitle-text {
+  font-size: 14px;
+}
+
 .comments-popup {
   position: fixed;
   top: 0;
@@ -330,8 +345,12 @@ textarea {
 }
 
 @media (max-width: 576px) {
-  .argument-owner-username {
-    font-size: 16px;
+  .title-text {
+    font-size: 15px;
+  }
+
+  .subtitle-text {
+    font-size: 12px;
   }
 
   .argument-content-text {
