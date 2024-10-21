@@ -2,13 +2,17 @@
   <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm" style="font-family: Inter,serif">
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
-        <img :src="owner.profileImg || avatar"
-             :alt="owner.username || 'User Profile Image'"
-             class="rounded-circle"
-             style="width: 48px; height: 48px; border: 3px solid #007769">
         <div>
-          <h5 class="title-text fw-bold mb-0">{{ owner.firstName }} {{ owner.lastName }}</h5>
-          <h6 class="subtitle-text fw-light mb-0">@{{ owner.username }}</h6>
+          <router-link v-if="owner._id" :to="'/users/' + owner._id" class="d-flex align-items-center flex-row column-gap-2" style="text-decoration: none; color: black">
+            <img :src="owner.profileImg || avatar"
+                 :alt="owner.username || 'User Profile Image'"
+                 class="rounded-circle"
+                 style="width: 48px; height: 48px; border: 3px solid #007769">
+            <div>
+              <h5 class="title-text fw-bold mb-0">{{ owner.firstName }} {{ owner.lastName }}</h5>
+              <h6 class="subtitle-text fw-light mb-0">@{{ owner.username }}</h6>
+            </div>
+          </router-link>
         </div>
         <div class="tag rounded text-black fw-bold"
              :style="{ fontSize: '14px', backgroundColor: side.backgroundColor }">

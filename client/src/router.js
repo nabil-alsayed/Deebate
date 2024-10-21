@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { jwtDecode } from "jwt-decode";
 
 // Protect authentication routes with a meta field
 
@@ -28,7 +29,8 @@ const routes = [
   {
     path: '/users/:userId',  // This is the dynamic route for user profiles
     name: 'UserProfile',
-    component: () => import('./views/UserProfile.vue'),  // The ProfileInfo component
+    component: () => import('./views/UserProfile.vue'),
+    meta: { requireAuth: true }
   }
 ]
 
@@ -37,22 +39,29 @@ const router = createRouter({
   routes
 })
 
+const isTokenExpired = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return true;
+  const currentTime = Date.now() / 1000;
+  const decoded = jwtDecode(token);
+
+  return decoded.exp < currentTime;
+}
+
 // Add a navigation guard to protect routes that require authentication
 router.beforeEach((to, from, next) => {
   const isAuth = localStorage.getItem('token');
 
-  if (to.meta.requireAuth && !isAuth) {
-    next('/login');  // Redirect to login if not authenticated
-  } else if ((to.name === 'login' || to.name === 'signup') && isAuth) {
-    // If the user is authenticated and trying to access login or signup, redirect to home
-    next('/');
-  } else {
-    next();
+  if (to.meta.requireAuth && (!isAuth || isTokenExpired())) {
+    // Redirect to login if not authenticated
+    return next('/login');
+  } else if ((to.name === 'login' || to.name === 'signup') && isAuth && !isTokenExpired()) {
+    // Redirect to home if authenticated and trying to access login or signup
+    return next('/');
   }
 
-  if (to.meta.requireAuth && isAuth) {
-    next('/'); // Redirect to home if authenticated
-  }
+  // If no condition matches, proceed with navigation
+  next();
 });
 
 
