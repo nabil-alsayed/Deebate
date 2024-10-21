@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Api } from '@/api/v1/Api.js';
 import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
@@ -61,6 +61,7 @@ export default {
     const searchQuery = ref('');
     const filteredUsers = ref([]);
     const loading = ref(false);
+    const popupRef = ref([null]);
 
     // Function to fetch users based on search query
     const fetchUsers = async () => {
@@ -103,15 +104,45 @@ export default {
       window.location.replace(`/users/${userId}`);
     };
 
+    // Hide popup when clicking outside
+    const handleClickOutside = (event) => {
+      if (popupRef.value && !popupRef.value.includes(event.target)) {
+        searchQuery.value = '';
+        filteredUsers.value = [];
+      }
+    };
+
+    // Hide popup when pressing "Esc"
+    const handleEscPress = (event) => {
+      if (event.key === 'Escape') {
+        searchQuery.value = '';
+        filteredUsers.value = [];
+      }
+    };
+
+    // Add event listeners when component is mounted
+    onMounted(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscPress);
+    });
+
+    // Remove event listeners when component is destroyed
+    onBeforeUnmount(() => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscPress);
+    });
+
     return {
       searchQuery,
       filteredUsers,
       loading,
       visitProfile,
-      defaultAvatar // Return it directly for template use
+      popupRef,  // Make sure to return popupRef for template binding
+      defaultAvatar
     };
   }
 };
+
 
 </script>
 
