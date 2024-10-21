@@ -105,7 +105,7 @@ The evaluation will be presented in form of a separate field below the final deb
 
 ### Entity-Relationship (ER) Diagram
 
-![ER Diagram](./images/WEBDEV.final.png)
+![ER Diagram](./images/er_diagram.png)
 
 ## Teasers (MS3)
 
