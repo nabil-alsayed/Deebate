@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Api } from '@/api/v1/Api.js';
 import defaultAvatar from '@/assets/avatars/user-avatar.svg';
 
@@ -103,15 +103,35 @@ export default {
       window.location.replace(`/users/${userId}`);
     };
 
+
+    // Hide popup when pressing "Esc"
+    const handleEscPress = (event) => {
+      if (event.key === 'Escape') {
+        searchQuery.value = '';
+        filteredUsers.value = [];
+      }
+    };
+
+    // Add event listeners when component is mounted
+    onMounted(() => {
+      document.addEventListener('keydown', handleEscPress);
+    });
+
+    // Remove event listeners when component is destroyed
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', handleEscPress);
+    });
+
     return {
       searchQuery,
       filteredUsers,
       loading,
       visitProfile,
-      defaultAvatar // Return it directly for template use
+      defaultAvatar
     };
   }
 };
+
 
 </script>
 
@@ -144,8 +164,8 @@ export default {
 
 /* Style the placeholder */
 .search-input::placeholder {
-  color: #7c7b7b;
-  font-weight: 500;
+  color: #dddddd;
+  font-weight: 400;
 }
 
 .input-icon {
@@ -158,7 +178,7 @@ export default {
 }
 
 input::placeholder {
-  font-weight: 700;
+  font-weight: 400;
   color: #999;
 }
 </style>

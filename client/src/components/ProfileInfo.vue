@@ -1,14 +1,12 @@
 <template>
   <div class="profile-info d-flex flex-row column-gap-3 align-items-center">
-    <div style="border-radius: 15px;">
-      <img :src="profileImgSrc || defaultAvatar"
-           alt="Profile Image"
-           class="rounded-circle"
-           width="110"
-           height="110"
-           style="object-fit: cover; border: 5px solid #007769"
-      />
-    </div>
+    <img :src="profileImgSrc || defaultAvatar"
+         alt="Profile Image"
+         class="profile-picture rounded-circle"
+         width="110"
+         height="110"
+         style="object-fit: cover; border: 5px solid #007769"
+    />
     <div>
       <div class="d-flex flex-row column-gap-2 align-items-center">
         <h2 class="m-0 fw-bold">{{ firstname }} {{ lastname }}</h2>
@@ -17,6 +15,10 @@
         </div>
       </div>
       <p class="fw-semibold m-0" style="color: #a8a8a8">@{{ username }}</p>
+      <div class="d-flex flex-row column-gap-1">
+        <i class="bi bi-eye-fill" style="font-size: 13px;color: #0edc84"> </i>
+        <p class="fw-semibold m-0" style="font-size: 13px;color: #0edc84"> {{ lastLogin }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +37,7 @@ export default {
     const username = ref("");
     const firstname = ref("");
     const lastname = ref("");
+    const lastLogin = ref("");
     const token = localStorage.getItem("token");
     const route = useRoute();
     const isSameUser = ref(false);
@@ -57,6 +60,7 @@ export default {
           username.value = user.value.username;
           firstname.value = user.value.firstName;
           lastname.value = user.value.lastName;
+          lastLogin.value = new Date(user.value.lastLogin).toDateString();
           if (user.value.profileImg) {
             profileImgSrc.value = user.value.profileImg;
           } else {
@@ -97,10 +101,12 @@ export default {
       username,
       firstname,
       lastname,
+      lastLogin,
       profileImgSrc,
       editProfile,
       isSameUser,
-      checkProfileOwner
+      checkProfileOwner,
+      defaultAvatar
     };
   },
   created() {
@@ -125,5 +131,12 @@ export default {
 
 .edit-button:hover {
   background-color: #dadada;
+}
+
+@media (max-width: 576px) {
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+  }
 }
 </style>

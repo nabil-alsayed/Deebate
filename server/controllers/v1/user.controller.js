@@ -19,9 +19,19 @@ const searchUsers = async (req, res) => {
         { username: { $regex: search, $options: 'i' } },
         { emailAddress: { $regex: search, $options: 'i' } },
         { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } }
+        { lastName: { $regex: search, $options: 'i' } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ['$firstName', ' ', '$lastName'] },
+              regex: search,
+              options: 'i'
+            }
+          }
+        }
       ]
     }).limit(Number(limit) || 5);
+
 
     if (users.length === 0) {
       return res.status(404).json({ error: 'No users found.' });

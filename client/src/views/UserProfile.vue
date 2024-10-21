@@ -7,12 +7,11 @@
       <!-- SEARCH -->
       <SearchBar />
 
-      <!-- ProfileInfo -->
+      <!-- ProfileInfo and DebateList linked to the updated userId -->
       <div class="right-bar d-flex flex-column row-gap-4" style="min-width: 250px">
-        <ProfileInfo />
+        <ProfileInfo :user-id="userId" />
         <DebateList :user="userId" />
       </div>
-
     </div>
   </div>
 </template>
@@ -22,15 +21,23 @@ import DebateList from "@/components/debates/DebateList.vue";
 import SearchBar from "@/components/top-bar/SearchBar.vue";
 import MenuBar from "@/components/MenuBar.vue";
 import ProfileInfo from "@/components/ProfileInfo.vue";
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import {useRoute} from "vue-router";
 
 export default {
   name: "UserProfile",
-  components: { DebateList, MenuBar, ProfileInfo, SearchBar },
+  components: {DebateList, MenuBar, ProfileInfo, SearchBar},
   setup() {
     const route = useRoute();
     const userId = ref(route.params.userId);
+
+    // Watch for changes in the route's userId and update accordingly
+    watch(
+      () => route.params.userId,
+      (newUserId) => {
+        userId.value = newUserId;
+      }
+    );
 
     return {
       userId,
@@ -40,7 +47,6 @@ export default {
 </script>
 
 <style scoped>
-
 .main-container-userprofile {
   display: flex;
   flex-direction: row;
@@ -53,7 +59,7 @@ export default {
   overflow-y: auto;
 }
 
-@media (max-width: 848px) {
+@media (max-width: 992px) {
   .right-bar {
     display: none;
   }

@@ -163,7 +163,7 @@ nav ul {
 
 
 /* Responsive Styling */
-@media (max-width: 848px) {
+@media (max-width: 992px) {
   .main-container-menu {
     position: sticky;
     top: 0;

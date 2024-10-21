@@ -23,6 +23,7 @@
 
         <!-- Right side Widgets (CategorySelector or EditProfile) -->
         <div class="right-bar" style="min-width: 250px">
+          <h2 class="title">Category</h2>
           <CategorySelector @category-selected="filterDebatesByCategory" />
         </div>
       </div>
@@ -136,7 +137,7 @@ export default {
 
 /* Responsive */
 
-@media (max-width: 848px) {
+@media (max-width: 992px) {
   .main-container-home {
     flex-direction: column;
     row-gap: 15px;

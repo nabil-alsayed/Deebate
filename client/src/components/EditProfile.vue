@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-profile bg-white ">
+  <div class="edit-profile bg-white">
     <transition>
       <div class="d-flex flex-column row-gap-4">
         <!-- User's First Name and Username -->
@@ -161,12 +161,12 @@ export default {
   methods: {
     // Check screen size and update `isOpen` based on width
     checkScreenSize() {
-      this.isOpen = window.innerWidth >= 849;
-      this.isWide = window.innerWidth >= 849;
+      this.isOpen = window.innerWidth >= 992;
+      this.isWide = window.innerWidth >= 992;
     },
     toggleAccordion() {
       // Only allow toggling for smaller screens
-      if (window.innerWidth <= 849) {
+      if (window.innerWidth <= 992) {
         this.isOpen = !this.isOpen;
       }
     },

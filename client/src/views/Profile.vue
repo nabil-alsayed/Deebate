@@ -1,5 +1,6 @@
 <template>
-  <div class="main-body-profile w-100 vh-100 column-gap-3 p-3">
+<!--  Use Bootstrap Responsiveness for Profile Flex Styling-->
+  <div class="main-body-profile flex-lg-row flex-column w-100 vh-100 column-gap-3 p-3">
     <div class="menu-bar">
       <MenuBar />
     </div>
@@ -7,7 +8,7 @@
       <!-- SEARCH -->
       <SearchBar />
       <!-- DEBATE LIST AND WIDGETS -->
-      <div class="main-body-profile">
+      <div class="main-body-profile flex-lg-row flex-column">
         <!-- DEBATE LIST -->
         <div class="d-flex flex-column row-gap-3 w-100 h-100">
           <div class="d-flex flex-column row-gap-1">
@@ -72,7 +73,6 @@ export default{
 
 .main-body-profile {
   display: flex;
-  flex-direction: row;
   column-gap: 15px;
 }
 
@@ -85,9 +85,8 @@ export default{
   align-items: center;
 }
 
-@media (max-width: 848px) {
+@media (max-width: 992px) {
   .main-body-profile {
-    flex-direction: column;
     row-gap: 15px;
   }
 
@@ -101,7 +100,4 @@ export default{
 
 }
 
-@media (max-width: 576px) {
-
-}
 </style>

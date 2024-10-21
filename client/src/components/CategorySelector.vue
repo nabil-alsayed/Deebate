@@ -1,6 +1,5 @@
 <template>
   <div style="width: 100%; position: sticky; top: 0">
-    <h2 class="title">Category</h2>
     <div class="category-grid">
       <div
         v-for="category in categories"
