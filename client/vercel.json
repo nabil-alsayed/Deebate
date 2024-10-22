@@ -12,15 +12,15 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",  // Routes to handle API requests
+      "src": "/api/(.*)",
       "dest": "/server/app.js"
     },
     {
-      "src": "/uploads/(.*)",  // Route to serve image files from the /uploads folder
+      "src": "/uploads/(.*)",
       "dest": "/server/uploads/$1"
     },
     {
-      "src": "/(.*)",  // All other routes should serve the frontend (Vue.js) app
+      "src": "/(.*)",
       "dest": "/client/dist/index.html"
     }
   ]
