@@ -1,4 +1,29 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/app.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "client/dist/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",  // Routes to handle API requests
+      "dest": "/server/app.js"
+    },
+    {
+      "src": "/uploads/(.*)",  // Route to serve image files from the /uploads folder
+      "dest": "/server/uploads/$1"
+    },
+    {
+      "src": "/(.*)",  // All other routes should serve the frontend (Vue.js) app
+      "dest": "/client/dist/index.html"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",  
