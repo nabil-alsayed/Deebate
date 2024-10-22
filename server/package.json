@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/dit342/group-19-web.git"
+    "url": "git+https://gitlab.com/dit342/group-00-web.git"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
