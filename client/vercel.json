@@ -23,11 +23,5 @@
       "src": "/(.*)",  // All other routes should serve the frontend (Vue.js) app
       "dest": "/client/dist/index.html"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",  
-      "destination": "/"
-    }
   ]
 }
