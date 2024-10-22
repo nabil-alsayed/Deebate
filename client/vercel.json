@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server/app.js"
+      "source": "/api/(.*)",
+      "destination": "/server/app.js"
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "/server/uploads/$1"
+      "source": "/uploads/(.*)",
+      "destination": "/server/uploads/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/"
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
