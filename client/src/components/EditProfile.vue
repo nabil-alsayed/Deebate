@@ -5,10 +5,12 @@
         <!-- User's First Name and Username -->
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
-            <div class="profile-image-container">
-              <img :src="profileImagePreview || this.user.profileImg"
-                  class="rounded-circle profile-image"
-                  alt="profile image"/>
+            <div class="profile-user-container">
+              <div class="profile-image-container">
+                <img :src="profileImagePreview || this.user.profileImg"
+                    class="rounded-circle profile-image"
+                    alt="profile image"/>
+              </div>
               <!-- Pen icon for changing profile image -->
               <i v-if="isOpen && editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
             </div>
@@ -364,7 +366,13 @@ input:disabled {
   height: 75px;
   border-radius: 50%;
   border: 3px solid #007769;
-  overflow: display;
+  overflow: show;
+}
+
+.profile-user-container {
+  position: relative;
+  border-radius: 50%;
+  overflow: hide;
 }
 
 .profile-image {
@@ -376,7 +384,7 @@ input:disabled {
 .change-photo-btn {
   position: absolute;
   bottom: 0;
-  right: 0;  
+  right: 0;
   background-color: #007769;
   color: #fff;
   border: none;
