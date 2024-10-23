@@ -34,8 +34,6 @@
         :debate="debateObj"
       />
 
-      <analysis v-if="hasAnalysis" :debate="debateObj" />
-
       <!-- Load More Arguments Button -->
       <button v-if="argumentsLimit < debateObj.arguments.length"
               class="btn w-100"
@@ -43,6 +41,8 @@
               @click="loadMoreArguments">
         View more arguments
       </button>
+
+      <analysis v-if="hasAnalysis" :debate="debateObj" />
 
       <!-- Add New Argument -->
       <div v-if="status !== 'closed'" class="d-flex flex-column row-gap-2">
@@ -102,12 +102,11 @@ import ArgumentsList from '@/components/arguments/ArgumentsList.vue'
 import { Api } from '@/api/v1/Api.js'
 import { getLoggedInUser } from '@/api/v1/usersApi.js'
 import debounce from 'lodash.debounce'
-import Argument from "@/components/arguments/Argument.vue";
-import Analysis from "@/components/arguments/Analysis.vue";
+import Analysis from '@/components/arguments/Analysis.vue'
 
 export default {
   name: 'DebateItem',
-  components: { Analysis, Argument, ArgumentsList },
+  components: { Analysis, ArgumentsList },
   props: {
     debateObj: {
       type: Object,
@@ -148,11 +147,9 @@ export default {
       return props.debateObj && props.debateObj.analysis && props.debateObj.analysis.trim() !== ''
     })
 
-
-
     const numberOfWithVotes = computed(() => props.debateObj.votesWith.length)
     const numberOfAgainstVotes = computed(() => props.debateObj.votesAgainst.length)
-    let argumentsLimit = ref(2)
+    const argumentsLimit = ref(2)
 
     const withButtonStyle = computed(() => ({
       backgroundColor: userSide.value === 'with' ? '#16B771' : '',
@@ -308,7 +305,7 @@ export default {
           {
             content: newArgument.value,
             userId: user.value._id,
-            side: side
+            side
           },
           {
             headers: {
@@ -383,7 +380,7 @@ export default {
     }
 
     const checkIfAnalysisIsAvailable = () => {
-      if(!getAnalysis().isEmpty()){
+      if (!getAnalysis().isEmpty()) {
         debateAnalysis.value = props.debateObj.analysis
       }
     }
@@ -418,7 +415,7 @@ export default {
       showAnalysis,
       checkIfAnalysisIsAvailable,
       getAnalysis,
-      hasAnalysis,
+      hasAnalysis
     }
   },
   async created() {
