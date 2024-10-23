@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <!-- <router-view :key="$route.params.userId"></router-view> -->
+    <router-view :key="$route.params.userId"></router-view>
     <!-- <div class="app-container">
       <div class="d-flex flex-row align-items-center">
         <img style="max-width: 50px;" src="@/assets/logo.png" alt="bye" />
