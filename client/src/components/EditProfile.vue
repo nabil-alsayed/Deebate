@@ -5,14 +5,13 @@
         <!-- User's First Name and Username -->
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
-              <div class="profile-image-container">
-                <img :src="profileImagePreview || this.user.profileImg"
-                    class="rounded-circle profile-image"
-                    alt="profile image"/>
-              </div>
-              <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
+            <div class="profile-image-container">
+              <img :src="profileImagePreview || this.user.profileImg"
+                  class="rounded-circle profile-image"
+                  alt="profile image"/>
               <!-- Pen icon for changing profile image -->
               <i v-if="isOpen && editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
+            </div>
             <div>
               <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
               <p class="username">@{{ user.username }}</p>
@@ -360,32 +359,33 @@ input:disabled {
 }
 
 .profile-image-container {
-  position: relative;
+  position: relative; /* Ensure the icon is positioned relative to this container */
   width: 75px;
   height: 75px;
   border-radius: 50%;
   border: 3px solid #007769;
-  overflow: hidden; /* Ensure the image stays within the circle */
+  overflow: display;
 }
 
 .profile-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
+  object-fit: cover;
 }
 
 .change-photo-btn {
   position: absolute;
-  bottom: -10px;
-  left: 100%;
-  transform: translateX(-50%);
-  background-color: #017769;
+  bottom: 0;
+  right: 0;  
+  background-color: #007769;
   color: #fff;
   border: none;
   border-radius: 5px;
   padding: 2px 5px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .change-photo-btn:hover {
