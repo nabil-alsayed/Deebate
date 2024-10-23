@@ -5,16 +5,14 @@
         <!-- User's First Name and Username -->
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
-            <div class="profile-image-container">
-              <img :src="profileImagePreview || this.user.profileImg"
-                   class="rounded-circle"
-                   alt="profile image"
-                   style="height: 75px; width: 75px; border-radius: 15px; border: 3px solid #007769"
-              />
+              <div class="profile-image-container">
+                <img :src="profileImagePreview || this.user.profileImg"
+                    class="rounded-circle profile-image"
+                    alt="profile image"/>
+              </div>
               <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
               <!-- Pen icon for changing profile image -->
               <i v-if="isOpen && editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
-            </div>
             <div>
               <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
               <p class="username">@{{ user.username }}</p>
@@ -122,7 +120,7 @@ export default {
       passwordPlaceholder: '********',
       profileImageFile: null,
       profileImagePreview: null,
-      defaultAvatar,
+      defaultAvatar
     };
   },
   created() {
@@ -134,7 +132,8 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.checkScreenSize);
-  },computed: {
+  },
+  computed: {
     hasChanges() {
       return (
         this.user.firstName !== this.editedUser.firstName ||
@@ -362,6 +361,17 @@ input:disabled {
 
 .profile-image-container {
   position: relative;
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  border: 3px solid #007769;
+  overflow: hidden; /* Ensure the image stays within the circle */
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
 }
 
 .change-photo-btn {
