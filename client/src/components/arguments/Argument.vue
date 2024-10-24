@@ -34,7 +34,7 @@
 
       <!-- Trash icon for delete - Suspense -->
       <div v-if="loading" class="skeleton skeleton-icon"></div>
-      <i v-else-if="isOwner" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
+      <i v-else-if="isOwner && $props.debate.status !== 'closed'" @click="deleteArgument" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
     <!-- Argument Content - Suspense -->
@@ -101,7 +101,7 @@ export default {
   name: 'Argument',
   props: {
     argument: { type: String, required: true },
-    debate: { type: Object, required: true }
+    debate: { type: Object, required: true },
   },
   data() {
     return {
