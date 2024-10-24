@@ -48,9 +48,46 @@
       <span class="fw-bold" style="font-size: 14px">{{ commentsWithUserDetails.length }}</span>
     </div>
 
-    <!-- Comments Popup -->
     <div v-if="showCommentsPopup" class="comments-popup">
-      <!-- Popup content (same as before) -->
+      <div class="comments-popup-content">
+        <div class="d-flex flex-row justify-content-end">
+          <i class="bi bi-x"
+             style="font-size: 30px; color: #007769; cursor: pointer"
+             @click="showCommentsPopup = false"
+          ></i>
+        </div>
+        <div class="comments-list">
+          <ul class="list-unstyled">
+            <li v-for="comment in commentsWithUserDetails" :key="comment._id" class="mb-3 p-2">
+              <div class="d-flex gap-2 w-100">
+                <img :src="comment.userDetails?.profileImg || avatar"
+                     :alt="comment.userDetails?.username"
+                     class="rounded-circle"
+                     style="width: 40px; height: 40px; border: 2px solid #007769">
+                <div>
+                  <h6 class="m-0 fw-bold">{{ comment.userDetails?.firstName }} {{ comment.userDetails?.lastName }}</h6>
+                  <small class="text-muted">@{{ comment.userDetails?.username }}</small>
+                </div>
+              </div>
+              <p class="mb-0 mt-2 comment-content">{{ comment.content }}</p>
+              <button v-if="isCommentOwner(comment)" @click="startUpdateComment(comment)" class="btn btn-sm btn-primary mt-2">
+                Edit comment <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="updatingComment">
+          <textarea v-model="updatedCommentContent" class="form-control mb-2 rounded-4"></textarea>
+          <button @click="submitCommentUpdate" class="btn btn-primary me-2">Save</button>
+          <button @click="cancelCommentUpdate" class="btn btn-secondary">Cancel</button>
+        </div>
+
+        <div>
+          <textarea v-model="newComment" placeholder="Type your comment" class="form-control mb-2 rounded-4"></textarea>
+          <button  @click="submitComment" class="btn btn-primary" style="width: 100%;">Comment</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -92,7 +129,6 @@ export default {
     await this.fetchCommentUserDetails()
     await this.fetchUserSide()
     this.checkWinner();
-    this.loading = false
   },
   methods: {
     async checkIfOwner() {
@@ -260,54 +296,7 @@ export default {
 </script>
 
 <style scoped>
-/* Skeleton Loader Styles */
-.skeleton {
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  animation: pulse 1.5s infinite;
-}
 
-.skeleton-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-}
-
-.skeleton-tag {
-  width: 50px;
-  height: 20px;
-  border-radius: 10px;
-}
-
-.skeleton-text {
-  width: 100%;
-  height: 40px;
-}
-
-.skeleton-comments {
-  width: 30px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-.skeleton-icon {
-  width: 20px;
-  height: 20px;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Regular Styles */
 .argument-content-text {
   font-size: 17px;
 }
