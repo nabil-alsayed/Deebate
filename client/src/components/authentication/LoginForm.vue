@@ -81,10 +81,10 @@ export default {
     showAlert() {
       // Show the alert
       this.alertShown = true;
-      // Hide the alert after 1.5 seconds
+      // Hide the alert after 2 seconds
       setTimeout(() => {
         this.alertShown = false;
-      }, 1500);
+      }, 2000);
     }
   }
 }
@@ -131,7 +131,7 @@ export default {
 .alert-box {
   position: fixed;
   top: 0;
-  margin-top: 20px;
+  margin-top: 30px;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px;
