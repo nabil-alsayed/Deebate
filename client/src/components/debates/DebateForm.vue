@@ -6,13 +6,11 @@
     >
       <!-- Topic input -->
       <div class="subject">
-        <span>Topic</span>
-        <b-input type="text" id="topic" name="topic" v-model="topic" class="input w-100" required placeholder="Debate Topic"/>
+        <b-input type="text" id="topic" name="topic" v-model="topic" class="input w-100" required placeholder="What is the debate about?"/>
       </div>
 
       <!-- Category Selector with Placeholder -->
       <div class="subject">
-        <span>Category</span>
         <b-form-select
           v-model="selectedCategory"
           :options="categoryOptions"

@@ -1,6 +1,6 @@
 <template>
   <div class="main-container-home w-100 vh-100 column-gap-3 p-3">
-    <!--    MENU -->
+    <!-- MENU -->
     <div class="menu-bar">
       <MenuBar />
     </div>
@@ -9,20 +9,28 @@
     <div class="main-content flex-grow-1 flex-column row-gap-3">
       <!-- SEARCH AND USER INFO -->
       <SearchBar />
+
       <!-- DEBATE LIST AND WIDGETS -->
       <div class="main-body">
-        <!-- DEBATE LIST -->
-
+        <!-- DEBATE FORM AND CATEGORY SELECTOR (Mobile Layout) -->
         <div class="d-flex flex-column row-gap-3" id="debates-sections">
-          <div class="d-flex flex-column row-gap-1">
+          <div class="debate-form d-flex flex-column row-gap-1">
             <h2 class="title">Post a Debate</h2>
             <DebateForm />
           </div>
+
+          <!-- Category Selector -->
+          <div v-if="isMobileLayout" class="d-flex flex-column row-gap-3">
+            <h2 class="title">Category</h2>
+            <CategorySelector @category-selected="filterDebatesByCategory" />
+          </div>
+
+          <!-- Debate List -->
           <DebateList :filteredDebates="filteredDebates" />
         </div>
 
-        <!-- Right side Widgets (CategorySelector or EditProfile) -->
-        <div class="right-bar" style="min-width: 250px">
+        <!-- Right side Widgets (CategorySelector or EditProfile) for Desktop -->
+        <div v-if="!isMobileLayout" class="right-bar" style="min-width: 250px">
           <h2 class="title">Category</h2>
           <CategorySelector @category-selected="filterDebatesByCategory" />
         </div>
@@ -31,15 +39,15 @@
   </div>
 </template>
 
+
 <script>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { Api } from '@/api/v1/Api.js';
 import MenuBar from '@/components/MenuBar.vue';
 import DebateForm from '@/components/debates/DebateForm.vue';
 import DebateList from '@/components/debates/DebateList.vue';
 import CategorySelector from '@/components/CategorySelector.vue';
-import EditProfile from '@/components/EditProfile.vue';
-import SearchBar from '@/components/top-bar/SearchBar.vue'
+import SearchBar from '@/components/top-bar/SearchBar.vue';
 
 export default {
   name: 'Home',
@@ -49,11 +57,27 @@ export default {
     DebateForm,
     DebateList,
     CategorySelector,
-    EditProfile,
   },
   setup() {
     const debates = ref([]);
-    const selectedCategory = ref(localStorage.getItem('selectedCategory') || ''); // Initially, fetch from localStorage if exists
+    const selectedCategory = ref(localStorage.getItem('selectedCategory') || '');
+
+    // Detect screen width for responsive layout
+    const isMobileLayout = ref(window.innerWidth <= 992);
+
+    // Method to check screen size and update isMobileLayout
+    const updateLayout = () => {
+      isMobileLayout.value = window.innerWidth <= 992;
+    };
+
+    // Add event listeners on mounted and clean up on unmounted
+    onMounted(() => {
+      window.addEventListener('resize', updateLayout);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', updateLayout);
+    });
 
     // Fetch debates from API
     const fetchDebates = async () => {
@@ -67,21 +91,19 @@ export default {
       }
     };
 
-    // Filter debates based on selected category and search query
+    // Filter debates based on selected category
     const filteredDebates = computed(() => {
       let filtered = debates.value;
-
       if (selectedCategory.value) {
         filtered = filtered.filter(debate => debate.category === selectedCategory.value);
       }
-
       return filtered;
     });
 
     // Watch for changes in selected category and fetch debates accordingly
-    watch(selectedCategory, (newCategory) => {
-      localStorage.setItem('selectedCategory', newCategory); // Save category in localStorage
-      fetchDebates(); // Refetch debates based on new category
+    watch(selectedCategory, () => {
+      localStorage.setItem('selectedCategory', selectedCategory.value);
+      fetchDebates();
     });
 
     // Fetch all debates on component mount
@@ -96,10 +118,12 @@ export default {
       debates,
       filteredDebates,
       filterDebatesByCategory,
+      isMobileLayout,
     };
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -143,17 +167,17 @@ export default {
     row-gap: 15px;
   }
 
-  .menu-bar {
-    max-height: fit-content;
-  }
-
   .main-body {
     flex-direction: column;
     row-gap: 15px;
   }
 
   .right-bar {
-    order: -1;
+    display: none;
+  }
+
+  .debate-form {
+    order: 0;
   }
 }
 
@@ -161,6 +185,6 @@ export default {
   .main-body {
     flex-direction: column;
   }
-
 }
 </style>
+

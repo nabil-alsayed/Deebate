@@ -106,23 +106,7 @@ export default {
   text-align: center;
 }
 
-.title {
-  color: grey;
-  font-size: 18px;
-  font-weight: 550;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 850px) {
-  .category-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 576px) {
-
+@media (max-width: 992px) {
   .category-grid {
     display: grid;
     grid-template-columns: repeat(6, 120px);
@@ -135,7 +119,6 @@ export default {
   .category-grid::-webkit-scrollbar {
     display: none;
   }
-
 }
 
 </style>
