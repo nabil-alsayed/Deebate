@@ -7,12 +7,14 @@
           <div class="d-flex flex-row column-gap-3 justify-content-start align-items-center">
             <div class="profile-user-container">
               <div class="profile-image-container">
-                <img :src="profileImagePreview || this.user.profileImg"
-                    class="rounded-circle profile-image"
-                    alt="profile image"/>
+                <img :src="profileImagePreview || defaultAvatar"
+                     class="rounded-circle profile-image"
+                     alt="profile image"/>
               </div>
               <!-- Pen icon for changing profile image -->
-              <i v-if="isOpen && editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
+              <i v-if="editMode" @click="triggerFileInput" class="bi bi-pen-fill change-photo-btn"></i>
+              <!-- Hidden file input -->
+              <input ref="fileInput" type="file" @change="handleFileChange" style="display: none;" accept="image/*" />
             </div>
             <div>
               <h2 class="user-name">{{ user.firstName || 'User' }}</h2>
@@ -173,8 +175,8 @@ export default {
     loadUser() {
       const localUser = JSON.parse(localStorage.getItem('user'));
       if (localUser) {
-        this.user = { ...localUser };
-        this.editedUser = { ...this.user, password: '' };
+        this.user = {...localUser};
+        this.editedUser = {...this.user, password: ''};
         this.profileImagePreview = this.user.profileImg ? `${this.user.profileImg}` : this.defaultAvatar;
       }
     },
@@ -188,28 +190,32 @@ export default {
       this.alertShown = true;
       setTimeout(() => {
         this.alertShown = false;
-        if(this.message.type === 'success'){
+        if (this.message.type === 'success') {
           window.location.reload();
         }
       }, 1500);
     },
     cancelEdit() {
-      this.editedUser = { ...this.user };
+      this.editedUser = {...this.user};
       this.editMode = false;
       this.message.text = '';
       this.profileImageFile = null;
       this.profileImagePreview = this.user.profileImg ? `${this.user.profileImg}` : this.defaultAvatar;
     },
+    // Trigger the hidden file input when the pen icon is clicked
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
+
+    // Handle file change and update preview
     handleFileChange(event) {
       const file = event.target.files[0];
       if (file) {
         this.profileImageFile = file;
-        this.profileImagePreview = URL.createObjectURL(file);
+        this.profileImagePreview = URL.createObjectURL(file);  // Show a preview of the selected image
       }
     },
+
     async saveProfile() {
       this.isSaving = true;
       this.message.text = '';
@@ -238,20 +244,20 @@ export default {
         const response = await Api.patch(`/users/${localUser._id}`, formData, config);
 
         localStorage.setItem('user', JSON.stringify(response.data));
-        this.user = { ...response.data };
-        this.editedUser = { ...this.user, password: '' };
+        this.user = {...response.data};
+        this.editedUser = {...this.user, password: ''};
         this.editMode = false;
-        this.message = { type: 'success', text: 'Profile updated successfully!' };
+        this.message = {type: 'success', text: 'Profile updated successfully!'};
         this.showAlert();
       } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to update profile.';
-        this.message = { type: 'error', text: errorMsg };
+        this.message = {type: 'error', text: errorMsg};
         this.showAlert();
       } finally {
         this.isSaving = false;
       }
     }
-  },
+  }
 };
 </script>
 
@@ -372,7 +378,7 @@ input:disabled {
 .profile-user-container {
   position: relative;
   border-radius: 50%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .profile-image {

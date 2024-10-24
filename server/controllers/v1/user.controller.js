@@ -211,11 +211,39 @@ const deleteAllUsers = async (req, res) => {
   }
 }
 
+
+const uploadProfileImage = async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const user = await User.findById({id}); // Assuming req.user contains authenticated user info
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the user's profileImg field with the file path
+    user.profileImg = `/uploads/${req.file.filename}`;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Profile image updated successfully.', profileImg: user.profileImg });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error uploading profile image', error: error.message });
+  }
+};
+
 module.exports = {
   searchUsers,
   getAllUsers,
   getUser,
   editUser,
   deleteUser,
-  deleteAllUsers
+  deleteAllUsers,
+  uploadProfileImage
 };
