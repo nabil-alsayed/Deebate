@@ -5,23 +5,35 @@
       style="color: grey"
     >
       <h2 class="title">{{ debates.length }} Debates</h2>
-      <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center"
-           style="font-size: 20px"
-      >
-        <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center"
-             @click="toggleSort" style="cursor: pointer;">
+      <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center" style="font-size: 20px">
+        <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center" @click="toggleSort" style="cursor: pointer;">
           <h2 class="title">End Time</h2>
           <i :class="['bi', sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-up inactive']"></i>
           <i :class="['bi', sortOrder === 'desc' ? 'bi-sort-down' : 'bi-sort-down inactive']"></i>
         </div>
       </div>
     </div>
-    <ul v-if="debates.length">
+
+    <!-- Skeleton loader while fetching debates -->
+    <ul v-if="loading">
+      <li v-for="n in 5" :key="n" class="debate-item skeleton-debate">
+        <div class="skeleton skeleton-header"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-tag"></div>
+        <div class="skeleton skeleton-argument"></div>
+        <div class="skeleton skeleton-button"></div>
+      </li>
+    </ul>
+
+    <!-- Display actual debates if not loading -->
+    <ul v-if="!loading && debates.length">
       <li v-for="debate in debates" :key="debate._id" class="debate-item">
         <debate-item :debateObj="debate" :key="debate._id" />
       </li>
     </ul>
-    <div v-else class="empty-list">
+
+    <!-- Empty state -->
+    <div v-if="!loading && !debates.length" class="empty-list">
       <img :src="EmptyListIllustration" alt="empty" style="width: 300px; height: 300px" />
       <p>Wooopsy. No debates yet!</p>
     </div>
@@ -51,6 +63,7 @@ export default {
       debates: [],
       error: null,
       sortOrder: 'desc',
+      loading: true, // Add loading state
       EmptyListIllustration,
     };
   },
@@ -65,8 +78,8 @@ export default {
     this.getDebates();
   },
   methods: {
-
     getDebates() {
+      this.loading = true; // Set loading state to true before fetching data
       const userQuery = this.user ? `user=${this.user}&` : '';
       const sortQuery = `sort=${this.sortOrder}`;
       Api.get(`/debates?${userQuery}${sortQuery}`)
@@ -76,9 +89,11 @@ export default {
         .catch((error) => {
           console.error(error);
           this.error = 'An error occurred while fetching debates. Please try again later.';
+        })
+        .finally(() => {
+          this.loading = false; // Set loading state to false after fetching data
         });
     },
-
     toggleSort() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
       this.getDebates();
@@ -130,5 +145,57 @@ li {
 
 .inactive {
   display: none;
+}
+
+/* Skeleton Loader Styles */
+.skeleton-debate {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-header {
+  width: 100px;
+  height: 20px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 30px;
+}
+
+.skeleton-tag {
+  width: 60px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.skeleton-argument {
+  width: 100%;
+  height: 40px;
+}
+
+.skeleton-button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>
