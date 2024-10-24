@@ -4,8 +4,6 @@
   </div>
 </template>
 
-<link rel="stylesheet" href="./styles.css">
-
 <script>
 
 export default {
