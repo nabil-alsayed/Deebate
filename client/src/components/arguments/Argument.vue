@@ -92,6 +92,7 @@ export default {
     await this.fetchCommentUserDetails()
     await this.fetchUserSide()
     this.checkWinner();
+    this.loading = false
   },
   methods: {
     async checkIfOwner() {

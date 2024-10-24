@@ -126,7 +126,8 @@ export default {
       analysis: '',
       winnerByAI: '',
       winnerByAudience: '',
-      chatGptUser: null
+      chatGptUser: null,
+      loading: true
     }
   },
   setup(props) {
