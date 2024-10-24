@@ -2,91 +2,98 @@
   <div class="d-flex flex-column row-gap-2">
     <!-- Header -->
     <div class="d-flex flex-row justify-content-between align-items-center" style="height: fit-content;font-family: 'Inter', sans-serif">
-      <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1 justify-content-center">
-        <!-- Show the formatted end time if the debate is not closed -->
-        <h3 class="fw-medium m-0" style="font-size: small;">Ends at</h3>
-        <h3 class="fw-bold m-0" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
+      <div v-if="loading" class="skeleton skeleton-header"></div>
+      <div v-else class="d-flex flex-row w-100 justify-content-between">
+        <div v-if="!isDebateClosed" class="d-flex flex-row column-gap-1 justify-content-center">
+          <h3 class="fw-medium m-0" style="font-size: small;">Ends at</h3>
+          <h3 class="fw-bold m-0" style="font-size: small; color: #a83737">{{ formattedEndTime }}</h3>
+        </div>
+        <div v-else class="d-flex flex-row column-gap-1 bg-black px-2 rounded text-white fw-bold"
+             style="font-size: 14px; max-width: fit-content; height: fit-content">
+          {{ status }}
+          <p class="m-0">
+            <i class="bi bi-door-closed"></i>
+          </p>
+        </div>
+        <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
       </div>
-      <!-- Category Tag -->
-      <div v-else class="d-flex flex-row column-gap-1 bg-black px-2 rounded text-white fw-bold"
-           style="font-size: 14px; max-width: fit-content; height: fit-content">
-        {{status}}
-        <p class="m-0">
-          <i class="bi bi-door-closed"></i>
-        </p>
-      </div>
-      <i v-if="isOwner" @click="deleteDebate" class="bi bi-trash" style="font-size: 15px; color: #a83737; cursor: pointer" />
     </div>
 
-    <div class="d-flex flex-column text-start row-gap-2">
-      <!-- Title -->
-      <h1 class="m-0" style="font-size: 25px; font-weight: 650">{{ topic }}</h1>
+    <!-- Title -->
+    <div v-if="loading" class="skeleton skeleton-title"></div>
+    <h1 v-else class="m-0" style="font-size: 25px; font-weight: 650">{{ topic }}</h1>
 
-      <!-- Category Tag -->
-      <div class="d-inline-block bg-success px-2 rounded text-white fw-bold"
-           style="font-size: 14px; max-width: fit-content">
-        <p class="m-0">{{ category }}</p>
-      </div>
+    <!-- Category Tag -->
+    <div v-if="loading" class="skeleton skeleton-category"></div>
+    <div v-else class="d-inline-block bg-success px-2 rounded text-white fw-bold"
+         style="font-size: 14px; max-width: fit-content">
+      <p class="m-0">{{ category }}</p>
+    </div>
 
-      <!-- Arguments List -->
+    <!-- Arguments List -->
+    <div v-if="loading" class="skeleton skeleton-arguments"></div>
+    <div v-else>
       <arguments-list
         :arguments="argumentsList.slice(0, argumentsLimit)"
         :debate="debateObj"
       />
+    </div>
 
-      <!-- Load More Arguments Button -->
-      <button v-if="argumentsLimit < debateObj.arguments.length"
-              class="btn w-100"
-              style="color: #0f5132"
-              @click="loadMoreArguments">
-        View more arguments
-      </button>
+    <!-- Load More Arguments Button -->
+    <div v-if="loading" class="skeleton skeleton-button"></div>
+    <button v-else-if="argumentsLimit < debateObj.arguments.length"
+            class="btn w-100"
+            style="color: #0f5132"
+            @click="loadMoreArguments">
+      View more arguments
+    </button>
 
-      <analysis v-if="hasAnalysis" :debate="debateObj" />
+    <!-- Analysis -->
+    <div v-if="loading" class="skeleton skeleton-analysis"></div>
+    <analysis v-else-if="hasAnalysis" :debate="debateObj" />
 
-      <!-- Add New Argument -->
-      <div v-if="status !== 'closed'" class="d-flex flex-column row-gap-2">
-        <b-form @submit.prevent="addArgument" class="d-flex flex-column row-gap-2">
-          <b-form-textarea
-            v-model="newArgument"
-            placeholder="Enter your argument here"
-            rows="3"
-            required
-          ></b-form-textarea>
+    <!-- Add New Argument -->
+    <div v-if="status !== 'closed'" class="d-flex flex-column row-gap-2">
+      <div v-if="loading" class="skeleton skeleton-form"></div>
+      <b-form v-else @submit.prevent="addArgument" class="d-flex flex-column row-gap-2">
+        <b-form-textarea
+          v-model="newArgument"
+          placeholder="Enter your argument here"
+          rows="3"
+          required
+        ></b-form-textarea>
 
-          <div>
-            <!-- Disable if user hasn't voted or isn't a participant -->
-            <button :disabled="!hasVoted && !isParticipant" class="btn btn-primary w-100" type="submit">
-              Kick Your Argument
-            </button>
+        <div>
+          <button :disabled="!hasVoted && !isParticipant" class="btn btn-primary w-100" type="submit">
+            Kick Your Argument
+          </button>
+        </div>
+
+        <!-- Voting Buttons -->
+        <div v-if="!hasVoted && !isParticipant" class="d-flex fw-bold rounded text-white justify-content-center align-items-center">
+          <div
+            @click="voteWith"
+            class="vote-button w-50 d-flex justify-content-center align-items-center"
+            :style="withButtonStyle"
+          >
+            <p class="m-0">Vote With</p>
+            <i class="bi bi-arrow-up fs-5 ms-2"></i>
           </div>
-
-          <!-- Voting Buttons -->
-          <div v-if="!hasVoted && !isParticipant" class="d-flex fw-bold rounded text-white justify-content-center align-items-center">
-            <div
-              @click="voteWith"
-              class="vote-button w-50 d-flex justify-content-center align-items-center"
-              :style="withButtonStyle"
-            >
-              <p class="m-0">Vote With</p>
-              <i class="bi bi-arrow-up fs-5 ms-2"></i>
-            </div>
-            <div
-              @click="voteAgainst"
-              class="vote-button w-50 d-flex justify-content-center align-items-center"
-              :style="againstButtonStyle"
-            >
-              <p class="m-0">Vote Against</p>
-              <i class="bi bi-arrow-down fs-5 ms-2"></i>
-            </div>
+          <div
+            @click="voteAgainst"
+            class="vote-button w-50 d-flex justify-content-center align-items-center"
+            :style="againstButtonStyle"
+          >
+            <p class="m-0">Vote Against</p>
+            <i class="bi bi-arrow-down fs-5 ms-2"></i>
           </div>
+        </div>
 
-          <!-- Withdraw vote button -->
-          <div v-if="hasVoted && !isParticipant">
-            <button @click="cancelVote" class="btn cancel-button w-100" type="button">Withdraw your vote</button>
-          </div>
-        </b-form>
-      </div>
+        <!-- Withdraw vote button -->
+        <div v-if="hasVoted && !isParticipant">
+          <button @click="cancelVote" class="btn cancel-button w-100" type="button">Withdraw your vote</button>
+        </div>
+      </b-form>
     </div>
 
     <!-- Alert for success/error messages -->
@@ -420,26 +427,94 @@ export default {
     }
   },
   async created() {
-    this.id = this.debateObj._id
-    this.topic = this.debateObj.topic
-    this.category = this.debateObj.category
-    this.argumentsList = this.debateObj.arguments
-    this.endTime = this.debateObj.endTime
-    this.votesWith = this.debateObj.votesWith
-    this.votesAgainst = this.debateObj.votesAgainst
-    this.status = this.debateObj.status
-    this.user = await getLoggedInUser()
-    this.userSide = this.getUserSide()
+    try {
+      // Simulate fetching data with a delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Check if the user is an owner or/and participant
-    this.checkIfUserIsOwner()
-    this.checkIfUserIsParticipant()
-    // this.checkIfAnalysisIsAvailable()
+      // Initialize the data
+      this.id = this.debateObj._id;
+      this.topic = this.debateObj.topic;
+      this.category = this.debateObj.category;
+      this.argumentsList = this.debateObj.arguments;
+      this.endTime = this.debateObj.endTime;
+      this.votesWith = this.debateObj.votesWith;
+      this.votesAgainst = this.debateObj.votesAgainst;
+      this.status = this.debateObj.status;
+      this.user = await getLoggedInUser();
+      this.userSide = this.getUserSide();
+
+      // Check if the user is an owner or/and participant
+      this.checkIfUserIsOwner();
+      this.checkIfUserIsParticipant();
+
+    } catch (error) {
+      console.error('Error loading debate data:', error);
+    } finally {
+      this.loading = false;
+    }
   }
 }
 </script>
 
 <style scoped>
+
+/* Skeleton Loader Styles */
+.skeleton {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-header {
+  width: 150px;
+  height: 20px;
+}
+
+.skeleton-title {
+  width: 200px;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.skeleton-category {
+  width: 100px;
+  height: 20px;
+}
+
+.skeleton-arguments {
+  width: 100%;
+  height: 100px;
+}
+
+.skeleton-button {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.skeleton-analysis {
+  width: 100%;
+  height: 100px;
+}
+
+.skeleton-form {
+  width: 100%;
+  height: 60px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Regular Styles */
 .vote-button {
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.1s ease;
