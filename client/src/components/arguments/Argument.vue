@@ -119,18 +119,28 @@ export default {
       },
       avatar: defaultAvatar,
       updatingComment: null,
-      updatedCommentContent: ''
+      updatedCommentContent: '',
+      loading: true
     }
   },
   async created() {
-    await this.fetchArgument()
-    await this.fetchOwner()
-    await this.checkIfOwner()
-    await this.fetchCommentUserDetails()
-    await this.fetchUserSide()
-    this.checkWinner();
+    await this.fetchData()
   },
   methods: {
+    async fetchData() {
+      try {
+        await this.fetchArgument();
+        await this.fetchOwner();
+        await this.checkIfOwner();
+        await this.fetchCommentUserDetails();
+        await this.fetchUserSide();
+        this.checkWinner();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        this.loading = false; // End loading state
+      }
+    },
     async checkIfOwner() {
       try {
         const user = await getLoggedInUser()
@@ -296,6 +306,55 @@ export default {
 </script>
 
 <style scoped>
+
+/* Skeleton Loader Styles */
+.skeleton {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-tag {
+  width: 50px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 40px;
+}
+
+.skeleton-comments {
+  width: 30px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.skeleton-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Regular Styles */
 
 .argument-content-text {
   font-size: 17px;
