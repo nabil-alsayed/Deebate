@@ -64,7 +64,6 @@ export default {
 
         // Set success message and show alert
         this.message = {type: 'success', text: response.data.message || 'Login successful!'};
-        this.showAlert();
 
         // Save the token in local storage
         localStorage.setItem('token', response.data.token);

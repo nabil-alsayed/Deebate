@@ -361,18 +361,18 @@ input:disabled {
 }
 
 .profile-image-container {
-  position: relative; /* Ensure the icon is positioned relative to this container */
+  position: relative;
   width: 75px;
   height: 75px;
   border-radius: 50%;
   border: 3px solid #007769;
-  overflow: show;
+  overflow: visible;
 }
 
 .profile-user-container {
   position: relative;
   border-radius: 50%;
-  overflow: hide;
+  overflow: hidden;
 }
 
 .profile-image {

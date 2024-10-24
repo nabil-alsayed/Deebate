@@ -77,7 +77,6 @@ export default {
 
         // Handle the response, save the token if necessary
         this.message = {type: 'success', text: response.data.message || 'Sign up successful!'};
-        this.showAlert();
 
         // Redirect the user to the home page
         this.$router.push('/login')
