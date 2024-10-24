@@ -361,15 +361,8 @@ export default {
 
     // Make use of HATEOAS links to fullfill the requirement
     const deleteDebate = async () => {
-      if (!props.debateObj.links || !props.debateObj.links.delete) {
-        console.error('Delete link not available')
-        message.value = { type: 'error', text: 'Unable to delete debate. Delete link not available.' }
-        showAlert()
-        return
-      }
-
       try {
-        await Api.delete(props.debateObj.links.delete, {
+        await Api.delete(`/debates/${props.debateObj._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
