@@ -161,7 +161,7 @@ li {
 .debate-item {
   background-color: white;
   border: 0.5px solid #dad9d9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
   border-radius: 15px;
   padding: 15px;
   margin-bottom: 15px;

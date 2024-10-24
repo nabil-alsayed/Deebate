@@ -68,9 +68,9 @@ export default {
   align-items: center;
   cursor: pointer;
   padding: 15px;
-  border: 1px solid #e0e0e0;
+  border: 0.5px solid #dad9d9;
   border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
   transition: all 0.3s ease;
   font-weight: 800;
   color: #017769;

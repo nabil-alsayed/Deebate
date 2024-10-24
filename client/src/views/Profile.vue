@@ -10,7 +10,7 @@
       <!-- DEBATE LIST AND WIDGETS -->
       <div class="main-body-profile flex-lg-row flex-column">
         <!-- DEBATE LIST -->
-        <div class="d-flex flex-column row-gap-3 w-100 h-100">
+        <div class="d-flex flex-column row-gap-3 w-100 h-100" id="debates-sections">
           <div class="d-flex flex-column row-gap-1">
             <h2 class="title">Post a Debate</h2>
             <DebateForm />
@@ -83,6 +83,11 @@ export default{
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+#debates-sections {
+  width: 100%;
+  padding: 0 8px;
 }
 
 @media (max-width: 992px) {
