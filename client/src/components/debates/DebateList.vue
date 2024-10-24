@@ -1,9 +1,6 @@
 <template>
   <div class="d-flex flex-column full-width row-gap-1" style="width: 100%">
-    <div
-      class="d-flex flex-row justify-content-between align-items-center"
-      style="color: grey"
-    >
+    <div class="d-flex flex-row justify-content-between align-items-center" style="color: grey">
       <h2 class="title">{{ debates.length }} Debates</h2>
       <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center" style="font-size: 20px">
         <div class="d-flex flex-row column-gap-2 justify-content-center align-items-center" @click="toggleSort" style="cursor: pointer;">
@@ -63,7 +60,8 @@ export default {
       debates: [],
       error: null,
       sortOrder: 'desc',
-      loading: true, // Add loading state
+      loading: true,
+      selectedCategory: localStorage.getItem('selectedCategory') || null,
       EmptyListIllustration,
     };
   },
@@ -72,17 +70,39 @@ export default {
       this.debates = newResults;
     },
   },
-  mounted() {
+  created() {
+    this.selectedCategory = '';
     localStorage.removeItem('selectedCategory');
-    this.selectedCategory = null;
     this.getDebates();
+  },
+  updated() {
+    this.selectedCategory = localStorage.getItem('selectedCategory');
   },
   methods: {
     getDebates() {
-      this.loading = true; // Set loading state to true before fetching data
-      const userQuery = this.user ? `user=${this.user}&` : '';
-      const sortQuery = `sort=${this.sortOrder}`;
-      Api.get(`/debates?${userQuery}${sortQuery}`)
+      this.loading = true;
+
+      // Build the query parameters dynamically
+      const queryParams = [];
+
+      // Add user query if exists
+      if (this.user) {
+        queryParams.push(`user=${this.user}`);
+      }
+
+      // Add sort query (it's always present)
+      queryParams.push(`sort=${this.sortOrder}`);
+
+      // Add category filter query if exists
+      if (this.selectedCategory) {
+        queryParams.push(`category=${this.selectedCategory}`);
+      }
+
+      // Join the query params with '&'
+      const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
+
+      // Make the API call
+      Api.get(`/debates${queryString}`)
         .then((response) => {
           this.debates = response.data.debates;
         })
@@ -91,14 +111,27 @@ export default {
           this.error = 'An error occurred while fetching debates. Please try again later.';
         })
         .finally(() => {
-          this.loading = false; // Set loading state to false after fetching data
+          this.loading = false;
         });
     },
+
     toggleSort() {
+      // Toggle the sort order
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+
+      // Fetch debates again with new sort order
       this.getDebates();
     },
-  },
+
+    updateCategory(newCategory) {
+      // Update the selected category and store it in local storage
+      this.selectedCategory = newCategory;
+      localStorage.setItem('selectedCategory', newCategory);
+
+      // Fetch debates again with the updated category
+      this.getDebates();
+    }
+  }
 };
 </script>
 
