@@ -26,7 +26,10 @@
           v-model="user.password"
           placeholder="Password"
         />
-        <b-button type="submit" class="button">Sign up</b-button>
+        <b-button type="submit" class="button">
+          <span v-if="isLoading">Signing you up...</span>
+          <span v-else>Sign up</span>
+        </b-button>
       </b-form>
       <div class="flex flex-column column-gap-4 text-center">
         <p class="small fw-medium">
@@ -58,11 +61,13 @@ export default {
         type: '',
         text: '',
       },
-      alertShown: false
+      alertShown: false,
+      isLoading: false
     }
   },
   methods: {
     async signup() {
+      this.isLoading = true;
       try {
         const response = await Api.post(
           '/auth/signup',
@@ -85,6 +90,8 @@ export default {
         const errorMsg = error.response?.data?.message || 'Sign up failed, please try again.';
         this.message = {type: 'error', text: errorMsg};
         this.showAlert();
+      } finally {
+        this.isLoading = false;
       }
     },
     showAlert() {

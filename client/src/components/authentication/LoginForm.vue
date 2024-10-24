@@ -19,7 +19,10 @@
           v-model="user.password"
           placeholder="Password"
         />
-        <b-button type="submit" class="button">Log in</b-button>
+        <b-button type="submit" class="button">
+          <span v-if="isLoading">Logging in...</span>
+          <span v-else>Log in</span>
+        </b-button>
       </b-form>
       <div class="flex flex-column column-gap-4 text-center">
         <p class="small fw-medium">
@@ -51,11 +54,13 @@ export default {
         type: '',
         text: '',
       },
-      alertShown: false
+      alertShown: false,
+      isLoading: false
     }
   },
   methods: {
     async login() {
+      this.isLoading = true;
       try {
         const response = await Api.post('/auth/login/', {
           emailAddress: this.user.email,
@@ -75,6 +80,8 @@ export default {
         const errorMsg = error.response?.data?.message || 'Login failed, please try again.';
         this.message = {type: 'error', text: errorMsg};
         this.showAlert();
+      } finally {
+        this.isLoading = false;
       }
     },
     showAlert() {
