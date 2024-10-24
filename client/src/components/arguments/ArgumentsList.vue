@@ -1,12 +1,15 @@
 <template>
-  <div v-if="arguments.length > 1"
-       v-for="argument in arguments"
-       :key="argument._id"
-  >
-    <argument @argument-deleted="handleArgumentDeleted" :argument="argument" :debate="debate"/>
-  </div>
-  <div v-else-if="arguments.length === 1">
-    <argument @argument-deleted="handleArgumentDeleted" :argument="arguments[0]" :debate="debate" />
+  <div class="d-flex flex-column row-gap-2">
+    <div v-if="arguments.length > 1"
+         v-for="argument in arguments"
+         :key="argument._id"
+         class="d-flex flex-column row-gap-3"
+    >
+      <argument @argument-deleted="handleArgumentDeleted" :argument="argument" :debate="debate"/>
+    </div>
+    <div v-else-if="arguments.length === 1">
+      <argument @argument-deleted="handleArgumentDeleted" :argument="arguments[0]" :debate="debate" />
+    </div>
   </div>
 </template>
 

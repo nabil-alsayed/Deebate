@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm" style="font-family: Inter, serif">
+  <div class="argument-card d-flex flex-column px-3 py-3 rounded-4" style="font-family: Inter, serif">
     <div class="d-flex justify-content-between align-items-center">
       <!-- Owner and Profile Image - Suspense and Data -->
       <div class="d-flex align-items-center gap-2">
@@ -355,6 +355,11 @@ export default {
 }
 
 /* Regular Styles */
+
+.argument-card {
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+}
 
 .argument-content-text {
   font-size: 17px;

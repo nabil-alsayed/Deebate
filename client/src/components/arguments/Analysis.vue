@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column px-3 py-3 rounded-4 shadow-sm" style="font-family: Inter,serif">
+  <div class="analysis-card d-flex flex-column px-3 py-3 rounded-4" style="font-family: Inter,serif">
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
         <img :src="chatgptAvatar" alt="ChatGPT" class="rounded-circle"
@@ -45,6 +45,12 @@ export default {
 </script>
 
 <style scoped>
+
+.analysis-card {
+  border: 0.5px solid #dad9d9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+}
+
 .title-text {
   font-size: 16px;
 }
